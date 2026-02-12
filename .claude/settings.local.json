@@ -29,7 +29,10 @@
       "Bash(__NEW_LINE_11064954b37f351f__ chmod +x /tmp/add_env_to_vercel.sh)",
       "Bash(bash:*)",
       "Bash(vercel env rm:*)",
-      "Bash(vercel env:*)"
+      "Bash(vercel env:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)"
     ]
   }
 }

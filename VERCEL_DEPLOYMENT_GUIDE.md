@@ -63,15 +63,15 @@ You'll be asked these questions:
 
 ```
 DATABASE_URL = postgresql://neondb_owner:npg_...@ep-shiny-snow-...
-JWT_SECRET = qp_s3cur3_jwt_k3y_2024_r4nd0m_str1ng_x7k9m2
-GROQ_API_KEY = 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
-REDIS_URL = redis://default:Acx3AAIncDJlZWQ3NzNjMGY4MTM0NTAyYTQxNDE1ZWJmYzZkZjkzM3AyNTIzNDM@saved-heron-52343.upstash.io:6379
-PAYSTACK_SECRET_KEY = sk_test_fdf7f14982b6af835c1a4b71ebd2f85a94dd13a0
-R2_ACCOUNT_ID = 4c3d190efbc88d52da77158fc8fa0689
-R2_ACCESS_KEY_ID = b85b33e4223b0056defb72a9950f3278
-R2_SECRET_ACCESS_KEY = 981446f2b3fec5acd469422919cc1d0ea0de5596910cf307b755e8e245e7a4e0
-SENDGRID_API_KEY = (your SendGrid key)
-SENTRY_DSN = https://test@sentry.io/test
+JWT_SECRET = (your-jwt-secret-key)
+GROQ_API_KEY = gsk_...
+REDIS_URL = redis://default:...@saved-heron-52343.upstash.io:6379
+PAYSTACK_SECRET_KEY = sk_test_...
+R2_ACCOUNT_ID = (your-r2-account-id)
+R2_ACCESS_KEY_ID = (your-r2-access-key)
+R2_SECRET_ACCESS_KEY = (your-r2-secret)
+SENDGRID_API_KEY = (your-sendgrid-key)
+SENTRY_DSN = https://...@....ingest.sentry.io/...
 ```
 
 ### Click "Save"
