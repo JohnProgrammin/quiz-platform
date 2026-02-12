@@ -20,7 +20,11 @@
       "Bash(grep:*)",
       "Bash(netstat:*)",
       "Bash(npm run build:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(vercel deploy:*)",
+      "Bash(vercel env add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

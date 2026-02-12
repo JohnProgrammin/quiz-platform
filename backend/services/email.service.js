@@ -1,48 +1,39 @@
 /**
  * Email Service
- * Handles sending emails via SendGrid
+ * Handles sending emails via Resend
  */
 
-const http = require('https');
+const https = require('https');
 
 class EmailService {
   constructor() {
-    this.apiKey = process.env.SENDGRID_API_KEY;
-    this.fromEmail = process.env.FROM_EMAIL || 'noreply@floraquiz.com';
+    this.apiKey = process.env.RESEND_API_KEY;
+    this.fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
   }
 
   /**
-   * Send email via SendGrid API
+   * Send email via Resend API
    * @param {string} to - Recipient email
    * @param {string} subject - Email subject
    * @param {string} htmlContent - HTML email body
    */
   async sendEmail(to, subject, htmlContent) {
     if (!this.apiKey) {
-      console.warn('⚠️  SendGrid API key not configured - email not sent');
+      console.warn('⚠️  Resend API key not configured - email not sent');
       return { success: false, message: 'Email service not configured' };
     }
 
     try {
       const data = JSON.stringify({
-        personalizations: [
-          {
-            to: [{ email: to }],
-            subject: subject,
-          },
-        ],
-        from: { email: this.fromEmail },
-        content: [
-          {
-            type: 'text/html',
-            value: htmlContent,
-          },
-        ],
+        from: this.fromEmail,
+        to: to,
+        subject: subject,
+        html: htmlContent,
       });
 
       const options = {
-        hostname: 'api.sendgrid.com',
-        path: '/v3/mail/send',
+        hostname: 'api.resend.com',
+        path: '/emails',
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -52,7 +43,7 @@ class EmailService {
       };
 
       return new Promise((resolve, reject) => {
-        const req = http.request(options, (res) => {
+        const req = https.request(options, (res) => {
           let responseData = '';
 
           res.on('data', (chunk) => {
@@ -60,17 +51,23 @@ class EmailService {
           });
 
           res.on('end', () => {
-            if (res.statusCode === 202) {
-              resolve({ success: true, message: 'Email sent successfully' });
-            } else {
-              console.error(`SendGrid error (${res.statusCode}):`, responseData);
-              reject(new Error(`Email sending failed: ${res.statusCode}`));
+            try {
+              const parsed = JSON.parse(responseData);
+              if (res.statusCode === 200) {
+                resolve({ success: true, message: 'Email sent successfully', id: parsed.id });
+              } else {
+                console.error(`Resend error (${res.statusCode}):`, parsed);
+                reject(new Error(`Email sending failed: ${parsed.message || res.statusCode}`));
+              }
+            } catch (e) {
+              console.error('Failed to parse Resend response:', responseData);
+              reject(new Error('Email service error'));
             }
           });
         });
 
         req.on('error', (error) => {
-          console.error('SendGrid request error:', error);
+          console.error('Resend request error:', error);
           reject(error);
         });
 
