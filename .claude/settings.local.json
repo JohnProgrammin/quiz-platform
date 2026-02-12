@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"c:\\\\Users\\\\HP\\\\Documents\\\\quiz-platform\\\\backend\"\" && echo \"---\" && ls -la \"c:UsersHPDocumentsquiz-platformfrontend\"\")",
+      "Bash(dir:*)",
+      "Bash(npm install:*)",
+      "Bash(node:*)",
+      "Bash(timeout:*)",
+      "Bash(npm run dev:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(taskkill:*)",
+      "Bash(python:*)",
+      "Bash(npm start)",
+      "Bash(del:*)",
+      "Bash(if exist clear-users.js del /F clear-users.js)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(curl:*)",
+      "Bash(__NEW_LINE_f3625e072388f74a__ cd \"/c/Users/HP/Documents/quiz-platform/backend/controllers\")",
+      "Bash(grep:*)",
+      "Bash(netstat:*)",
+      "Bash(npm run build:*)",
+      "Bash(ls:*)"
+    ]
+  }
+}

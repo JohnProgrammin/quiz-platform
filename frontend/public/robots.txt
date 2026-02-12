@@ -1,0 +1,27 @@
+# FloraQuiz - AI-Powered Learning Platform
+# Search Engine Optimization for Web Crawlers
+
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /private
+Disallow: /.env
+
+# Specific rules for Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Specific rules for Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://floraquiz.com/sitemap.xml
+
+# Request timeout
+Request-rate: 30/60
+

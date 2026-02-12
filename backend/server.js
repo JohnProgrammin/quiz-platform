@@ -1,0 +1,1053 @@
+/**
+ * FloraQuiz - Production-Ready Backend Server
+ * Modular Express.js application with services, middleware, and routes
+ *
+ * Architecture:
+ * Middleware → Routes → Controllers → Services → Database
+ */
+
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+
+// ============================================
+// IMPORTS - Configuration
+// ============================================
+
+const { sql, testConnection: testDbConnection } = require('./config/database.serverless');
+const { pricingPlans } = require('./config/stripe.config');
+const cacheService = require('./services/cache.service');
+const storageService = require('./services/storage.service');
+
+// ============================================
+// IMPORTS - Middleware
+// ============================================
+
+const {
+  helmetConfig,
+  globalLimiter,
+  authLimiter,
+  sanitizeInput,
+  validateJson,
+  preventParameterPollution,
+  tierBasedRateLimit,
+} = require('./middleware/security');
+
+const {
+  authenticateToken,
+  checkSubscriptionTier,
+  checkFeatureAccess,
+  optionalAuth,
+} = require('./middleware/auth');
+
+// ============================================
+// APP CONFIGURATION
+// ============================================
+
+// ============================================
+// ENVIRONMENT VALIDATION
+// ============================================
+const requiredEnvVars = [
+  'DATABASE_URL',
+  'JWT_SECRET',
+  'GROQ_API_KEY',
+  'REDIS_URL',
+  'PAYSTACK_SECRET_KEY',
+  'R2_ACCOUNT_ID',
+  'R2_ACCESS_KEY_ID',
+  'R2_SECRET_ACCESS_KEY',
+];
+
+const missingVars = requiredEnvVars.filter(v => !process.env[v]);
+if (missingVars.length > 0) {
+  console.error('🔴 CRITICAL: Missing required environment variables:');
+  missingVars.forEach(v => console.error(`   - ${v}`));
+  process.exit(1);
+}
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+// ============================================
+// GLOBAL MIDDLEWARE STACK
+// ============================================
+
+// Security
+app.use(helmetConfig);
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+}));
+
+// Parsing & Validation
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(validateJson);
+app.use(sanitizeInput);
+app.use(preventParameterPollution);
+
+// Rate Limiting
+app.use(globalLimiter);
+
+// Static Files (SEO: robots.txt, sitemap.xml)
+app.use(express.static(path.join(__dirname, '../frontend/public')));
+
+// Database connection is now imported directly in controllers using Neon serverless
+// No need to inject into app.locals
+
+// Request Logging (optional - can add Pino later)
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
+
+// ============================================
+// PUBLIC ROUTES (No Authentication)
+// ============================================
+
+/**
+ * Health Check Endpoint
+ * Used by: Vercel, monitoring systems, load balancers
+ */
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+/**
+ * Pricing Plans Endpoint
+ * Returns available subscription tiers
+ */
+app.get('/api/v1/subscription/plans', (req, res) => {
+  res.json(pricingPlans);
+});
+
+// ============================================
+// AUTH ROUTES
+// ============================================
+
+const authRouter = express.Router();
+
+/**
+ * Sign Up
+ * POST /api/v1/auth/signup
+ * Body: { username, email, password, fullName }
+ */
+authRouter.post('/signup', authLimiter, async (req, res) => {
+  try {
+    const { username, email, password, fullName } = req.body;
+
+    // Validation
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'Username, email, and password required' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    // Hash password
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user in database
+    const result = await sql`
+      INSERT INTO users (username, email, password_hash, full_name, subscription_tier)
+      VALUES (${username}, ${email}, ${hashedPassword}, ${fullName || username}, 'free')
+      RETURNING id, username, email, full_name, subscription_tier, created_at
+    `;
+
+    const user = result[0];
+
+    // Create JWT token
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    );
+
+    res.status(201).json({
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        fullName: user.full_name,
+        subscriptionTier: user.subscription_tier,
+      },
+    });
+  } catch (error) {
+    console.error('Signup error:', error);
+    if (error.code === '23505') {
+      // Unique constraint violation
+      return res.status(400).json({ error: 'Username or email already exists' });
+    }
+    res.status(500).json({ error: 'Signup failed' });
+  }
+});
+
+/**
+ * Login
+ * POST /api/v1/auth/login
+ * Body: { username, password }
+ */
+authRouter.post('/login', authLimiter, async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password required' });
+    }
+
+    // Get user from database
+    const result = await sql`
+      SELECT id, username, email, full_name, password_hash, subscription_tier
+      FROM users WHERE username = ${username} OR email = ${username}
+    `;
+
+    if (result.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const user = result[0];
+
+    // Verify password
+    const bcrypt = require('bcryptjs');
+    const passwordMatch = await bcrypt.compare(password, user.password_hash);
+
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Update last login
+    await sql`UPDATE users SET last_login_at = NOW() WHERE id = ${user.id}`;
+
+    // Create JWT token
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        fullName: user.full_name,
+        subscriptionTier: user.subscription_tier,
+      },
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+/**
+ * Send Verification Email
+ * POST /api/v1/auth/send-verification-email
+ * Body: { email }
+ * Sends verification email to user's email address
+ */
+authRouter.post('/send-verification-email', authLimiter, async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Find user by email
+    const result = await sql`
+      SELECT id, email_verified FROM users WHERE email = ${email}
+    `;
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = result[0];
+
+    if (user.email_verified) {
+      return res.status(400).json({ error: 'Email already verified' });
+    }
+
+    // Generate verification token
+    const jwt = require('jsonwebtoken');
+    const verificationToken = jwt.sign(
+      { id: user.id, type: 'email_verification' },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // Send verification email
+    const emailService = require('./services/email.service');
+    await emailService.sendVerificationEmail(email, verificationToken);
+
+    res.json({ message: 'Verification email sent. Check your inbox.' });
+  } catch (error) {
+    console.error('Send verification email error:', error);
+    res.status(500).json({ error: 'Failed to send verification email' });
+  }
+});
+
+/**
+ * Verify Email Token
+ * POST /api/v1/auth/verify-email
+ * Body: { token }
+ * Verifies the email token and marks email as verified
+ */
+authRouter.post('/verify-email', async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ error: 'Verification token is required' });
+    }
+
+    // Verify token
+    const jwt = require('jsonwebtoken');
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ error: 'Invalid or expired verification token' });
+    }
+
+    if (decoded.type !== 'email_verification') {
+      return res.status(401).json({ error: 'Invalid token type' });
+    }
+
+    // Update user email verification status
+    const result = await sql`
+      UPDATE users SET email_verified = true
+      WHERE id = ${decoded.id}
+      RETURNING id, username, email, email_verified
+    `;
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({
+      message: 'Email verified successfully',
+      user: {
+        id: result[0].id,
+        username: result[0].username,
+        email: result[0].email,
+        emailVerified: result[0].email_verified
+      }
+    });
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json({ error: 'Email verification failed' });
+  }
+});
+
+app.use('/api/v1/auth', authRouter);
+
+// ============================================
+// PROTECTED ROUTES (Authentication Required)
+// ============================================
+
+/**
+ * Get Current User Profile
+ * GET /api/v1/users/me
+ */
+app.get('/api/v1/users/me', authenticateToken, async (req, res) => {
+  try {
+    const user = await sql`
+      SELECT id, username, email, full_name, bio, subscription_tier,
+             monthly_quiz_count, monthly_quiz_reset_at, created_at
+      FROM users WHERE id = ${req.user.id}
+    `;
+
+    if (user.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({
+      id: user[0].id,
+      username: user[0].username,
+      email: user[0].email,
+      fullName: user[0].full_name,
+      bio: user[0].bio,
+      subscriptionTier: user[0].subscription_tier,
+      monthlyQuizCount: user[0].monthly_quiz_count,
+      createdAt: user[0].created_at,
+    });
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+/**
+ * Logout
+ * POST /api/v1/auth/logout
+ */
+app.post('/api/v1/auth/logout', authenticateToken, (req, res) => {
+  // JWT is stateless, just confirm logout on client side
+  res.json({ message: 'Logged out successfully' });
+});
+
+// ============================================
+// SUBSCRIPTION/PAYMENT ROUTES
+// ============================================
+
+/**
+ * Create Paystack Payment
+ * POST /api/v1/subscription/checkout
+ * Body: { plan: 'pro' | 'premium' }
+ */
+app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) => {
+  try {
+    const { plan } = req.body;
+
+    if (!plan || !['pro', 'premium'].includes(plan)) {
+      return res.status(400).json({ error: 'Valid plan required (pro or premium)' });
+    }
+
+    // Get user email
+    const user = await sql`SELECT email FROM users WHERE id = ${req.user.id}`;
+
+    if (!user[0]) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Plan amounts in NGN
+    const amounts = {
+      pro: 9999,      // $9.99 equivalent
+      premium: 19999   // $19.99 equivalent
+    };
+
+    // Import Paystack config
+    const { createTransaction } = require('./config/paystack.config');
+
+    // Create Paystack transaction
+    const transaction = await createTransaction({
+      email: user[0].email,
+      amount: amounts[plan],
+      plan: plan,
+      userId: req.user.id,
+      callbackUrl: `${process.env.FRONTEND_URL}/subscription/callback`,
+    });
+
+    res.json({
+      authorizationUrl: transaction.data.authorization_url,
+      accessCode: transaction.data.access_code,
+      reference: transaction.data.reference,
+    });
+  } catch (error) {
+    console.error('Paystack transaction error:', error);
+    res.status(500).json({ error: 'Failed to initiate payment' });
+  }
+});
+
+/**
+ * Get Current Subscription
+ * GET /api/v1/subscription/current
+ */
+app.get('/api/v1/subscription/current', authenticateToken, async (req, res) => {
+  try {
+    const subscription = await sql`
+      SELECT tier, status, current_period_end, cancel_at_period_end
+      FROM subscriptions WHERE user_id = ${req.user.id} ORDER BY created_at DESC LIMIT 1
+    `;
+
+    if (subscription.length === 0) {
+      return res.json({ subscription: null, tier: 'free' });
+    }
+
+    res.json({
+      subscription: subscription[0],
+      tier: subscription[0].tier,
+    });
+  } catch (error) {
+    console.error('Get subscription error:', error);
+    res.status(500).json({ error: 'Failed to fetch subscription' });
+  }
+});
+
+/**
+ * Verify Payment
+ * GET /api/v1/subscription/verify-payment
+ * Query: reference={paystack_reference}
+ * Verifies a Paystack payment and checks subscription status
+ */
+app.get('/api/v1/subscription/verify-payment', authenticateToken, async (req, res) => {
+  try {
+    const { reference } = req.query;
+
+    if (!reference) {
+      return res.status(400).json({ error: 'Payment reference required' });
+    }
+
+    // Import Paystack config
+    const { verifyPayment } = require('./config/paystack.config');
+
+    // Verify with Paystack
+    const verification = await verifyPayment(reference);
+
+    if (!verification.data || verification.status !== true) {
+      return res.status(400).json({ error: 'Payment verification failed' });
+    }
+
+    const paystackData = verification.data;
+
+    // Check if payment was already processed
+    const existing = await sql`
+      SELECT tier FROM subscriptions
+      WHERE user_id = ${req.user.id} AND paystack_reference = ${reference}
+      LIMIT 1
+    `;
+
+    if (existing.length > 0) {
+      // Already processed
+      return res.json({
+        verified: true,
+        tier: existing[0].tier,
+        message: 'Subscription already active',
+      });
+    }
+
+    // Get plan from metadata
+    const plan = paystackData.metadata?.plan;
+    if (!plan || !['pro', 'premium'].includes(plan)) {
+      return res.status(400).json({ error: 'Invalid plan in payment data' });
+    }
+
+    // Create subscription
+    const tier = plan === 'pro' ? 'pro' : 'premium';
+    const periodEnd = new Date();
+    periodEnd.setMonth(periodEnd.getMonth() + 1);
+
+    const subscription = await sql`
+      INSERT INTO subscriptions (
+        user_id, paystack_reference, tier, status,
+        current_period_start, current_period_end
+      ) VALUES (
+        ${req.user.id}, ${reference}, ${tier}, ${'active'},
+        NOW(), ${periodEnd.toISOString()}
+      )
+      RETURNING id
+    `;
+
+    // Update user tier
+    await sql`
+      UPDATE users
+      SET subscription_tier = ${tier}, subscription_status = 'active', updated_at = NOW()
+      WHERE id = ${req.user.id}
+    `;
+
+    // Log payment event
+    await sql`
+      INSERT INTO payment_events (
+        user_id, event_type, amount, currency, status, metadata
+      ) VALUES (
+        ${req.user.id}, 'charge.success', ${paystackData.amount / 100}, ${paystackData.currency}, 'succeeded',
+        ${JSON.stringify({ reference, plan })}
+      )
+    `;
+
+    res.json({
+      verified: true,
+      tier: tier,
+      subscriptionId: subscription[0].id,
+      message: `Successfully upgraded to ${tier} plan`,
+    });
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    res.status(500).json({ error: 'Payment verification failed' });
+  }
+});
+
+/**
+ * Update Current User Profile
+ * PATCH /api/v1/users/me
+ * Body: { fullName, bio }
+ */
+app.patch('/api/v1/users/me', authenticateToken, async (req, res) => {
+  try {
+    const { fullName, bio } = req.body;
+
+    const result = await sql`
+      UPDATE users SET full_name = COALESCE(${fullName || null}, full_name), bio = COALESCE(${bio || null}, bio), updated_at = NOW()
+      WHERE id = ${req.user.id}
+      RETURNING id, username, email, full_name, bio, subscription_tier
+    `;
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({
+      id: result[0].id,
+      username: result[0].username,
+      email: result[0].email,
+      fullName: result[0].full_name,
+      bio: result[0].bio,
+      subscriptionTier: result[0].subscription_tier,
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+/**
+ * Cancel Subscription
+ * POST /api/v1/subscription/cancel
+ * Cancels subscription at period end (Paystack)
+ */
+app.post('/api/v1/subscription/cancel', authenticateToken, async (req, res) => {
+  try {
+    // Get user's subscription
+    const subResult = await sql`
+      SELECT id, current_period_end FROM subscriptions
+      WHERE user_id = ${req.user.id} AND status = ${'active'}
+      ORDER BY created_at DESC LIMIT 1
+    `;
+
+    if (subResult.length === 0) {
+      return res.status(404).json({ error: 'No active subscription found' });
+    }
+
+    const subscription = subResult[0];
+    const periodEnd = subscription.current_period_end;
+
+    // Update database to mark subscription for cancellation
+    await sql`
+      UPDATE subscriptions
+      SET cancel_at_period_end = true, canceled_at = NOW(), updated_at = NOW()
+      WHERE id = ${subscription.id}
+    `;
+
+    // Update user tier (will revert to free after period end)
+    await sql`
+      UPDATE users
+      SET subscription_status = 'pending_cancellation', updated_at = NOW()
+      WHERE id = ${req.user.id}
+    `;
+
+    res.json({
+      success: true,
+      message: 'Subscription will cancel at period end',
+      periodEnd: new Date(periodEnd),
+    });
+  } catch (error) {
+    console.error('Cancel subscription error:', error);
+    res.status(500).json({ error: 'Failed to cancel subscription' });
+  }
+});
+
+/**
+ * Resume Canceled Subscription
+ * POST /api/v1/subscription/resume
+ * Resumes a subscription that was marked for cancellation (Paystack)
+ */
+app.post('/api/v1/subscription/resume', authenticateToken, async (req, res) => {
+  try {
+    const subResult = await sql`
+      SELECT id FROM subscriptions
+      WHERE user_id = ${req.user.id} AND cancel_at_period_end = true
+      ORDER BY created_at DESC LIMIT 1
+    `;
+
+    if (subResult.length === 0) {
+      return res.status(404).json({ error: 'No pending cancellation found' });
+    }
+
+    const subscriptionId = subResult[0].id;
+
+    // Update database to cancel the pending cancellation
+    await sql`
+      UPDATE subscriptions
+      SET cancel_at_period_end = false, canceled_at = NULL, updated_at = NOW()
+      WHERE id = ${subscriptionId}
+    `;
+
+    // Update user status
+    await sql`
+      UPDATE users
+      SET subscription_status = 'active', updated_at = NOW()
+      WHERE id = ${req.user.id}
+    `;
+
+    res.json({
+      success: true,
+      message: 'Subscription resumed successfully'
+    });
+  } catch (error) {
+    console.error('Resume subscription error:', error);
+    res.status(500).json({ error: 'Failed to resume subscription' });
+  }
+});
+
+/**
+ * Get Subscription Management Info
+ * GET /api/v1/subscription/management
+ * Returns subscription details and management options for Paystack
+ */
+app.get('/api/v1/subscription/management', authenticateToken, async (req, res) => {
+  try {
+    const subscription = await sql`
+      SELECT id, tier, status, current_period_start, current_period_end, cancel_at_period_end, paystack_reference
+      FROM subscriptions WHERE user_id = ${req.user.id}
+      ORDER BY created_at DESC LIMIT 1
+    `;
+
+    if (subscription.length === 0) {
+      return res.json({ subscription: null, message: 'No active subscription' });
+    }
+
+    const sub = subscription[0];
+
+    res.json({
+      subscription: {
+        id: sub.id,
+        tier: sub.tier,
+        status: sub.status,
+        periodStart: sub.current_period_start,
+        periodEnd: sub.current_period_end,
+        cancelAtPeriodEnd: sub.cancel_at_period_end,
+        paystackReference: sub.paystack_reference,
+      },
+      canCancel: sub.status === 'active' && !sub.cancel_at_period_end,
+      canResume: sub.cancel_at_period_end,
+    });
+  } catch (error) {
+    console.error('Subscription management error:', error);
+    res.status(500).json({ error: 'Failed to fetch subscription management info' });
+  }
+});
+
+/**
+ * Get Billing History
+ * GET /api/v1/subscription/history
+ * Returns payment events for current user
+ */
+app.get('/api/v1/subscription/history', authenticateToken, async (req, res) => {
+  try {
+    const events = await sql`
+      SELECT id, event_type, amount, currency, status, created_at
+      FROM payment_events
+      WHERE user_id = ${req.user.id}
+      ORDER BY created_at DESC
+      LIMIT 20
+    `;
+
+    res.json({ history: events });
+  } catch (error) {
+    console.error('Billing history error:', error);
+    res.status(500).json({ error: 'Failed to fetch billing history' });
+  }
+});
+
+// ============================================
+// PHASE 3: NOTES, QUIZ & TEACHING ROUTES
+// ============================================
+
+// Import routes
+const notesRoutes = require('./routes/notes.routes');
+const quizRoutes = require('./routes/quiz.routes');
+const teachingRoutes = require('./routes/teaching.routes');
+
+// Register routes
+app.use('/api/v1/notes', notesRoutes);
+app.use('/api/v1/quiz', quizRoutes);
+app.use('/api/v1/teaching', teachingRoutes);
+
+// ============================================
+// WEBHOOK ROUTES
+// ============================================
+
+/**
+ * Paystack Webhook Handler
+ * POST /api/v1/webhooks/paystack
+ * Handles payment.success events
+ */
+app.post('/api/v1/webhooks/paystack', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    const signature = req.headers['x-paystack-signature'];
+
+    // CRITICAL: Validate signature before processing
+    if (!signature) {
+      console.error('🔴 SECURITY: Paystack webhook received without signature header');
+      return res.status(400).json({ error: 'Signature required' });
+    }
+
+    const { verifyWebhookSignature } = require('./config/paystack.config');
+
+    // Verify webhook signature - will throw error if invalid
+    let event;
+    try {
+      event = verifyWebhookSignature(req.body, signature);
+    } catch (signatureError) {
+      console.error('🔴 SECURITY: Invalid Paystack webhook signature:', signatureError.message);
+      // Return 401 for invalid signature but log it - this is a security issue
+      return res.status(401).json({ error: 'Invalid signature' });
+    }
+
+    if (event.event !== 'charge.success') {
+      console.log(`ℹ️ Unhandled event: ${event.event}`);
+      return res.json({ status: 'ok' });
+    }
+
+    const charge = event.data;
+    const reference = charge.reference;
+    const userId = charge.metadata.userId;
+    const plan = charge.metadata.plan;
+
+    // Check for duplicate payments
+    const existing = await sql`
+      SELECT id FROM payment_events WHERE metadata = ${JSON.stringify({ reference })}
+    `;
+
+    if (existing.length > 0) {
+      console.log(`✅ Duplicate payment (already processed): ${reference}`);
+      return res.json({ status: 'ok' });
+    }
+
+    // Update user subscription
+    const tier = plan === 'pro' ? 'pro' : 'premium';
+    const periodEnd = new Date();
+    periodEnd.setMonth(periodEnd.getMonth() + 1);
+
+    await sql`
+      INSERT INTO subscriptions (
+        user_id, paystack_reference, tier, status,
+        current_period_start, current_period_end
+      ) VALUES (
+        ${userId}, ${reference}, ${tier}, ${'active'},
+        NOW(), ${periodEnd.toISOString()}
+      )
+    `;
+
+    // Update user tier
+    await sql`
+      UPDATE users SET subscription_tier = ${tier}, subscription_status = 'active', updated_at = NOW()
+      WHERE id = ${userId}
+    `;
+
+    // Log payment event
+    await sql`
+      INSERT INTO payment_events (
+        user_id, event_type, amount, currency, status, metadata
+      ) VALUES (
+        ${userId}, 'charge.success', ${charge.amount / 100}, ${charge.currency}, 'succeeded',
+        ${JSON.stringify({ reference, plan })}
+      )
+    `;
+
+    console.log(`✅ Payment successful for user ${userId}, plan: ${plan}`);
+    res.json({ status: 'ok' });
+  } catch (error) {
+    console.error('Paystack webhook error:', error);
+    res.status(200).json({ status: 'ok', error: error.message });
+  }
+});
+
+// ============================================
+// TEST ENDPOINTS (Development)
+// ============================================
+
+if (process.env.NODE_ENV === 'development') {
+  /**
+   * Test Database Connection
+   * GET /api/v1/test/db
+   */
+  app.get('/api/v1/test/db', async (req, res) => {
+    try {
+      const result = await sql`SELECT NOW()`;
+      res.json({
+        status: 'connected',
+        timestamp: result[0].now,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: error.message,
+      });
+    }
+  });
+
+  /**
+   * Test Redis Connection
+   * GET /api/v1/test/redis
+   */
+  app.get('/api/v1/test/redis', async (req, res) => {
+    try {
+      const testKey = 'test_' + Date.now();
+      await cacheService.set(testKey, { message: 'test' }, 60);
+      const value = await cacheService.get(testKey);
+      await cacheService.delete(testKey);
+
+      res.json({
+        status: 'connected',
+        value,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: error.message,
+      });
+    }
+  });
+
+  /**
+   * Test R2 Connection
+   * GET /api/v1/test/r2
+   */
+  app.get('/api/v1/test/r2', async (req, res) => {
+    try {
+      const connected = await storageService.testConnection();
+      res.json({
+        status: connected ? 'connected' : 'error',
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: error.message,
+      });
+    }
+  });
+
+  /**
+   * Clear Quiz History (Development Testing)
+   * POST /api/v1/test/clear-quizzes
+   * Clears all quizzes and attempts for the authenticated user
+   */
+  app.post('/api/v1/test/clear-quizzes', async (req, res) => {
+    try {
+      // Get user ID from auth header or body
+      let userId = req.user?.id;
+      if (!userId && req.body?.userId) {
+        userId = req.body.userId;
+      }
+
+      if (!userId) {
+        return res.status(400).json({ error: 'User ID required' });
+      }
+
+      // Delete quiz attempts
+      await sql`DELETE FROM quiz_attempts WHERE user_id = ${userId}`;
+
+      // Delete quizzes
+      await sql`DELETE FROM quizzes WHERE user_id = ${userId}`;
+
+      // Reset monthly quiz count
+      await sql`UPDATE users SET monthly_quiz_count = 0, monthly_quiz_reset_at = NOW() WHERE id = ${userId}`;
+
+      res.json({
+        status: 'success',
+        message: 'Quiz history cleared for testing',
+        userId,
+      });
+    } catch (error) {
+      console.error('Clear quiz history error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: error.message,
+      });
+    }
+  });
+}
+
+// ============================================
+// ERROR HANDLING & 404
+// ============================================
+
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
+
+// 404 handler (second-to-last middleware)
+app.use(notFoundHandler);
+
+// Error handler (must be last middleware)
+app.use(errorHandler);
+
+// ============================================
+// SERVER STARTUP
+// ============================================
+
+async function startServer() {
+  try {
+    console.log('🚀 FloraQuiz Server Starting...\n');
+
+    // Start server immediately
+    app.listen(PORT, () => {
+      console.log(`✅ Server running on http://localhost:${PORT}`);
+      console.log(`Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}\n`);
+    });
+
+    // Test connections in background (non-blocking)
+    setTimeout(async () => {
+      console.log('\n🔍 Running connection tests in background...\n');
+
+      // Test database
+      try {
+        const dbResult = await Promise.race([
+          testDbConnection(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+        ]);
+        console.log('✅ Database: Connected');
+      } catch (err) {
+        console.warn('⚠️  Database: Connection test failed (will retry on first request)');
+      }
+
+      // Test Redis
+      try {
+        const redisResult = await Promise.race([
+          cacheService.testConnection(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+        ]);
+        console.log('✅ Redis: Connected');
+      } catch (err) {
+        console.warn('⚠️  Redis: Not available - caching disabled');
+      }
+
+      // Test R2
+      try {
+        const r2Result = await Promise.race([
+          storageService.testConnection(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+        ]);
+        console.log('✅ R2 Storage: Connected');
+      } catch (err) {
+        console.warn('⚠️  R2: Not available - file uploads disabled');
+      }
+
+      console.log('\n✨ Server ready to accept requests!\n');
+    }, 100);
+
+  } catch (error) {
+    console.error('❌ Critical startup error:', error.message);
+    // Still try to start the server
+    app.listen(PORT, () => {
+      console.log(`⚠️  Server started with errors on http://localhost:${PORT}`);
+    });
+  }
+}
+
+// Start the server
+startServer();
+
+// ============================================
+// GRACEFUL SHUTDOWN
+// ============================================
+
+process.on('SIGINT', async () => {
+  console.log('\n🛑 Shutting down gracefully...');
+  await pool.end();
+  await cacheService.disconnect();
+  process.exit(0);
+});
+
+module.exports = app;
