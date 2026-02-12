@@ -24,7 +24,12 @@
       "Bash(vercel deploy:*)",
       "Bash(vercel env add:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(/tmp/add_env_to_vercel.sh << 'EOF'\n#!/bin/bash\n\nPROJECT_ID=\"prj_I5YFj3aEboXpkYuWNzTVvHUA2zgo\"\nORG_ID=\"team_s2FgQ8UF9GdocGF9k83bLdsc\"\n\n# Get the vercel token\nVERCEL_TOKEN=$\\(cat ~/.vercel/auth.json 2>/dev/null | grep -o '\"token\":\"[^\"]*' | cut -d'\"' -f4\\)\n\nif [ -z \"$VERCEL_TOKEN\" ]; then\n  echo \"Token not found, trying environment variable...\"\n  VERCEL_TOKEN=\"${VERCEL_TOKEN}\"\nfi\n\nif [ -z \"$VERCEL_TOKEN\" ]; then\n  echo \"Cannot find Vercel auth token. Will use CLI instead.\"\n  echo \"Run these commands manually:\"\n  echo \"vercel env add RESEND_API_KEY\"\n  echo \"vercel env add SENTRY_DSN\"\n  exit 1\nfi\n\necho \"Token found: ${VERCEL_TOKEN:0:20}...\"\n\n# Add env vars using curl to Vercel API\nadd_env_var\\(\\) {\n  local key=$1\n  local value=$2\n  \n  echo \"Adding $key to Vercel...\"\n  curl -X POST \"https://api.vercel.com/v10/projects/$PROJECT_ID/env\" \\\\\n    -H \"Authorization: Bearer $VERCEL_TOKEN\" \\\\\n    -H \"Content-Type: application/json\" \\\\\n    -d \"{\n      \\\\\"key\\\\\": \\\\\"$key\\\\\",\n      \\\\\"value\\\\\": \\\\\"$value\\\\\",\n      \\\\\"target\\\\\": [\\\\\"production\\\\\"]\n    }\" \\\\\n    -s | grep -o '\"key\":\"[^\"]*' | head -1\n}\n\n# Add the variables\nadd_env_var \"RESEND_API_KEY\" \"re_7yNA7T4t_E7xy7GTYVwfMN3VXUg1bvNHj\"\nadd_env_var \"SENTRY_DSN\" \"https://c2d1ff9ae1f35e5f2f6fb254e6715558@o451087347639910.ingest.de.sentry.io/4510873522536528\"\n\necho \"✅ Environment variables added!\"\n\nEOF)",
+      "Bash(__NEW_LINE_11064954b37f351f__ chmod +x /tmp/add_env_to_vercel.sh)",
+      "Bash(bash:*)",
+      "Bash(vercel env rm:*)",
+      "Bash(vercel env:*)"
     ]
   }
 }
