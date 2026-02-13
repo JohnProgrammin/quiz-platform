@@ -114,6 +114,24 @@ app.use((req, res, next) => {
 // ============================================
 
 /**
+ * Root Endpoint
+ * Returns API status and welcome message
+ */
+app.get('/', (req, res) => {
+  res.json({
+    message: 'FloraQuiz API Server',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      pricing: '/api/v1/subscription/plans',
+      auth: '/api/v1/auth/*',
+      quizzes: '/api/v1/quiz/*',
+    },
+  });
+});
+
+/**
  * Health Check Endpoint
  * Used by: Vercel, monitoring systems, load balancers
  */
@@ -223,12 +241,25 @@ authRouter.post('/signup', authLimiter, async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Signup error:', error);
+    console.error('Signup error:', {
+      message: error.message,
+      code: error.code,
+      detail: error.detail,
+      stack: error.stack,
+    });
+
     if (error.code === '23505') {
       // Unique constraint violation
       return res.status(400).json({ error: 'Username or email already exists' });
     }
-    res.status(500).json({ error: 'Signup failed' });
+
+    if (error.code === '28P01' || error.message?.includes('permission')) {
+      // Database permission error
+      return res.status(503).json({ error: 'Database service temporarily unavailable' });
+    }
+
+    // Generic error - don't expose internal details
+    res.status(500).json({ error: 'Signup failed. Please try again.' });
   }
 });
 
