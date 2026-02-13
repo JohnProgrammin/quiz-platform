@@ -53,9 +53,12 @@ const requiredEnvVars = [
   'DATABASE_URL',
   'JWT_SECRET',
   'GROQ_API_KEY',
-  'REDIS_URL',
   'PAYSTACK_SECRET_KEY',
-  'R2_ACCOUNT_ID',
+];
+
+const optionalEnvVars = [
+  'REDIS_URL',      // Optional - graceful fallback if missing
+  'R2_ACCOUNT_ID',  // Optional - graceful fallback if missing
   'R2_ACCESS_KEY_ID',
   'R2_SECRET_ACCESS_KEY',
 ];
@@ -65,6 +68,13 @@ if (missingVars.length > 0) {
   console.error('🔴 CRITICAL: Missing required environment variables:');
   missingVars.forEach(v => console.error(`   - ${v}`));
   process.exit(1);
+}
+
+// Warn about missing optional vars
+const missingOptional = optionalEnvVars.filter(v => !process.env[v]);
+if (missingOptional.length > 0) {
+  console.warn('⚠️  Optional services disabled (missing env vars):');
+  missingOptional.forEach(v => console.warn(`   - ${v}`));
 }
 
 const app = express();
@@ -1065,37 +1075,39 @@ async function startServer() {
     setTimeout(async () => {
       console.log('\n🔍 Running connection tests in background...\n');
 
-      // Test database
-      try {
-        const dbResult = await Promise.race([
-          testDbConnection(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-        ]);
-        console.log('✅ Database: Connected');
-      } catch (err) {
-        console.warn('⚠️  Database: Connection test failed (will retry on first request)');
+      // Test database (critical - must work)
+      if (process.env.DATABASE_URL) {
+        try {
+          const dbResult = await Promise.race([
+            testDbConnection(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+          ]);
+          console.log('✅ Database: Connected');
+        } catch (err) {
+          console.warn('⚠️  Database: Connection test failed (will retry on first request)');
+        }
       }
 
-      // Test Redis
-      try {
-        const redisResult = await Promise.race([
-          cacheService.testConnection(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
-        ]);
-        console.log('✅ Redis: Connected');
-      } catch (err) {
-        console.warn('⚠️  Redis: Not available - caching disabled');
+      // Test Redis (optional - graceful fallback)
+      if (process.env.REDIS_URL) {
+        try {
+          const redisResult = await Promise.race([
+            cacheService.testConnection(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
+          ]);
+          console.log('✅ Redis: Connected');
+        } catch (err) {
+          console.warn('⚠️  Redis: Not available - caching disabled');
+        }
+      } else {
+        console.log('ℹ️  Redis: Not configured - caching disabled');
       }
 
-      // Test R2
-      try {
-        const r2Result = await Promise.race([
-          storageService.testConnection(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
-        ]);
-        console.log('✅ R2 Storage: Connected');
-      } catch (err) {
-        console.warn('⚠️  R2: Not available - file uploads disabled');
+      // Skip R2 test (slow and not critical for core functionality)
+      if (process.env.R2_ACCOUNT_ID) {
+        console.log('ℹ️  R2: Configured - file uploads enabled');
+      } else {
+        console.log('ℹ️  R2: Not configured - file uploads disabled');
       }
 
       console.log('\n✨ Server ready to accept requests!\n');
