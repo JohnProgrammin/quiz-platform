@@ -98,62 +98,62 @@ api.interceptors.response.use(
 );
 
 // Auth
-export const signup = (data) => api.post('/v1/auth/signup', data);
-export const login = (data) => api.post('/v1/auth/login', data);
-export const logout = () => api.post('/v1/auth/logout');
-export const sendVerificationEmail = (email) => api.post('/v1/auth/send-verification-email', { email });
-export const verifyEmail = (token) => api.post('/v1/auth/verify-email', { token });
+export const signup = (data) => api.post('/api/v1/auth/signup', data);
+export const login = (data) => api.post('/api/v1/auth/login', data);
+export const logout = () => api.post('/api/v1/auth/logout');
+export const sendVerificationEmail = (email) => api.post('/api/v1/auth/send-verification-email', { email });
+export const verifyEmail = (token) => api.post('/api/v1/auth/verify-email', { token });
 
 // Profile
-export const getProfile = () => api.get('/v1/users/me');
-export const updateProfile = (data) => api.patch('/v1/users/me', data);
+export const getProfile = () => api.get('/api/v1/users/me');
+export const updateProfile = (data) => api.patch('/api/v1/users/me', data);
 
 // Notes
-export const uploadNote = (formData) => api.post('/v1/notes', formData);
-export const getNotes = () => api.get('/v1/notes');
-export const getNote = (id) => api.get(`/v1/notes/${id}`);
-export const deleteNote = (id) => api.delete(`/v1/notes/${id}`);
+export const uploadNote = (formData) => api.post('/api/v1/notes', formData);
+export const getNotes = () => api.get('/api/v1/notes');
+export const getNote = (id) => api.get(`/api/v1/notes/${id}`);
+export const deleteNote = (id) => api.delete(`/api/v1/notes/${id}`);
 
 // Quizzes
-export const generateQuiz = (data) => api.post('/v1/quiz/generate', data);
-export const getQuizzes = () => api.get('/v1/quiz');
-export const getQuiz = (id) => api.get(`/v1/quiz/${id}`);
-export const submitQuiz = (id, answers) => api.post(`/v1/quiz/${id}/submit`, { answers });
-export const getQuizResults = (quizId, attemptId) => api.get(`/v1/quiz/${quizId}/results/${attemptId}`);
-export const getQuizHistory = () => api.get('/v1/quiz/history/all');
-export const getAllAttempts = () => api.get('/v1/quiz/attempts/all');
-export const getQuizAttempts = (quizId) => api.get(`/v1/quiz/${quizId}/attempts`);
+export const generateQuiz = (data) => api.post('/api/v1/quiz/generate', data);
+export const getQuizzes = () => api.get('/api/v1/quiz');
+export const getQuiz = (id) => api.get(`/api/v1/quiz/${id}`);
+export const submitQuiz = (id, answers) => api.post(`/api/v1/quiz/${id}/submit`, { answers });
+export const getQuizResults = (quizId, attemptId) => api.get(`/api/v1/quiz/${quizId}/results/${attemptId}`);
+export const getQuizHistory = () => api.get('/api/v1/quiz/history/all');
+export const getAllAttempts = () => api.get('/api/v1/quiz/attempts/all');
+export const getQuizAttempts = (quizId) => api.get(`/api/v1/quiz/${quizId}/attempts`);
 
 // Teaching (Pre-Quiz & Weakness Quizzes)
-export const getPreQuizSummary = (noteId) => api.post('/v1/teaching/pre-quiz-summary', { noteId });
+export const getPreQuizSummary = (noteId) => api.post('/api/v1/teaching/pre-quiz-summary', { noteId });
 export const generateWeaknessQuiz = (attemptId, weakTopics) =>
-  api.post('/v1/teaching/weakness-quiz', { attemptId, weakTopics });
+  api.post('/api/v1/teaching/weakness-quiz', { attemptId, weakTopics });
 
 // AI Teaching Chat (Premium only)
 export const createTeachingSession = (topic, noteId = null) =>
-  api.post('/v1/teaching/sessions', { topic, noteId });
+  api.post('/api/v1/teaching/sessions', { topic, noteId });
 export const getTeachingSessions = () =>
-  api.get('/v1/teaching/sessions');
+  api.get('/api/v1/teaching/sessions');
 export const getTeachingSession = (sessionId) =>
-  api.get(`/v1/teaching/sessions/${sessionId}`);
+  api.get(`/api/v1/teaching/sessions/${sessionId}`);
 export const sendTeachingMessage = (sessionId, message) =>
-  api.post(`/v1/teaching/sessions/${sessionId}/messages`, { message });
+  api.post(`/api/v1/teaching/sessions/${sessionId}/messages`, { message });
 export const updateSessionStatus = (sessionId, status) =>
-  api.patch(`/v1/teaching/sessions/${sessionId}/status`, { status });
+  api.patch(`/api/v1/teaching/sessions/${sessionId}/status`, { status });
 
 // Subscription & Billing
-export const getSubscriptionPlans = () => api.get('/v1/subscription/plans');
-export const createCheckoutSession = (data) => api.post('/v1/subscription/checkout', data);
-export const getCurrentSubscription = () => api.get('/v1/subscription/current');
-export const cancelSubscription = () => api.post('/v1/subscription/cancel');
-export const resumeSubscription = () => api.post('/v1/subscription/resume');
-export const getSubscriptionManagement = () => api.get('/v1/subscription/management');
-export const verifyPayment = (reference) => api.get(`/v1/subscription/verify-payment?reference=${reference}`);
+export const getSubscriptionPlans = () => api.get('/api/v1/subscription/plans');
+export const createCheckoutSession = (data) => api.post('/api/v1/subscription/checkout', data);
+export const getCurrentSubscription = () => api.get('/api/v1/subscription/current');
+export const cancelSubscription = () => api.post('/api/v1/subscription/cancel');
+export const resumeSubscription = () => api.post('/api/v1/subscription/resume');
+export const getSubscriptionManagement = () => api.get('/api/v1/subscription/management');
+export const verifyPayment = (reference) => api.get(`/api/v1/subscription/verify-payment?reference=${reference}`);
 // Deprecated: Stripe portal endpoint - replaced with getSubscriptionManagement
 // Kept as stub for backward compatibility
 export const getBillingPortalUrl = () => {
   return Promise.reject(new Error('Billing portal not available with Paystack. Use subscription management features instead.'));
 };
-export const getBillingHistory = () => api.get('/v1/subscription/history');
+export const getBillingHistory = () => api.get('/api/v1/subscription/history');
 
 export default api;
