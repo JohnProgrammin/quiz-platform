@@ -11,9 +11,45 @@ require('dotenv').config();
 
 class CacheService {
   constructor() {
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
-    this.redis.on('error', (err) => console.error('Redis error:', err));
-    this.redis.on('connect', () => console.log('✅ Redis connected'));
+    this.isConnected = false;
+
+    // Only try to connect if REDIS_URL is provided
+    if (process.env.REDIS_URL) {
+      try {
+        this.redis = new Redis(process.env.REDIS_URL, {
+          retryStrategy: (times) => {
+            const delay = Math.min(times * 50, 2000);
+            return delay;
+          },
+          maxRetriesPerRequest: 3, // Reduce retry attempts
+          enableReadyCheck: false,
+          enableOfflineQueue: false,
+        });
+
+        this.redis.on('error', (err) => {
+          console.warn('⚠️ Redis error (cache disabled):', err.message);
+          this.isConnected = false;
+        });
+
+        this.redis.on('connect', () => {
+          console.log('✅ Redis connected');
+          this.isConnected = true;
+        });
+
+        this.redis.on('ready', () => {
+          console.log('✅ Redis ready');
+          this.isConnected = true;
+        });
+      } catch (error) {
+        console.warn('⚠️ Redis connection failed, cache disabled:', error.message);
+        this.redis = null;
+        this.isConnected = false;
+      }
+    } else {
+      console.warn('⚠️ REDIS_URL not set - caching disabled (app will work without cache)');
+      this.redis = null;
+      this.isConnected = false;
+    }
   }
 
   /**
@@ -23,6 +59,11 @@ class CacheService {
    * @param {number} ttl - Time to live in seconds (default: 3600 = 1 hour)
    */
   async set(key, value, ttl = 3600) {
+    // If Redis is not connected, silently skip caching (app still works)
+    if (!this.redis || !this.isConnected) {
+      return true; // Return true so app continues normally
+    }
+
     try {
       const serialized = JSON.stringify(value);
       if (ttl) {
@@ -32,8 +73,8 @@ class CacheService {
       }
       return true;
     } catch (error) {
-      console.error(`Cache set error for key ${key}:`, error);
-      return false;
+      console.warn(`Cache set warning for key ${key}:`, error.message);
+      return true; // Still return true - cache failure shouldn't crash app
     }
   }
 
@@ -43,11 +84,16 @@ class CacheService {
    * @returns {any} - Deserialized value or null if not found
    */
   async get(key) {
+    // If Redis is not connected, return null (cache miss)
+    if (!this.redis || !this.isConnected) {
+      return null;
+    }
+
     try {
       const value = await this.redis.get(key);
       return value ? JSON.parse(value) : null;
     } catch (error) {
-      console.error(`Cache get error for key ${key}:`, error);
+      console.warn(`Cache get warning for key ${key}:`, error.message);
       return null;
     }
   }
