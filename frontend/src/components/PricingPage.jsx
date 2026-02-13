@@ -18,9 +18,13 @@ function PricingPage({ user, onLogout }) {
   const loadPlans = async () => {
     try {
       const response = await getSubscriptionPlans();
-      const proPlan = response.data.pro || {
+      const data = response.data;
+
+      // Extract plans from new multi-currency format
+      const proPlan = data.plans?.pro || {
         name: 'Pro',
         price: 999,
+        currency: data.currency || 'USD',
         description: 'For serious learners',
         features: [
           'Unlimited quizzes',
@@ -31,12 +35,12 @@ function PricingPage({ user, onLogout }) {
           'Free-text questions',
           'Enhanced analytics',
         ],
-        priceId: process.env.REACT_APP_STRIPE_PRICE_ID_PRO,
       };
 
-      const premiumPlan = response.data.premium || {
+      const premiumPlan = data.plans?.premium || {
         name: 'Premium',
         price: 1999,
+        currency: data.currency || 'USD',
         description: 'For mastery seekers',
         features: [
           'Everything in Pro',
@@ -47,16 +51,37 @@ function PricingPage({ user, onLogout }) {
           'PDF export',
           'Advanced analytics',
         ],
-        priceId: process.env.REACT_APP_STRIPE_PRICE_ID_PREMIUM,
       };
 
       setPlans([
-        { tier: 'pro', ...proPlan },
-        { tier: 'premium', ...premiumPlan },
+        { tier: 'pro', ...proPlan, currency: data.currency || 'USD' },
+        { tier: 'premium', ...premiumPlan, currency: data.currency || 'USD' },
       ]);
+
+      // Log detection info
+      if (data.detected) {
+        console.log(`💱 Auto-detected currency: ${data.currency}`);
+      }
     } catch (err) {
       console.error('Error loading plans:', err);
       setError('Failed to load pricing plans');
+      // Fallback to USD if API fails
+      setPlans([
+        {
+          tier: 'pro',
+          name: 'Pro',
+          price: 999,
+          currency: 'USD',
+          features: ['Unlimited quizzes', 'Unlimited notes', 'AI feedback'],
+        },
+        {
+          tier: 'premium',
+          name: 'Premium',
+          price: 1999,
+          currency: 'USD',
+          features: ['Everything in Pro', 'AI Teaching', 'API Access'],
+        },
+      ]);
     }
   };
 

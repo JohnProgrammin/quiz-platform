@@ -2,6 +2,27 @@ import React from 'react';
 import { Check, Sparkles, Crown } from 'lucide-react';
 import { useSubscription } from '../contexts/SubscriptionContext';
 
+// Currency symbols and formatting
+const currencySymbols = {
+  USD: '$', GBP: '£', EUR: '€', INR: '₹', NGN: '₦',
+  KES: 'KES', ZAR: 'R', AUD: 'A$', CAD: 'C$', BRL: 'R$',
+  JPY: '¥', CNY: '¥', MXN: '$', CHF: 'CHF', SEK: 'kr',
+  NZD: 'NZ$', SGD: 'S$', HKD: 'HK$', THB: '฿', PKR: '₨',
+};
+
+const decimalsForCurrency = {
+  JPY: 0, // Japanese Yen uses no decimals
+  KES: 0, THB: 0, // Some currencies use 0 decimals
+};
+
+function formatPrice(priceInMinorUnits, currency = 'USD') {
+  const symbol = currencySymbols[currency] || currency;
+  const decimals = decimalsForCurrency[currency] ?? 2;
+  const divisor = Math.pow(10, decimals);
+  const displayPrice = (priceInMinorUnits / divisor).toFixed(decimals);
+  return `${symbol}${displayPrice}`;
+}
+
 function PricingCard({ plan, onSelect, isPopular = false }) {
   const { tier } = useSubscription();
   const isCurrentPlan = tier === plan.tier;
@@ -36,9 +57,16 @@ function PricingCard({ plan, onSelect, isPopular = false }) {
 
         <div className="mb-6">
           <div className="flex items-baseline gap-1">
-            <span className="text-4xl font-extrabold text-ink">${plan.price / 100}</span>
+            <span className="text-4xl font-extrabold text-ink">
+              {formatPrice(plan.price, plan.currency)}
+            </span>
             <span className="text-lg font-bold text-slate">/month</span>
           </div>
+          {plan.currency && plan.currency !== 'USD' && (
+            <p className="text-xs text-slate mt-1">
+              ≈ ${(plan.priceUSD || plan.price) / 100} USD
+            </p>
+          )}
         </div>
 
         <ul className="space-y-3 mb-6">

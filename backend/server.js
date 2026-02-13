@@ -19,6 +19,7 @@ const { sql, testConnection: testDbConnection } = require('./config/database.ser
 const { pricingPlans } = require('./config/stripe.config');
 const cacheService = require('./services/cache.service');
 const storageService = require('./services/storage.service');
+const currencyService = require('./services/currency.service');
 
 // ============================================
 // IMPORTS - Middleware
@@ -117,11 +118,49 @@ app.get('/health', (req, res) => {
 });
 
 /**
- * Pricing Plans Endpoint
- * Returns available subscription tiers
+ * Pricing Plans Endpoint (Multi-Currency)
+ * Auto-detects user's currency from IP address
+ * Returns pricing in user's local currency
  */
-app.get('/api/v1/subscription/plans', (req, res) => {
-  res.json(pricingPlans);
+app.get('/api/v1/subscription/plans', async (req, res) => {
+  try {
+    // Get user's IP address (works on all platforms)
+    const clientIP = req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+                     req.connection.remoteAddress ||
+                     req.socket.remoteAddress ||
+                     '127.0.0.1';
+
+    // Check if currency is explicitly requested
+    const requestedCurrency = req.query.currency?.toUpperCase();
+
+    let currency = requestedCurrency;
+
+    // If no currency requested, detect from IP
+    if (!currency) {
+      const geoData = await currencyService.detectCountryFromIP(clientIP);
+      currency = geoData.currency || 'USD';
+    }
+
+    // Validate currency is supported
+    const supported = currencyService.getSupportedCurrencies();
+    if (!supported[currency]) {
+      currency = 'USD';
+    }
+
+    // Get pricing plans in user's currency
+    const plans = currencyService.getPricingPlans(currency);
+
+    // Add metadata
+    res.json({
+      ...plans,
+      clientIP: clientIP.substring(0, 10) + '***', // Privacy: mask IP
+      detected: !requestedCurrency,
+    });
+  } catch (error) {
+    console.error('Pricing endpoint error:', error);
+    // Fallback to USD if any error
+    res.json(currencyService.getPricingPlans('USD'));
+  }
 });
 
 // ============================================
