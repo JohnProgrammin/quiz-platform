@@ -40,6 +40,7 @@ const globalLimiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false }, // Skip X-Forwarded-For validation (we set trust proxy)
   skip: (req) => {
     // Skip rate limiting for health check
     return req.path === '/health';
@@ -55,6 +56,7 @@ const authLimiter = rateLimit({
   max: 5,
   message: 'Too many login/signup attempts, please try again later.',
   skipSuccessfulRequests: true, // Don't count successful requests
+  validate: { xForwardedForHeader: false }, // Skip X-Forwarded-For validation (we set trust proxy)
 });
 
 /**
@@ -76,6 +78,7 @@ const teachingMessageLimiter = rateLimit({
   max: 100,
   keyGenerator: (req) => req.user.id, // Rate limit by user ID, not IP
   message: 'Too many messages, please try again later.',
+  validate: { xForwardedForHeader: false }, // Skip X-Forwarded-For validation (we set trust proxy)
 });
 
 // ============================================

@@ -74,6 +74,10 @@ const PORT = process.env.PORT || 3001;
 // GLOBAL MIDDLEWARE STACK
 // ============================================
 
+// Trust proxy (important for Render, which uses reverse proxy)
+// This allows rate limiting to work correctly with X-Forwarded-For header
+app.set('trust proxy', 1);
+
 // Security
 app.use(helmetConfig);
 app.use(cors({
