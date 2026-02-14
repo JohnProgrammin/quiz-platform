@@ -101,7 +101,7 @@ exports.getQuizzes = async (req, res) => {
       ORDER BY created_at DESC
     `;
 
-    res.json(result);
+    res.json({ data: result });
   } catch (error) {
     console.error('Get quizzes error:', error);
     res.status(500).json({ error: 'Failed to get quizzes' });
@@ -136,13 +136,15 @@ exports.getQuiz = async (req, res) => {
     }
 
     res.json({
-      ...quiz,
-      questions: questions.map((q) => ({
-        id: q.id,
-        text: q.text || q.question, // Handle both field names (text or question)
-        type: q.type,
-        options: q.type === 'mcq' ? q.options : undefined,
-      })),
+      data: {
+        ...quiz,
+        questions: questions.map((q) => ({
+          id: q.id,
+          text: q.text || q.question, // Handle both field names (text or question)
+          type: q.type,
+          options: q.type === 'mcq' ? q.options : undefined,
+        })),
+      },
     });
   } catch (error) {
     console.error('Get quiz error:', error);
@@ -344,7 +346,7 @@ exports.getHistory = async (req, res) => {
       LIMIT 50
     `;
 
-    res.json(result);
+    res.json({ data: result });
   } catch (error) {
     console.error('Get history error:', error);
     res.status(500).json({ error: 'Failed to get history' });

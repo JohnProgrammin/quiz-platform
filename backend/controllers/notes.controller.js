@@ -90,7 +90,7 @@ exports.getNotes = async (req, res) => {
       ORDER BY created_at DESC
     `;
 
-    res.status(200).json(notes);
+    res.status(200).json({ data: notes });
   } catch (error) {
     console.error('Get notes error:', error);
     res.status(500).json({ error: 'Failed to get notes' });
