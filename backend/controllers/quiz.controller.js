@@ -300,6 +300,35 @@ exports.getResults = async (req, res) => {
 };
 
 /**
+ * Get all attempts for a specific quiz
+ */
+exports.getAttempts = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const result = await sql`
+      SELECT
+        id,
+        quiz_id,
+        score,
+        total_questions,
+        percentage,
+        completed_at,
+        time_spent_seconds
+      FROM quiz_attempts
+      WHERE quiz_id = ${id} AND user_id = ${userId}
+      ORDER BY completed_at DESC
+    `;
+
+    res.json({ data: result });
+  } catch (error) {
+    console.error('Get attempts error:', error);
+    res.status(500).json({ error: 'Failed to get quiz attempts' });
+  }
+};
+
+/**
  * Get quiz history
  */
 exports.getHistory = async (req, res) => {

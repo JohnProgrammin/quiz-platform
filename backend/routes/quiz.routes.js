@@ -40,6 +40,9 @@ router.get(
   quizController.getResults
 );
 
+// Get all attempts for a quiz
+router.get('/:id/attempts', authenticateToken, quizController.getAttempts);
+
 // Get quiz history
 router.get('/history/all', authenticateToken, quizController.getHistory);
 
