@@ -195,8 +195,8 @@ exports.submitQuiz = async (req, res) => {
     // Save attempt to database
     try {
       const attemptResult = await sql`
-        INSERT INTO quiz_attempts (id, quiz_id, user_id, answers, percentage, score, completed_at)
-        VALUES (${attemptId}, ${id}, ${userId}, ${JSON.stringify(graded.gradedAnswers)}, ${percentage}, ${graded.correctCount}, NOW())
+        INSERT INTO quiz_attempts (id, quiz_id, user_id, answers, percentage, score, total_questions, completed_at)
+        VALUES (${attemptId}, ${id}, ${userId}, ${JSON.stringify(graded.gradedAnswers)}, ${percentage}, ${graded.correctCount}, ${questions.length}, NOW())
         RETURNING id
       `;
 
