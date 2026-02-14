@@ -36,7 +36,11 @@
       "Bash(railway login:*)",
       "Bash(railway status:*)",
       "Bash(git -C \"c:/Users/HP/Documents/quiz-platform/\" log --oneline)",
-      "Bash(git -C \"c:/Users/HP/Documents/quiz-platform/\" status --short)"
+      "Bash(git -C \"c:/Users/HP/Documents/quiz-platform/\" status --short)",
+      "Bash(git revert:*)",
+      "Bash(for endpoint in \"send-verification-email\" \"verify-email\" \"cancel\" \"resume\" \"management\" \"history\")",
+      "Bash(do echo -n \"$endpoint: \")",
+      "Bash(done)"
     ]
   }
 }

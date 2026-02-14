@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, FileText, Sparkles, LogOut, Menu, X, BarChart3 } from 'lucide-react';
 import { useSubscription } from '../contexts/SubscriptionContext';
+import LanguageSwitcher from './LanguageSwitcher';
 
 function Navbar({ user, onLogout }) {
   const location = useLocation();
@@ -91,6 +92,8 @@ function Navbar({ user, onLogout }) {
 
             {/* Desktop right side */}
             <div className="hidden md:flex items-center gap-2">
+              <LanguageSwitcher />
+
               <Link
                 to="/profile"
                 className={`flex items-center gap-2 px-3 py-2 rounded-xl font-bold text-sm transition-all ${
@@ -197,8 +200,12 @@ function Navbar({ user, onLogout }) {
             </Link>
           </div>
 
-          {/* Logout */}
-          <div className="p-4 border-t-2 border-border">
+          {/* Logout & Language */}
+          <div className="p-4 border-t-2 border-border space-y-2">
+            <div className="flex items-center px-4 py-3 rounded-xl">
+              <LanguageSwitcher />
+              <span className="text-sm font-semibold text-slate ml-2">Change Language</span>
+            </div>
             <button
               onClick={onLogout}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-danger hover:bg-red-50 transition-all"

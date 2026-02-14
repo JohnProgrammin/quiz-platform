@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import UpgradePrompt from './UpgradePrompt';
 import { getAllAttempts, getQuizzes, getNotes } from '../api';
@@ -7,6 +8,7 @@ import { useSubscription } from '../contexts/SubscriptionContext';
 import { FileText, BookOpen, Target, Trophy, ArrowRight, Flame } from 'lucide-react';
 
 function Dashboard({ user, onLogout }) {
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     totalNotes: 0,
     totalQuizzes: 0,
@@ -70,17 +72,17 @@ function Dashboard({ user, onLogout }) {
           <div className="w-12 h-12 rounded-full bg-brand-500 flex items-center justify-center animate-bounce">
             <span className="text-xl font-black text-white">Q</span>
           </div>
-          <p className="text-slate font-bold mt-4">Loading...</p>
+          <p className="text-slate font-bold mt-4">{t('common.loading')}</p>
         </div>
       </div>
     );
   }
 
   const statCards = [
-    { label: 'Notes', value: stats.totalNotes, icon: <FileText className="w-6 h-6" />, color: 'text-brand-500', bg: 'bg-brand-50' },
-    { label: 'Quizzes', value: stats.totalQuizzes, icon: <BookOpen className="w-6 h-6" />, color: 'text-violet-500', bg: 'bg-violet-50' },
-    { label: 'Attempts', value: stats.totalAttempts, icon: <Target className="w-6 h-6" />, color: 'text-amber-500', bg: 'bg-amber-50' },
-    { label: 'Avg Score', value: `${stats.averageScore}%`, icon: <Trophy className="w-6 h-6" />, color: 'text-brand-500', bg: 'bg-green-50' },
+    { label: t('dashboard.stats.notes'), value: stats.totalNotes, icon: <FileText className="w-6 h-6" />, color: 'text-brand-500', bg: 'bg-brand-50' },
+    { label: t('dashboard.stats.quizzes'), value: stats.totalQuizzes, icon: <BookOpen className="w-6 h-6" />, color: 'text-violet-500', bg: 'bg-violet-50' },
+    { label: t('quiz.quiz'), value: stats.totalAttempts, icon: <Target className="w-6 h-6" />, color: 'text-amber-500', bg: 'bg-amber-50' },
+    { label: t('dashboard.stats.averageScore'), value: `${stats.averageScore}%`, icon: <Trophy className="w-6 h-6" />, color: 'text-brand-500', bg: 'bg-green-50' },
   ];
 
   return (
@@ -90,9 +92,9 @@ function Dashboard({ user, onLogout }) {
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-extrabold text-ink">
-            Hey, {user.fullName || user.username}!
+            {t('dashboard.welcome', { name: user.fullName || user.username })}
           </h1>
-          <p className="text-slate font-semibold mt-1">Here's your learning progress</p>
+          <p className="text-slate font-semibold mt-1">{t('dashboard.statistics')}</p>
         </div>
 
         {isFree && (
@@ -117,7 +119,7 @@ function Dashboard({ user, onLogout }) {
           <div className="px-6 py-4 border-b-2 border-border flex items-center justify-between">
             <h2 className="text-lg font-extrabold text-ink flex items-center gap-2">
               <Flame className="w-5 h-5 text-amber-500" />
-              Recent Activity
+              {t('dashboard.recentActivity')}
             </h2>
           </div>
 
@@ -126,12 +128,12 @@ function Dashboard({ user, onLogout }) {
               <div className="w-20 h-20 rounded-full bg-surface flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-10 h-10 text-muted" />
               </div>
-              <h3 className="text-lg font-extrabold text-ink mb-2">No quizzes yet!</h3>
+              <h3 className="text-lg font-extrabold text-ink mb-2">{t('quiz.noQuizzes')}</h3>
               <p className="text-slate font-semibold mb-6">
-                Upload your notes and take your first quiz
+                {t('notes.dragDropFile')}
               </p>
               <button onClick={() => navigate('/notes')} className="btn-primary">
-                GET STARTED
+                {t('common.submit').toUpperCase()}
               </button>
             </div>
           ) : (
@@ -145,7 +147,7 @@ function Dashboard({ user, onLogout }) {
                   <div className="flex-1">
                     <h3 className="font-bold text-ink">{attempt.quizTitle}</h3>
                     <p className="text-sm font-semibold text-slate mt-1">
-                      {new Date(attempt.completedAt).toLocaleDateString()} &middot; {attempt.score}/{attempt.totalQuestions} correct
+                      {new Date(attempt.completedAt).toLocaleDateString()} &middot; {attempt.score}/{attempt.totalQuestions} {t('results.correctAnswers').toLowerCase()}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">

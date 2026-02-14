@@ -405,3 +405,64 @@ body {
 .unlock-badge { animation: unlock-badge 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .flame-flicker { animation: flame-flicker 2s ease-in-out infinite; }
 .confetti-particle { animation: confetti-fall 3s ease-out forwards; }
+
+/* ── RTL Support (Arabic) ── */
+[dir="rtl"] {
+  text-align: right;
+  direction: rtl;
+}
+
+[dir="rtl"] .card {
+  direction: rtl;
+}
+
+[dir="rtl"] .input-field {
+  text-align: right;
+}
+
+[dir="rtl"] .flex {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .gap-3 {
+  gap: 0.75rem;
+}
+
+[dir="rtl"] .gap-4 {
+  gap: 1rem;
+}
+
+[dir="rtl"] .pr-4 {
+  padding-right: 0;
+  padding-left: 1rem;
+}
+
+[dir="rtl"] .pl-4 {
+  padding-left: 0;
+  padding-right: 1rem;
+}
+
+[dir="rtl"] .space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+[dir="rtl"] .space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+/* RTL specific animations */
+[dir="rtl"] .reveal-left {
+  transform: translateX(48px);
+}
+
+[dir="rtl"] .reveal-left.visible {
+  transform: translateX(0);
+}
+
+[dir="rtl"] .reveal-right {
+  transform: translateX(-48px);
+}
+
+[dir="rtl"] .reveal-right.visible {
+  transform: translateX(0);
+}

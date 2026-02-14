@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import UpgradePrompt from './UpgradePrompt';
 import { uploadNote, getNotes, deleteNote, generateQuiz } from '../api';
@@ -7,6 +8,7 @@ import { useSubscription } from '../contexts/SubscriptionContext';
 import { Upload, FileText, Trash2, Sparkles, Loader, Lock } from 'lucide-react';
 
 function Notes({ user, onLogout }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { subscription, tier } = useSubscription();
   const [notes, setNotes] = useState([]);
@@ -115,13 +117,13 @@ function Notes({ user, onLogout }) {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-extrabold text-ink">My Notes</h1>
-              <p className="text-slate font-semibold mt-1">Upload study materials and generate quizzes</p>
+              <h1 className="text-2xl font-extrabold text-ink">{t('notes.myNotes')}</h1>
+              <p className="text-slate font-semibold mt-1">{t('notes.dragDropFile')}</p>
             </div>
             {isFree && (
               <div className="bg-amber-50 border-2 border-amber-500 rounded-2xl px-4 py-3 text-right">
-                <p className="font-bold text-ink">{notes.length}/3 Notes</p>
-                <p className="text-xs font-semibold text-slate mt-1">Free Tier Limit</p>
+                <p className="font-bold text-ink">{notes.length}/3 {t('notes.notes')}</p>
+                <p className="text-xs font-semibold text-slate mt-1">{t('subscription.free')} {t('subscription.plan')} {t('common.cancel').toLowerCase()}</p>
               </div>
             )}
           </div>
@@ -132,14 +134,14 @@ function Notes({ user, onLogout }) {
           <div className="card p-6 mb-8 bg-red-50 border-2 border-danger">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-bold text-danger">Note limit reached</p>
-                <p className="text-sm font-semibold text-slate mt-1">You can upload {noteLimit} notes on the free plan.</p>
+                <p className="font-bold text-danger">{t('notes.maxNotesReached')}</p>
+                <p className="text-sm font-semibold text-slate mt-1">{t('subscription.unlimitedNotes')} on the {t('subscription.free')} plan.</p>
               </div>
               <button
                 onClick={() => navigate('/pricing')}
                 className="btn-primary text-sm"
               >
-                Upgrade to Pro
+                {t('subscription.upgrade')} to Pro
               </button>
             </div>
           </div>
@@ -175,30 +177,30 @@ function Notes({ user, onLogout }) {
               <Upload className="w-7 h-7 text-brand-500" />
             </div>
             <span className="text-lg font-extrabold text-ink block mb-1">
-              {uploading ? 'Uploading...' : 'Click to upload'}
+              {uploading ? t('common.loading') : t('notes.uploadFile')}
             </span>
-            <span className="text-sm font-semibold text-slate">PDF, TXT, or MD files</span>
+            <span className="text-sm font-semibold text-slate">PDF, TXT, or MD {t('common.cancel').toLowerCase()}</span>
           </label>
         </div>
 
         {/* Notes List */}
         <div className="card">
           <div className="px-6 py-4 border-b-2 border-border">
-            <h2 className="text-lg font-extrabold text-ink">Your Notes ({notes.length})</h2>
+            <h2 className="text-lg font-extrabold text-ink">{t('notes.myNotes')} ({notes.length})</h2>
           </div>
 
           {loading ? (
             <div className="p-12 text-center">
               <Loader className="w-8 h-8 text-brand-500 animate-spin mx-auto" />
-              <p className="text-slate font-bold mt-3">Loading notes...</p>
+              <p className="text-slate font-bold mt-3">{t('common.loading')}</p>
             </div>
           ) : notes.length === 0 ? (
             <div className="p-12 text-center">
               <div className="w-20 h-20 rounded-full bg-surface flex items-center justify-center mx-auto mb-4">
                 <FileText className="w-10 h-10 text-muted" />
               </div>
-              <h3 className="text-lg font-extrabold text-ink mb-2">No notes yet</h3>
-              <p className="text-slate font-semibold">Upload your first note to get started!</p>
+              <h3 className="text-lg font-extrabold text-ink mb-2">{t('notes.noNotes')}</h3>
+              <p className="text-slate font-semibold">{t('notes.createNote')}</p>
             </div>
           ) : (
             <div>
@@ -220,7 +222,7 @@ function Notes({ user, onLogout }) {
                     <div className="flex items-center gap-4">
                       {!isFree && (
                         <div className="flex items-center gap-3">
-                          <label className="text-sm font-semibold text-slate">Questions:</label>
+                          <label className="text-sm font-semibold text-slate">{t('quiz.question')}:</label>
                           <input
                             type="range"
                             min="10"
@@ -240,12 +242,12 @@ function Notes({ user, onLogout }) {
                         {generatingQuiz === note.id ? (
                           <>
                             <Loader className="w-4 h-4 animate-spin" />
-                            Generating...
+                            {t('common.loading')}
                           </>
                         ) : (
                           <>
                             <Sparkles className="w-4 h-4" />
-                            Generate Quiz
+                            {t('notes.generateQuiz')}
                           </>
                         )}
                       </button>
