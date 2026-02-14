@@ -34,7 +34,9 @@
       "Bash(git branch:*)",
       "Bash(git push:*)",
       "Bash(railway login:*)",
-      "Bash(railway status:*)"
+      "Bash(railway status:*)",
+      "Bash(git -C \"c:/Users/HP/Documents/quiz-platform/\" log --oneline)",
+      "Bash(git -C \"c:/Users/HP/Documents/quiz-platform/\" status --short)"
     ]
   }
 }
