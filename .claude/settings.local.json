@@ -40,7 +40,8 @@
       "Bash(git revert:*)",
       "Bash(for endpoint in \"send-verification-email\" \"verify-email\" \"cancel\" \"resume\" \"management\" \"history\")",
       "Bash(do echo -n \"$endpoint: \")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(test:*)"
     ]
   }
 }
