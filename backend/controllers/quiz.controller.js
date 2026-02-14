@@ -58,8 +58,8 @@ exports.generateQuiz = async (req, res) => {
 
     // Save quiz to database
     const quizResult = await sql`
-      INSERT INTO quizzes (id, user_id, note_id, title, questions, question_count, created_at)
-      VALUES (${quizId}, ${userId}, ${noteId}, ${'Quiz from ' + note.id}, ${JSON.stringify(questions)}, ${questions.length}, NOW())
+      INSERT INTO quizzes (id, user_id, note_id, title, questions, question_count, total_questions, created_at)
+      VALUES (${quizId}, ${userId}, ${noteId}, ${'Quiz from ' + note.id}, ${JSON.stringify(questions)}, ${questions.length}, ${questions.length}, NOW())
       RETURNING *
     `;
 
