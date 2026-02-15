@@ -29,10 +29,10 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-gray-100 flex flex-col">
-      <div className="border-b-2 border-gray-100 bg-white">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="border-b border-gray-200 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-brand-500 flex items-center justify-center">
             <span className="text-lg font-black text-white">Q</span>
           </div>
           <span className="ml-3 text-2xl font-black text-ink tracking-tight hidden sm:inline">floraquiz</span>
@@ -46,7 +46,7 @@ function Login({ onLogin }) {
 
           {error && (
             <div
-              className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-2xl text-danger font-bold text-sm text-center"
+              className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-danger font-bold text-sm text-center"
               role="alert"
               aria-live="assertive"
             >
@@ -63,7 +63,7 @@ function Login({ onLogin }) {
                 required
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:border-brand-400 focus:outline-none transition-all font-semibold placeholder-slate"
+                className="w-full px-6 py-3 border border-gray-300 rounded-lg focus:border-brand-500 focus:outline-none transition-colors font-semibold placeholder-gray-500 bg-white"
                 placeholder="Username or email"
                 aria-label="Username or email address"
                 aria-required="true"
@@ -79,7 +79,7 @@ function Login({ onLogin }) {
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:border-brand-400 focus:outline-none transition-all font-semibold placeholder-slate pr-12"
+                  className="w-full px-6 py-3 border border-gray-300 rounded-lg focus:border-brand-500 focus:outline-none transition-colors font-semibold placeholder-gray-500 bg-white pr-12"
                   placeholder="Password"
                   aria-label="Password"
                   aria-required="true"
@@ -87,7 +87,7 @@ function Login({ onLogin }) {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate hover:text-ink transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-ink transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   aria-pressed={showPassword}
                 >
@@ -103,14 +103,14 @@ function Login({ onLogin }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-4 bg-gradient-to-r from-brand-400 to-brand-600 text-white font-black rounded-2xl hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed text-lg"
+              className="w-full px-6 py-3 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-lg"
               aria-busy={loading}
             >
               {loading ? 'LOGGING IN...' : 'LOG IN'}
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t-2 border-gray-100 text-center">
+          <div className="mt-8 pt-6 border-t border-gray-200 text-center">
             <p className="text-slate font-semibold">
               Don't have an account?{' '}
               <Link to="/signup" className="text-brand-500 font-black hover:underline">

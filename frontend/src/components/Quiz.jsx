@@ -97,7 +97,7 @@ function Quiz({ user, onLogout }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-gray-100">
+      <div className="min-h-screen bg-gray-50">
         <Navbar user={user} onLogout={onLogout} />
         <div className="flex flex-col items-center justify-center h-96">
           <Loader className="w-10 h-10 text-brand-500 animate-spin" />
@@ -109,7 +109,7 @@ function Quiz({ user, onLogout }) {
 
   if (!quiz) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-gray-100">
+      <div className="min-h-screen bg-gray-50">
         <Navbar user={user} onLogout={onLogout} />
         <div className="flex flex-col items-center justify-center h-96">
           <X className="w-16 h-16 text-danger mb-4" />
@@ -122,12 +122,12 @@ function Quiz({ user, onLogout }) {
   // Show teaching modal for Pro+ users
   if (showTeaching && teaching && tier !== 'free') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-gray-100">
+      <div className="min-h-screen bg-gray-50">
         <Navbar user={user} onLogout={onLogout} />
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-10 max-h-[80vh] overflow-y-auto border-2 border-gray-200 shadow-2xl">
+          <div className="bg-white rounded-lg max-w-2xl w-full p-10 max-h-[80vh] overflow-y-auto border border-gray-300 shadow-2xl">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-100 to-brand-50 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-brand-50 flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-brand-500" />
               </div>
               <h2 className="text-3xl font-black text-ink">Pre-Quiz Teaching</h2>
@@ -137,7 +137,7 @@ function Quiz({ user, onLogout }) {
               <p className="text-lg font-semibold text-ink mb-6 leading-relaxed">{teaching.data?.summary}</p>
 
               {teaching.data?.keyPoints && (
-                <div className="bg-gradient-to-br from-green-50 to-white p-6 rounded-2xl border-2 border-green-100">
+                <div className="bg-green-50 p-6 rounded-lg border border-green-300">
                   <h3 className="font-black text-ink mb-4 text-lg">Key Concepts:</h3>
                   <ul className="space-y-3">
                     {teaching.data.keyPoints.map((point, idx) => (
@@ -153,7 +153,7 @@ function Quiz({ user, onLogout }) {
 
             <button
               onClick={() => setShowTeaching(false)}
-              className="w-full inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-brand-400 to-brand-600 text-white font-black rounded-2xl hover:shadow-lg transition-all"
+              className="w-full inline-flex items-center justify-center px-8 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
             >
               Start Quiz →
             </button>
@@ -169,7 +169,7 @@ function Quiz({ user, onLogout }) {
   const optionLabels = ['A', 'B', 'C', 'D'];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-gray-100">
+    <div className="min-h-screen bg-gray-50">
       <Navbar user={user} onLogout={onLogout} />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -185,9 +185,9 @@ function Quiz({ user, onLogout }) {
               <p className="text-xs font-semibold text-slate">Complete</p>
             </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+          <div className="w-full bg-gray-300 rounded-full h-3 overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-brand-400 to-brand-600 rounded-full transition-all duration-300"
+              className="h-full bg-brand-500 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -195,13 +195,13 @@ function Quiz({ user, onLogout }) {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-8 p-5 bg-red-50 border-2 border-red-200 rounded-2xl shadow-sm">
+          <div className="mb-8 p-5 bg-red-50 border border-red-300 rounded-lg shadow-sm">
             <p className="text-danger font-bold">{error}</p>
           </div>
         )}
 
         {/* Question Card */}
-        <div className="bg-white border-2 border-gray-200 rounded-3xl p-10 mb-8 shadow-sm">
+        <div className="bg-white border border-gray-300 rounded-lg p-10 mb-8 shadow-sm">
           <p className="text-lg font-semibold text-slate mb-2">Question {currentQuestion + 1}</p>
           <h2 className="text-3xl font-black text-ink leading-tight">
             {question.text || question.q}
@@ -217,16 +217,16 @@ function Quiz({ user, onLogout }) {
                 <button
                   key={index}
                   onClick={() => handleSelectAnswer(currentQuestion, index)}
-                  className={`w-full text-left p-6 rounded-2xl border-2 transition-all font-semibold flex items-start gap-4 ${
+                  className={`w-full text-left p-6 rounded-lg border transition-all font-semibold flex items-start gap-4 ${
                     isSelected
-                      ? 'border-brand-400 bg-gradient-to-r from-brand-50 to-green-50 text-brand-600 shadow-md'
-                      : 'border-gray-200 bg-white text-ink hover:border-brand-300 hover:shadow-md'
+                      ? 'border-brand-500 bg-brand-50 text-brand-600 shadow-md'
+                      : 'border-gray-300 bg-white text-ink hover:border-brand-400 hover:shadow-md'
                   }`}
                 >
                   <span className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-black flex-shrink-0 mt-0.5 ${
                     isSelected
-                      ? 'bg-gradient-to-br from-brand-400 to-brand-600 text-white'
-                      : 'bg-gray-100 text-slate border-2 border-gray-300'
+                      ? 'bg-brand-500 text-white'
+                      : 'bg-gray-200 text-slate border border-gray-400'
                   }`}>
                     {optionLabels[index]}
                   </span>
@@ -244,7 +244,7 @@ function Quiz({ user, onLogout }) {
               value={answers[currentQuestion] || ''}
               onChange={(e) => handleSelectAnswer(currentQuestion, e.target.value)}
               placeholder="Type your answer here..."
-              className="w-full h-40 p-6 border-2 border-gray-200 rounded-2xl resize-none focus:border-brand-400 focus:outline-none transition-all font-semibold"
+              className="w-full h-40 p-6 border border-gray-300 rounded-lg resize-none focus:border-brand-500 focus:outline-none transition-colors font-semibold"
             />
             <p className="text-sm font-semibold text-slate mt-3">{(answers[currentQuestion]?.length || 0).toLocaleString()} characters</p>
           </div>
@@ -255,7 +255,7 @@ function Quiz({ user, onLogout }) {
           <button
             onClick={handlePrevious}
             disabled={currentQuestion === 0}
-            className="flex-1 px-6 py-4 border-2 border-gray-300 text-ink font-black rounded-2xl hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-4 border border-gray-400 text-ink font-black rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             ← Previous
           </button>
@@ -264,14 +264,14 @@ function Quiz({ user, onLogout }) {
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex-1 px-6 py-4 bg-gradient-to-r from-brand-400 to-brand-600 text-white font-black rounded-2xl hover:shadow-lg transition-all disabled:opacity-60"
+              className="flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60"
             >
               {submitting ? 'Submitting...' : 'Submit Quiz'}
             </button>
           ) : (
             <button
               onClick={handleNext}
-              className="flex-1 px-6 py-4 bg-gradient-to-r from-brand-400 to-brand-600 text-white font-black rounded-2xl hover:shadow-lg transition-all"
+              className="flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
             >
               Next →
             </button>
@@ -279,19 +279,19 @@ function Quiz({ user, onLogout }) {
         </div>
 
         {/* Question Navigator */}
-        <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 shadow-sm">
+        <div className="bg-white border border-gray-300 rounded-lg p-6 shadow-sm">
           <p className="text-sm font-black text-slate mb-4 uppercase tracking-wide">Jump to question</p>
           <div className="flex flex-wrap gap-2">
             {quiz.questions.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentQuestion(index)}
-                className={`w-11 h-11 rounded-xl text-sm font-black transition-all ${
+                className={`w-11 h-11 rounded-lg text-sm font-black transition-all ${
                   currentQuestion === index
-                    ? 'bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-md'
+                    ? 'bg-brand-500 text-white shadow-md'
                     : answers[index] !== undefined
-                    ? 'bg-brand-200 text-brand-700 border-2 border-brand-300'
-                    : 'bg-gray-100 text-slate border-2 border-gray-300 hover:border-brand-300 hover:bg-gray-200'
+                    ? 'bg-brand-100 text-brand-700 border border-brand-300'
+                    : 'bg-gray-200 text-slate border border-gray-400 hover:border-brand-400 hover:bg-gray-300'
                 }`}
               >
                 {index + 1}

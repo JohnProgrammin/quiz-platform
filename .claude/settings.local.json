@@ -41,7 +41,9 @@
       "Bash(for endpoint in \"send-verification-email\" \"verify-email\" \"cancel\" \"resume\" \"management\" \"history\")",
       "Bash(do echo -n \"$endpoint: \")",
       "Bash(done)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(cd c:\\\\\\\\Users\\\\\\\\HP\\\\\\\\Documents\\\\\\\\quiz-platform && gh repo edit --visibility private 2>&1:*)",
+      "Bash(gh repo edit:*)"
     ]
   }
 }

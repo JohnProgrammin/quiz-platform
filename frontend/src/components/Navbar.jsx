@@ -57,17 +57,17 @@ function Navbar({ user, onLogout }) {
 
   return (
     <>
-      <nav className={`bg-white sticky top-0 z-50 transition-all duration-200 border-b-2 border-gray-100 ${
-        scrolled ? 'shadow-md' : ''
+      <nav className={`bg-white sticky top-0 z-50 transition-all duration-200 border-b border-gray-200 ${
+        scrolled ? 'shadow-sm' : ''
       }`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/dashboard" className="flex items-center gap-3 flex-shrink-0 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center group-hover:shadow-lg transition-all">
+              <div className="w-10 h-10 rounded-lg bg-brand-500 flex items-center justify-center group-hover:shadow-md transition-all">
                 <span className="text-lg font-black text-white">Q</span>
               </div>
-              <span className="text-2xl font-black gradient-text tracking-tight hidden sm:inline">floraquiz</span>
+              <span className="text-2xl font-black text-brand-500 tracking-tight hidden sm:inline">floraquiz</span>
             </Link>
 
             {/* Desktop nav */}
@@ -105,7 +105,7 @@ function Navbar({ user, onLogout }) {
                     : 'text-slate hover:text-ink hover:bg-gray-100'
                 }`}
               >
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center flex-shrink-0 text-white">
+                <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0 text-white">
                   <span className="text-xs font-black">{user.username[0].toUpperCase()}</span>
                 </div>
                 <span className="max-w-[100px] truncate">{user.username}</span>
@@ -146,15 +146,15 @@ function Navbar({ user, onLogout }) {
       {/* Mobile menu panel */}
       <div
         ref={menuRef}
-        className={`fixed top-16 right-0 w-72 max-w-[85vw] h-[calc(100vh-4rem)] bg-white border-l-2 border-gray-100 z-50 transform transition-transform duration-300 ease-out lg:hidden ${
+        className={`fixed top-16 right-0 w-72 max-w-[85vw] h-[calc(100vh-4rem)] bg-white border-l border-gray-200 z-50 transform transition-transform duration-300 ease-out lg:hidden ${
           mobileOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* User info */}
-          <div className="p-6 border-b-2 border-gray-100 bg-gradient-to-br from-green-50 to-white">
+          <div className="p-6 border-b border-gray-200 bg-white">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center flex-shrink-0 text-white shadow-md">
+              <div className="w-12 h-12 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0 text-white shadow-sm">
                 <span className="text-base font-black">{user.username[0].toUpperCase()}</span>
               </div>
               <div className="min-w-0">
@@ -204,7 +204,7 @@ function Navbar({ user, onLogout }) {
           </div>
 
           {/* Logout & Language */}
-          <div className="p-4 border-t-2 border-gray-100 space-y-2 bg-gray-50">
+          <div className="p-4 border-t border-gray-200 space-y-2 bg-white">
             <div className="flex items-center justify-between px-4 py-3 rounded-xl">
               <span className="text-sm font-semibold text-slate">Language</span>
               <LanguageSwitcher />
