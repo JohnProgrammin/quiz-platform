@@ -82,6 +82,7 @@ const createTransaction = async (params) => {
     const data = {
       email: params.email,
       amount: params.amount, // Already in minor units from currencyService.convertPrice()
+      currency: params.currency || 'NGN', // Currency code required by Paystack
       metadata: {
         userId: params.userId,
         plan: params.plan,

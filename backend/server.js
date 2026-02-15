@@ -525,6 +525,7 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
     const transaction = await createTransaction({
       email: user[0].email,
       amount: paymentData.amount, // Properly converted amount
+      currency: paymentData.currency, // Currency code for Paystack
       plan: plan,
       userId: req.user.id,
       callbackUrl: `${process.env.FRONTEND_URL}/subscription/callback`,
