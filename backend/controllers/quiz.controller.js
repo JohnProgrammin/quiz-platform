@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const { sql } = require('../config/database.serverless');
 const aiService = require('../services/ai.service');
 const quizService = require('../services/quiz.service');
+const gamificationService = require('../services/gamification.service');
 
 /**
  * Generate a new quiz from notes
@@ -209,6 +210,57 @@ exports.submitQuiz = async (req, res) => {
 
       console.log(`✅ Quiz attempt saved: ${attemptId}`);
 
+      // Award gamification XP
+      let gamificationData = null;
+      try {
+        let xpAwarded = gamificationService.XP_REWARDS.QUIZ_COMPLETE;
+        if (percentage === 100) {
+          xpAwarded += gamificationService.XP_REWARDS.PERFECT_SCORE;
+          await gamificationService.checkAchievement(userId, 'perfect_score', { quizId: id, percentage });
+        } else if (percentage >= 80) {
+          xpAwarded += gamificationService.XP_REWARDS.GOOD_SCORE;
+        }
+
+        const xpResult = await gamificationService.awardXP(userId, xpAwarded, 'Quiz completion', {
+          quizId: id,
+          percentage,
+          attemptId,
+        });
+
+        // Update streak
+        const newStreak = await gamificationService.updateStreak(userId);
+
+        // Check first quiz achievement
+        if (graded.correctCount > 0) {
+          await gamificationService.checkAchievement(userId, 'first_quiz', { quizId: id });
+        }
+
+        // Check quiz completion count achievements
+        const userAttempts = await sql`
+          SELECT COUNT(*) as count FROM quiz_attempts WHERE user_id = ${userId}
+        `;
+        const attemptCount = userAttempts[0]?.count || 0;
+        if (attemptCount === 10) {
+          await gamificationService.checkAchievement(userId, 'quiz_10', { totalAttempts: 10 });
+        } else if (attemptCount === 50) {
+          await gamificationService.checkAchievement(userId, 'quiz_50', { totalAttempts: 50 });
+        } else if (attemptCount === 100) {
+          await gamificationService.checkAchievement(userId, 'quiz_100', { totalAttempts: 100 });
+        }
+
+        gamificationData = {
+          xpAwarded: xpResult.xpAwarded,
+          leveledUp: xpResult.leveledUp,
+          newLevel: xpResult.newLevel,
+          currentStreak: newStreak,
+          nextLevelXP: xpResult.nextLevelXP,
+          progressToNextLevel: xpResult.currentProgress,
+        };
+      } catch (gamErr) {
+        console.error('⚠️ Error awarding gamification:', gamErr.message);
+        // Don't fail the quiz submission, gamification is bonus
+      }
+
       res.status(201).json({
         message: 'Quiz submitted successfully',
         data: {
@@ -218,6 +270,7 @@ exports.submitQuiz = async (req, res) => {
           percentage: percentage,
           gradedAnswers: graded.gradedAnswers,
         },
+        gamification: gamificationData,
       });
     } catch (dbError) {
       console.error('❌ Database error saving quiz attempt:', dbError.message);

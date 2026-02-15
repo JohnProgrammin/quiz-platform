@@ -82,7 +82,11 @@ function Quiz({ user, onLogout }) {
       console.log('Submit response:', response);
 
       if (response && response.data) {
-        navigate(`/quiz/${id}/results`);
+        navigate(`/quiz/${id}/results`, {
+          state: {
+            gamification: response.data.gamification,
+          },
+        });
       } else {
         setError('Failed to submit quiz: Invalid response from server');
         setSubmitting(false);

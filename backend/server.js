@@ -20,6 +20,7 @@ const { pricingPlans } = require('./config/stripe.config');
 const cacheService = require('./services/cache.service');
 const storageService = require('./services/storage.service');
 const currencyService = require('./services/currency.service');
+const gamificationService = require('./services/gamification.service');
 
 // ============================================
 // IMPORTS - Middleware
@@ -231,6 +232,14 @@ authRouter.post('/signup', authLimiter, async (req, res) => {
     `;
 
     const user = result[0];
+
+    // Initialize gamification for new user
+    try {
+      await gamificationService.initializeUser(user.id);
+    } catch (gamErr) {
+      console.error('⚠️ Error initializing gamification:', gamErr.message);
+      // Don't fail signup if gamification init fails
+    }
 
     // Create JWT token
     const jwt = require('jsonwebtoken');
@@ -863,12 +872,14 @@ const notesRoutes = require('./routes/notes.routes');
 const quizRoutes = require('./routes/quiz.routes');
 const teachingRoutes = require('./routes/teaching.routes');
 const couponRoutes = require('./routes/coupon.routes');
+const gamificationRoutes = require('./routes/gamification.routes');
 
 // Register routes
 app.use('/api/v1/notes', notesRoutes);
 app.use('/api/v1/quiz', quizRoutes);
 app.use('/api/v1/teaching', teachingRoutes);
 app.use('/api/v1/coupons', couponRoutes);
+app.use('/api/v1/gamification', gamificationRoutes);
 
 // ============================================
 // WEBHOOK ROUTES

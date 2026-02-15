@@ -6,7 +6,9 @@ import UpgradePrompt from './UpgradePrompt';
 import CouponInput from './CouponInput';
 import TrialCountdown from './TrialCountdown';
 import { SkeletonDashboard } from './Skeleton';
-import { getAllAttempts, getQuizzes, getNotes, getTrialStatus } from '../api';
+import XPBar from './XPBar';
+import StreakIndicator from './StreakIndicator';
+import { getAllAttempts, getQuizzes, getNotes, getTrialStatus, getUserStats } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { FileText, BookOpen, Target, Trophy, ArrowRight, Flame, Gift } from 'lucide-react';
 
@@ -22,6 +24,7 @@ function Dashboard({ user, onLogout }) {
   const [loading, setLoading] = useState(true);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [trialStatus, setTrialStatus] = useState({ hasActiveTrial: false });
+  const [gamificationStats, setGamificationStats] = useState(null);
   const navigate = useNavigate();
   const { isFree } = useSubscription();
 
@@ -32,10 +35,11 @@ function Dashboard({ user, onLogout }) {
 
   const loadDashboardData = async () => {
     try {
-      const [attemptsRes, quizzesRes, notesRes] = await Promise.all([
+      const [attemptsRes, quizzesRes, notesRes, gamificationRes] = await Promise.all([
         getAllAttempts(),
         getQuizzes(),
         getNotes(),
+        getUserStats().catch(() => ({ data: null })), // Gamification is optional
       ]);
 
       const attempts = attemptsRes.data;
@@ -51,6 +55,11 @@ function Dashboard({ user, onLogout }) {
       });
 
       setRecentAttempts(attempts.slice(0, 5));
+
+      // Load gamification stats if available
+      if (gamificationRes?.data) {
+        setGamificationStats(gamificationRes.data);
+      }
     } catch (error) {
       console.error('Error loading dashboard:', error);
     } finally {
@@ -169,6 +178,22 @@ function Dashboard({ user, onLogout }) {
             </div>
           ))}
         </div>
+
+        {/* Gamification Section */}
+        {gamificationStats && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <XPBar
+              level={gamificationStats.level}
+              totalXP={gamificationStats.totalXP}
+              nextLevelXP={gamificationStats.nextLevelXP}
+              progressToNextLevel={gamificationStats.progressToNextLevel}
+            />
+            <StreakIndicator
+              currentStreak={gamificationStats.currentStreak}
+              longestStreak={gamificationStats.longestStreak}
+            />
+          </div>
+        )}
 
         {/* Recent Activity Section */}
         <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-sm overflow-hidden">

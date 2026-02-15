@@ -157,6 +157,13 @@ export const getBillingPortalUrl = () => {
 export const getBillingHistory = () => api.get('/v1/subscription/history');
 
 // ============================================
+// GAMIFICATION ENDPOINTS
+// ============================================
+export const getUserStats = () => api.get('/v1/gamification/stats');
+export const getLeaderboard = (limit = 100) => api.get(`/v1/gamification/leaderboard?limit=${limit}`);
+export const getAchievements = () => api.get('/v1/gamification/achievements');
+
+// ============================================
 // COUPON / TRIAL ENDPOINTS
 // ============================================
 export const redeemCoupon = (code) => api.post('/v1/coupons/redeem', { code });

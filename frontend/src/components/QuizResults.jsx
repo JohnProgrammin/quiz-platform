@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import UpgradePrompt from './UpgradePrompt';
+import GamificationDisplay from './GamificationDisplay';
 import { getQuiz, getQuizAttempts, getQuizResults, generateWeaknessQuiz } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { RotateCcw, Home, CheckCircle, XCircle, Loader, Trophy, Target, TrendingUp, Lock, Sparkles } from 'lucide-react';
@@ -10,6 +11,7 @@ function QuizResults({ user, onLogout }) {
   const { id } = useParams();
   const { attemptId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { tier } = useSubscription();
   const [quiz, setQuiz] = useState(null);
   const [attempts, setAttempts] = useState([]);
@@ -17,6 +19,14 @@ function QuizResults({ user, onLogout }) {
   const [aiFeedback, setAiFeedback] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generatingWeakness, setGeneratingWeakness] = useState(false);
+  const [gamification, setGamification] = useState(null);
+
+  // Get gamification data from navigation state if available
+  useEffect(() => {
+    if (location?.state?.gamification) {
+      setGamification(location.state.gamification);
+    }
+  }, [location]);
 
   useEffect(() => {
     loadResults();
@@ -110,6 +120,15 @@ function QuizResults({ user, onLogout }) {
   return (
     <div className="min-h-screen bg-surface">
       <Navbar user={user} onLogout={onLogout} />
+
+      {gamification && (
+        <GamificationDisplay
+          xpAwarded={gamification.xpAwarded}
+          leveledUp={gamification.leveledUp}
+          newLevel={gamification.newLevel}
+          currentStreak={gamification.currentStreak}
+        />
+      )}
 
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Score Header */}
