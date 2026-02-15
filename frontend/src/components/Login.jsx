@@ -29,21 +29,24 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col">
-      <div className="border-b-2 border-border bg-white">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center">
-          <span className="text-2xl font-extrabold gradient-text tracking-tight">floraquiz</span>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-gray-100 flex flex-col">
+      <div className="border-b-2 border-gray-100 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center">
+            <span className="text-lg font-black text-white">Q</span>
+          </div>
+          <span className="ml-3 text-2xl font-black text-ink tracking-tight hidden sm:inline">floraquiz</span>
         </div>
       </div>
 
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <h1 className="text-3xl font-extrabold text-ink text-center mb-2">Log in</h1>
-          <p className="text-slate text-center mb-8 font-semibold">Welcome back! Ready to learn?</p>
+          <h1 className="text-4xl font-black text-ink text-center mb-2">Log in</h1>
+          <p className="text-slate text-center mb-8 font-semibold text-lg">Welcome back! Ready to learn?</p>
 
           {error && (
             <div
-              className="mb-6 p-4 bg-red-50 border-2 border-danger rounded-2xl text-danger font-bold text-sm text-center"
+              className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-2xl text-danger font-bold text-sm text-center"
               role="alert"
               aria-live="assertive"
             >
@@ -60,7 +63,7 @@ function Login({ onLogin }) {
                 required
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                className="input-field"
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:border-brand-400 focus:outline-none transition-all font-semibold placeholder-slate"
                 placeholder="Username or email"
                 aria-label="Username or email address"
                 aria-required="true"
@@ -76,7 +79,7 @@ function Login({ onLogin }) {
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="input-field pr-12"
+                  className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:border-brand-400 focus:outline-none transition-all font-semibold placeholder-slate pr-12"
                   placeholder="Password"
                   aria-label="Password"
                   aria-required="true"
@@ -100,17 +103,17 @@ function Login({ onLogin }) {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full text-base disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full px-6 py-4 bg-gradient-to-r from-brand-400 to-brand-600 text-white font-black rounded-2xl hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed text-lg"
               aria-busy={loading}
             >
               {loading ? 'LOGGING IN...' : 'LOG IN'}
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t-2 border-border text-center">
+          <div className="mt-8 pt-6 border-t-2 border-gray-100 text-center">
             <p className="text-slate font-semibold">
               Don't have an account?{' '}
-              <Link to="/signup" className="text-brand-500 font-bold hover:underline">
+              <Link to="/signup" className="text-brand-500 font-black hover:underline">
                 SIGN UP
               </Link>
             </p>
