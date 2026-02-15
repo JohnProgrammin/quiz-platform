@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { signup } from '../api';
 
 function Signup({ onLogin }) {
@@ -33,8 +33,13 @@ function Signup({ onLogin }) {
   return (
     <div className="min-h-screen bg-surface flex flex-col">
       <div className="border-b-2 border-border bg-white">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 text-slate hover:text-ink transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+            <span className="font-bold">Back</span>
+          </Link>
           <span className="text-2xl font-extrabold text-brand-500 tracking-tight">floraquiz</span>
+          <div className="w-16"></div>
         </div>
       </div>
 

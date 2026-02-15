@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import UpgradePrompt from './UpgradePrompt';
+import { SkeletonDashboard } from './Skeleton';
 import { getAllAttempts, getQuizzes, getNotes } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { FileText, BookOpen, Target, Trophy, ArrowRight, Flame } from 'lucide-react';
@@ -68,11 +69,8 @@ function Dashboard({ user, onLogout }) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar user={user} onLogout={onLogout} />
-        <div className="flex flex-col items-center justify-center h-96">
-          <div className="w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center animate-bounce shadow-sm">
-            <span className="text-2xl font-black text-white">Q</span>
-          </div>
-          <p className="text-slate font-bold mt-6">{t('common.loading')}</p>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <SkeletonDashboard />
         </div>
       </div>
     );

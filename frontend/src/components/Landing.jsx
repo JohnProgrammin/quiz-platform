@@ -299,7 +299,7 @@ function Landing() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-              <Link to="/signup" className="btn-primary text-lg px-8 py-4 relative pulse-ring">
+              <Link to="/signup" className="btn-primary text-lg px-8 py-4">
                 START LEARNING FREE
               </Link>
               <Link to="/login" className="btn-secondary text-lg px-8 py-4 flex items-center gap-2">

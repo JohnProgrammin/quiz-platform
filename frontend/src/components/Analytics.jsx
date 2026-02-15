@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
+import { SkeletonAnalytics } from './Skeleton';
 import { getAllAttempts, getQuizzes, getProfile } from '../api';
 import { BarChart3, TrendingUp, Target, Zap, Calendar, Award, Clock } from 'lucide-react';
 
@@ -121,10 +122,8 @@ function Analytics({ user, onLogout }) {
     return (
       <div className="min-h-screen bg-surface">
         <Navbar user={user} onLogout={onLogout} />
-        <div className="flex items-center justify-center h-96">
-          <div className="animate-spin text-brand-500">
-            <BarChart3 className="w-12 h-12" />
-          </div>
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <SkeletonAnalytics />
         </div>
       </div>
     );
