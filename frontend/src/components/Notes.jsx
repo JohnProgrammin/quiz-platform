@@ -30,7 +30,7 @@ function Notes({ user, onLogout }) {
   const loadNotes = async () => {
     try {
       const response = await getNotes();
-      setNotes(response.data);
+      setNotes(response.data.data || response.data || []);
     } catch (error) {
       console.error('Error loading notes:', error);
     } finally {

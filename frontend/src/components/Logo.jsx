@@ -8,7 +8,7 @@ function Logo({ size = 'md', className = '' }) {
   };
 
   return (
-    <span className={`${sizeClasses[size]} gradient-text tracking-tight ${className}`}>
+    <span className={`${sizeClasses[size]} text-brand-500 tracking-tight ${className}`}>
       floraquiz
     </span>
   );

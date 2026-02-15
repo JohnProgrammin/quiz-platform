@@ -20,7 +20,7 @@ function UpgradePrompt({ feature, compact = false, className = '' }) {
     return (
       <button
         onClick={() => navigate('/pricing')}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-500 to-violet-500 text-white font-bold rounded-xl hover:shadow-lg transition-all"
+        className="inline-flex items-center gap-2 px-4 py-2 bg-brand-500 text-white font-bold rounded-xl hover:shadow-lg transition-all"
       >
         <Crown className="w-4 h-4" />
         Upgrade to Pro
@@ -30,7 +30,7 @@ function UpgradePrompt({ feature, compact = false, className = '' }) {
 
   return (
     <div className={`card p-8 text-center ${className}`}>
-      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-500 to-violet-500 flex items-center justify-center mx-auto mb-4">
+      <div className="w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center mx-auto mb-4">
         <Lock className="w-8 h-8 text-white" />
       </div>
 

@@ -66,10 +66,10 @@ function Dashboard({ user, onLogout }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-gray-100">
+      <div className="min-h-screen bg-gray-50">
         <Navbar user={user} onLogout={onLogout} />
         <div className="flex flex-col items-center justify-center h-96">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center animate-bounce shadow-lg">
+          <div className="w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center animate-bounce shadow-lg">
             <span className="text-2xl font-black text-white">Q</span>
           </div>
           <p className="text-slate font-bold mt-6">{t('common.loading')}</p>
@@ -86,7 +86,7 @@ function Dashboard({ user, onLogout }) {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-gray-100">
+    <div className="min-h-screen bg-gray-50">
       <Navbar user={user} onLogout={onLogout} />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -112,7 +112,7 @@ function Dashboard({ user, onLogout }) {
               key={stat.label}
               className="bg-white rounded-2xl border-2 border-gray-200 p-8 hover:shadow-lg hover:border-brand-300 transition-all duration-300 hover:-translate-y-1"
             >
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-100 to-brand-50 flex items-center justify-center mb-4 ${stat.color}`}>
+              <div className={`w-14 h-14 rounded-2xl bg-brand-500 flex items-center justify-center mb-4 ${stat.color}`}>
                 {stat.icon}
               </div>
               <div className="text-4xl font-black text-ink mb-2">{stat.value}</div>
@@ -124,9 +124,9 @@ function Dashboard({ user, onLogout }) {
         {/* Recent Activity Section */}
         <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-sm overflow-hidden">
           {/* Header */}
-          <div className="px-8 py-7 border-b-2 border-gray-100 flex items-center justify-between bg-gradient-to-r from-white to-gray-50">
+          <div className="px-8 py-7 border-b-2 border-gray-100 flex items-center justify-between bg-white">
             <h2 className="text-2xl font-black text-ink flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
                 <Flame className="w-6 h-6 text-amber-500" />
               </div>
               {t('dashboard.recentActivity')}
@@ -136,7 +136,7 @@ function Dashboard({ user, onLogout }) {
           {/* Content */}
           {recentAttempts.length === 0 ? (
             <div className="p-16 text-center">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center mx-auto mb-6 border-2 border-gray-200">
+              <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6 border-2 border-gray-200">
                 <BookOpen className="w-12 h-12 text-gray-400" />
               </div>
               <h3 className="text-2xl font-black text-ink mb-3">{t('quiz.noQuizzes')}</h3>
@@ -145,7 +145,7 @@ function Dashboard({ user, onLogout }) {
               </p>
               <button
                 onClick={() => navigate('/notes')}
-                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-brand-400 to-brand-600 text-white font-black rounded-2xl hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                className="inline-flex items-center justify-center px-8 py-4 bg-brand-500 text-white font-black rounded-2xl hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
               >
                 {t('common.submit').toUpperCase()}
               </button>
@@ -155,7 +155,7 @@ function Dashboard({ user, onLogout }) {
               {recentAttempts.map((attempt, index) => (
                 <div
                   key={attempt.id}
-                  className="px-8 py-6 hover:bg-gradient-to-r hover:from-green-50 hover:to-white cursor-pointer transition-all duration-200 flex items-center justify-between group"
+                  className="px-8 py-6 hover:bg-green-50 cursor-pointer transition-all duration-200 flex items-center justify-between group"
                   onClick={() => navigate(`/quiz/${attempt.quizId}/results`)}
                 >
                   <div className="flex-1">

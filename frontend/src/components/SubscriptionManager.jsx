@@ -79,7 +79,7 @@ function SubscriptionManager() {
 
       <div className="flex items-center gap-3 mb-6">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-          tier === 'premium' ? 'bg-gradient-to-br from-amber-400 to-orange-500' : 'bg-gradient-to-br from-brand-500 to-violet-500'
+          tier === 'premium' ? 'bg-amber-400' : 'bg-brand-500'
         }`}>
           <Crown className="w-6 h-6 text-white" />
         </div>

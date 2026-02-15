@@ -192,7 +192,7 @@ function Landing() {
       icon: <Sparkles className="w-7 h-7" />,
       color: 'text-brand-500',
       bg: 'bg-blue-50',
-      gradient: 'from-brand-500 to-violet-500',
+      solidBg: 'bg-brand-500',
       features: [
         'Unlimited quizzes & notes',
         '10-30 smart questions',
@@ -213,7 +213,7 @@ function Landing() {
       icon: <Crown className="w-7 h-7" />,
       color: 'text-amber-500',
       bg: 'bg-amber-50',
-      gradient: 'from-amber-400 to-orange-500',
+      solidBg: 'bg-amber-400',
       features: [
         'Everything in Pro',
         '✨ Unlimited AI Teaching',
@@ -260,7 +260,7 @@ function Landing() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
-              <span className="text-2xl font-extrabold gradient-text tracking-tight">floraquiz</span>
+              <span className="text-2xl font-extrabold text-brand-500 tracking-tight">floraquiz</span>
             </Link>
 
             <div className="flex items-center gap-3">
@@ -289,7 +289,7 @@ function Landing() {
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-ink leading-tight mb-6">
               AI-powered learning that finds and fixes
               <br />
-              <span className="gradient-text">your weak spots</span>
+              <span className="text-brand-500">your weak spots</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-slate font-semibold max-w-2xl mx-auto mb-10 leading-relaxed">
@@ -310,7 +310,7 @@ function Landing() {
             {/* Animated quiz demo with premium motion graphics */}
             <div className="relative max-w-3xl mx-auto" aria-label="Animated quiz demo">
               {/* Glow backdrop */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-brand-400/10 to-accent-400/10 rounded-3xl blur-2xl -z-10" />
+              <div className="absolute -inset-4 bg-brand-400/5 rounded-3xl blur-2xl -z-10" />
 
               <div className="card p-6 sm:p-8 shadow-2xl border border-border/50 bg-white">
                 {/* Browser-like header */}
@@ -324,7 +324,7 @@ function Landing() {
                 </div>
 
                 {/* Question area */}
-                <div className="bg-gradient-to-br from-slate-50 to-surface rounded-2xl p-6 sm:p-8 mb-6 border border-border/40">
+                <div className="bg-gray-50 rounded-2xl p-6 sm:p-8 mb-6 border border-border/40">
                   <p className="text-base sm:text-lg font-extrabold text-ink mb-1 min-h-8 leading-relaxed">
                     {questionText}
                     {questionText.length > 0 && questionText.length < 55 && (
@@ -345,7 +345,7 @@ function Landing() {
                           : 'opacity-0 pointer-events-none'
                       } ${
                         demoPhase === 3 && i === 1
-                          ? 'border-brand-500 bg-gradient-to-r from-blue-50 to-brand-50 text-brand-600 demo-correct shadow-xl'
+                          ? 'border-brand-500 bg-blue-50 text-brand-600 demo-correct shadow-xl'
                           : 'border-border/60 bg-white hover:bg-surface text-slate'
                       }`}
                       style={{
@@ -355,7 +355,7 @@ function Landing() {
                       <span
                         className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs transition-all flex-shrink-0 ${
                           demoPhase === 3 && i === 1
-                            ? 'bg-gradient-to-br from-brand-400 to-brand-500 text-white shadow-lg'
+                            ? 'bg-brand-500 text-white shadow-lg'
                             : 'bg-slate-100 text-slate-600'
                         }`}
                       >
@@ -389,7 +389,7 @@ function Landing() {
                 {showBadge && (
                   <div className="flex gap-3 items-center">
                     <div
-                      className="demo-badge inline-flex items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg"
+                      className="demo-badge inline-flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg"
                     >
                       <CheckCircle className="w-4 h-4" />
                       <span>Correct! +10 points</span>
@@ -535,7 +535,7 @@ function Landing() {
                   to={tier.href}
                   className={`block text-center font-bold py-3 px-6 rounded-xl transition-all ${
                     tier.highlighted
-                      ? 'bg-gradient-to-r ' + tier.gradient + ' text-white hover:shadow-lg'
+                      ? 'bg-brand-500 text-white hover:shadow-lg'
                       : 'bg-surface border-2 border-border text-ink hover:bg-slate hover:text-white'
                   }`}
                 >
@@ -636,7 +636,7 @@ function Landing() {
       {/* ── Footer ── */}
       <footer className="py-8 px-4 bg-ink text-center">
         <div className="flex items-center justify-center gap-2 mb-3">
-          <span className="text-lg font-extrabold gradient-text">floraquiz</span>
+          <span className="text-lg font-extrabold text-brand-500">floraquiz</span>
         </div>
         <p className="text-slate font-semibold text-sm">
           Made with AI. Built for students.

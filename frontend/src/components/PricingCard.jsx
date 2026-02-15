@@ -45,7 +45,7 @@ function PricingCard({ plan, onSelect, isPopular = false }) {
       <div className="p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-            plan.tier === 'premium' ? 'bg-gradient-to-br from-amber-400 to-orange-500' : 'bg-gradient-to-br from-brand-500 to-violet-500'
+            plan.tier === 'premium' ? 'bg-amber-400' : 'bg-brand-500'
           }`}>
             <span className="text-white">{icons[plan.tier]}</span>
           </div>

@@ -85,7 +85,7 @@ function Navbar({ user, onLogout }) {
                   {item.icon}
                   <span>{item.label}</span>
                   {item.badge && (
-                    <span className="text-xs font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white ml-1">
+                    <span className="text-xs font-black px-2 py-0.5 rounded-full bg-amber-400 text-white ml-1">
                       {item.badge}
                     </span>
                   )}
@@ -111,7 +111,7 @@ function Navbar({ user, onLogout }) {
                 <span className="max-w-[100px] truncate">{user.username}</span>
                 {(isPro || isPremium) && (
                   <span className={`text-xs font-black px-2 py-0.5 rounded-full ml-1 ${
-                    isPremium ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-white' : 'bg-brand-500 text-white'
+                    isPremium ? 'bg-amber-400 text-white' : 'bg-brand-500 text-white'
                   }`}>
                     {isPremium ? 'PREMIUM' : 'PRO'}
                   </span>
@@ -181,7 +181,7 @@ function Navbar({ user, onLogout }) {
                 {item.icon}
                 <span>{item.label}</span>
                 {item.badge && (
-                  <span className="text-xs font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white ml-auto">
+                  <span className="text-xs font-black px-2 py-0.5 rounded-full bg-amber-400 text-white ml-auto">
                     {item.badge}
                   </span>
                 )}

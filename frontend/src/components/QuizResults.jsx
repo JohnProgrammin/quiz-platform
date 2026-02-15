@@ -168,7 +168,7 @@ function QuizResults({ user, onLogout }) {
 
         {/* AI Feedback Section (Pro+ only) */}
         {tier === 'free' ? (
-          <div className="card p-8 mb-8 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-500 relative overflow-hidden">
+          <div className="card p-8 mb-8 bg-amber-50 border-2 border-amber-500 relative overflow-hidden">
             <div className="absolute inset-0 backdrop-blur-sm bg-white/40" />
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-4">

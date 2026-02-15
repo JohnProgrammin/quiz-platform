@@ -34,7 +34,7 @@ function Signup({ onLogin }) {
     <div className="min-h-screen bg-surface flex flex-col">
       <div className="border-b-2 border-border bg-white">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center">
-          <span className="text-2xl font-extrabold gradient-text tracking-tight">floraquiz</span>
+          <span className="text-2xl font-extrabold text-brand-500 tracking-tight">floraquiz</span>
         </div>
       </div>
 

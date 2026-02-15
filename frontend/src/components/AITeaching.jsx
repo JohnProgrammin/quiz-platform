@@ -298,7 +298,7 @@ function AITeaching({ user, onLogout }) {
                 {/* Header */}
                 <div className="px-6 py-4 border-b-2 border-border flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
                       <Sparkles className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -326,7 +326,7 @@ function AITeaching({ user, onLogout }) {
                 <div className="flex-1 overflow-y-auto p-6 space-y-4">
                   {messages.length === 0 && !sending ? (
                     <div className="flex flex-col items-center justify-center h-full text-center">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-4">
+                      <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
                         <Sparkles className="w-8 h-8 text-white" />
                       </div>
                       <h3 className="text-lg font-extrabold text-ink mb-2">Start Learning!</h3>
@@ -344,7 +344,7 @@ function AITeaching({ user, onLogout }) {
                           className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
                             msg.role === 'user'
                               ? 'bg-brand-500'
-                              : 'bg-gradient-to-br from-amber-400 to-orange-500'
+                              : 'bg-gray-100'
                           }`}
                         >
                           {msg.role === 'user' ? (
@@ -426,7 +426,7 @@ function AITeaching({ user, onLogout }) {
                   {/* Typing Indicator */}
                   {sending && (
                     <div className="flex gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
                         <Sparkles className="w-5 h-5 text-white" />
                       </div>
                       <div className="p-4 rounded-2xl bg-white border-2 border-border">
@@ -473,7 +473,7 @@ function AITeaching({ user, onLogout }) {
             ) : (
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mx-auto mb-4">
+                  <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
                     <Sparkles className="w-10 h-10 text-white" />
                   </div>
                   <h3 className="text-xl font-extrabold text-ink mb-2">Start Learning!</h3>
