@@ -489,6 +489,7 @@ app.post('/api/v1/auth/logout', authenticateToken, (req, res) => {
  * Create Paystack Payment
  * POST /api/v1/subscription/checkout
  * Body: { plan: 'pro' | 'premium' }
+ * Automatically detects user's currency and converts price
  */
 app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) => {
   try {
@@ -498,35 +499,53 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
       return res.status(400).json({ error: 'Valid plan required (pro or premium)' });
     }
 
-    // Get user email
+    // Get user email and IP for currency detection
     const user = await sql`SELECT email FROM users WHERE id = ${req.user.id}`;
 
     if (!user[0]) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Plan amounts in NGN
-    const amounts = {
-      pro: 9999,      // $9.99 equivalent
-      premium: 19999   // $19.99 equivalent
-    };
+    // Detect user's currency from IP address
+    const clientIP = req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+                     req.connection.remoteAddress ||
+                     req.socket.remoteAddress ||
+                     '127.0.0.1';
+
+    const geoData = await currencyService.detectCountryFromIP(clientIP);
+    const userCurrency = geoData.currency || 'USD';
+
+    // Get payment data with proper currency conversion
+    const paymentData = currencyService.getPaystackPaymentData(userCurrency, plan);
 
     // Import Paystack config
     const { createTransaction } = require('./config/paystack.config');
 
-    // Create Paystack transaction
+    // Create Paystack transaction with converted amount
     const transaction = await createTransaction({
       email: user[0].email,
-      amount: amounts[plan],
+      amount: paymentData.amount, // Properly converted amount
       plan: plan,
       userId: req.user.id,
       callbackUrl: `${process.env.FRONTEND_URL}/subscription/callback`,
+      metadata: {
+        userCurrency: paymentData.originalCurrency,
+        paystackCurrency: paymentData.currency,
+        conversionRate: paymentData.conversionRate,
+      },
     });
 
     res.json({
       authorizationUrl: transaction.data.authorization_url,
       accessCode: transaction.data.access_code,
       reference: transaction.data.reference,
+      paymentInfo: {
+        amount: paymentData.amount,
+        currency: paymentData.currency,
+        originalCurrency: paymentData.originalCurrency,
+        displayPrice: paymentData.displayPrice,
+        conversionRate: paymentData.conversionRate,
+      },
     });
   } catch (error) {
     console.error('Paystack transaction error:', error);
