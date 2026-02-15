@@ -57,26 +57,29 @@ function Navbar({ user, onLogout }) {
 
   return (
     <>
-      <nav className={`bg-white border-b-2 border-border sticky top-0 z-50 transition-shadow duration-200 ${
-        scrolled ? 'shadow-sm' : ''
+      <nav className={`bg-white sticky top-0 z-50 transition-all duration-200 border-b-2 border-gray-100 ${
+        scrolled ? 'shadow-md' : ''
       }`}>
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex items-center justify-between h-14">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to="/dashboard" className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-xl font-extrabold gradient-text tracking-tight">floraquiz</span>
+            <Link to="/dashboard" className="flex items-center gap-3 flex-shrink-0 group">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center group-hover:shadow-lg transition-all">
+                <span className="text-lg font-black text-white">Q</span>
+              </div>
+              <span className="text-2xl font-black gradient-text tracking-tight hidden sm:inline">floraquiz</span>
             </Link>
 
             {/* Desktop nav */}
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden lg:flex items-center gap-1">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all duration-200 ${
                     isActive(item.path)
-                      ? 'bg-brand-50 text-brand-500'
-                      : 'text-slate hover:text-ink hover:bg-surface'
+                      ? 'bg-brand-100 text-brand-600 shadow-sm'
+                      : 'text-slate hover:text-ink hover:bg-gray-100'
                   }`}
                 >
                   {item.icon}
@@ -91,23 +94,23 @@ function Navbar({ user, onLogout }) {
             </div>
 
             {/* Desktop right side */}
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden lg:flex items-center gap-3">
               <LanguageSwitcher />
 
               <Link
                 to="/profile"
-                className={`flex items-center gap-2 px-3 py-2 rounded-xl font-bold text-sm transition-all ${
+                className={`flex items-center gap-3 px-4 py-2 rounded-xl font-bold text-sm transition-all duration-200 ${
                   isActive('/profile')
-                    ? 'bg-brand-50 text-brand-500'
-                    : 'text-slate hover:text-ink hover:bg-surface'
+                    ? 'bg-brand-100 text-brand-600 shadow-sm'
+                    : 'text-slate hover:text-ink hover:bg-gray-100'
                 }`}
               >
-                <div className="w-7 h-7 rounded-full bg-warning flex items-center justify-center flex-shrink-0">
-                  <span className="text-xs font-black text-white">{user.username[0].toUpperCase()}</span>
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center flex-shrink-0 text-white">
+                  <span className="text-xs font-black">{user.username[0].toUpperCase()}</span>
                 </div>
-                <span className="max-w-[120px] truncate">{user.username}</span>
+                <span className="max-w-[100px] truncate">{user.username}</span>
                 {(isPro || isPremium) && (
-                  <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
+                  <span className={`text-xs font-black px-2 py-0.5 rounded-full ml-1 ${
                     isPremium ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-white' : 'bg-brand-500 text-white'
                   }`}>
                     {isPremium ? 'PREMIUM' : 'PRO'}
@@ -117,7 +120,7 @@ function Navbar({ user, onLogout }) {
 
               <button
                 onClick={onLogout}
-                className="p-2 text-slate hover:text-danger hover:bg-red-50 rounded-xl transition-all"
+                className="p-2 text-slate hover:text-ink hover:bg-red-50 rounded-xl transition-all duration-200"
                 title="Log out"
               >
                 <LogOut className="w-5 h-5" />
@@ -127,7 +130,7 @@ function Navbar({ user, onLogout }) {
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 text-ink hover:bg-surface rounded-xl transition-all"
+              className="lg:hidden p-2 text-ink hover:bg-gray-100 rounded-xl transition-all"
             >
               {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -137,26 +140,26 @@ function Navbar({ user, onLogout }) {
 
       {/* Mobile menu overlay */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 mobile-menu-overlay md:hidden" />
+        <div className="fixed inset-0 z-40 mobile-menu-overlay lg:hidden bg-black/30" />
       )}
 
       {/* Mobile menu panel */}
       <div
         ref={menuRef}
-        className={`fixed top-14 right-0 w-72 max-w-[85vw] h-[calc(100vh-3.5rem)] bg-white border-l-2 border-border z-50 transform transition-transform duration-300 ease-out md:hidden ${
+        className={`fixed top-16 right-0 w-72 max-w-[85vw] h-[calc(100vh-4rem)] bg-white border-l-2 border-gray-100 z-50 transform transition-transform duration-300 ease-out lg:hidden ${
           mobileOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* User info */}
-          <div className="p-5 border-b-2 border-border">
+          <div className="p-6 border-b-2 border-gray-100 bg-gradient-to-br from-green-50 to-white">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-warning flex items-center justify-center flex-shrink-0">
-                <span className="text-base font-black text-white">{user.username[0].toUpperCase()}</span>
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center flex-shrink-0 text-white shadow-md">
+                <span className="text-base font-black">{user.username[0].toUpperCase()}</span>
               </div>
               <div className="min-w-0">
-                <div className="font-extrabold text-ink truncate">{user.username}</div>
-                <div className="text-sm font-semibold text-slate">
+                <div className="font-black text-ink truncate">{user.username}</div>
+                <div className="text-sm font-semibold text-slate mt-0.5">
                   {isPremium ? '👑 Premium' : isPro ? '⭐ Pro' : 'Free Tier'}
                 </div>
               </div>
@@ -164,15 +167,15 @@ function Navbar({ user, onLogout }) {
           </div>
 
           {/* Nav links */}
-          <div className="flex-1 p-4 space-y-1">
+          <div className="flex-1 p-4 space-y-1 overflow-y-auto">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all duration-200 ${
                   isActive(item.path)
-                    ? 'bg-brand-50 text-brand-500'
-                    : 'text-ink hover:bg-surface'
+                    ? 'bg-brand-100 text-brand-600 shadow-sm'
+                    : 'text-ink hover:bg-gray-100'
                 }`}
               >
                 {item.icon}
@@ -187,28 +190,28 @@ function Navbar({ user, onLogout }) {
 
             <Link
               to="/profile"
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all duration-200 ${
                 isActive('/profile')
-                  ? 'bg-brand-50 text-brand-500'
-                  : 'text-ink hover:bg-surface'
+                  ? 'bg-brand-100 text-brand-600 shadow-sm'
+                  : 'text-ink hover:bg-gray-100'
               }`}
             >
-              <div className="w-5 h-5 rounded-full bg-slate flex items-center justify-center">
-                <span className="text-[10px] font-black text-white">{user.username[0].toUpperCase()}</span>
+              <div className="w-6 h-6 rounded-full bg-brand-200 flex items-center justify-center">
+                <span className="text-[10px] font-black text-brand-600">{user.username[0].toUpperCase()}</span>
               </div>
               <span>Profile</span>
             </Link>
           </div>
 
           {/* Logout & Language */}
-          <div className="p-4 border-t-2 border-border space-y-2">
-            <div className="flex items-center px-4 py-3 rounded-xl">
+          <div className="p-4 border-t-2 border-gray-100 space-y-2 bg-gray-50">
+            <div className="flex items-center justify-between px-4 py-3 rounded-xl">
+              <span className="text-sm font-semibold text-slate">Language</span>
               <LanguageSwitcher />
-              <span className="text-sm font-semibold text-slate ml-2">Change Language</span>
             </div>
             <button
               onClick={onLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-danger hover:bg-red-50 transition-all"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-danger hover:bg-red-50 transition-all duration-200"
             >
               <LogOut className="w-5 h-5" />
               <span>Log out</span>

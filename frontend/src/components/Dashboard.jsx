@@ -66,95 +66,111 @@ function Dashboard({ user, onLogout }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-gray-100">
         <Navbar user={user} onLogout={onLogout} />
         <div className="flex flex-col items-center justify-center h-96">
-          <div className="w-12 h-12 rounded-full bg-brand-500 flex items-center justify-center animate-bounce">
-            <span className="text-xl font-black text-white">Q</span>
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center animate-bounce shadow-lg">
+            <span className="text-2xl font-black text-white">Q</span>
           </div>
-          <p className="text-slate font-bold mt-4">{t('common.loading')}</p>
+          <p className="text-slate font-bold mt-6">{t('common.loading')}</p>
         </div>
       </div>
     );
   }
 
   const statCards = [
-    { label: t('dashboard.stats.notes'), value: stats.totalNotes, icon: <FileText className="w-6 h-6" />, color: 'text-brand-500', bg: 'bg-brand-50' },
-    { label: t('dashboard.stats.quizzes'), value: stats.totalQuizzes, icon: <BookOpen className="w-6 h-6" />, color: 'text-violet-500', bg: 'bg-violet-50' },
-    { label: t('quiz.quiz'), value: stats.totalAttempts, icon: <Target className="w-6 h-6" />, color: 'text-amber-500', bg: 'bg-amber-50' },
-    { label: t('dashboard.stats.averageScore'), value: `${stats.averageScore}%`, icon: <Trophy className="w-6 h-6" />, color: 'text-brand-500', bg: 'bg-green-50' },
+    { label: t('dashboard.stats.notes'), value: stats.totalNotes, icon: <FileText className="w-7 h-7" />, color: 'text-brand-500' },
+    { label: t('dashboard.stats.quizzes'), value: stats.totalQuizzes, icon: <BookOpen className="w-7 h-7" />, color: 'text-brand-500' },
+    { label: t('quiz.quiz'), value: stats.totalAttempts, icon: <Target className="w-7 h-7" />, color: 'text-brand-500' },
+    { label: t('dashboard.stats.averageScore'), value: `${stats.averageScore}%`, icon: <Trophy className="w-7 h-7" />, color: 'text-brand-500' },
   ];
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-gray-100">
       <Navbar user={user} onLogout={onLogout} />
 
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-extrabold text-ink">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Header Section */}
+        <div className="mb-12">
+          <h1 className="text-4xl sm:text-5xl font-black text-ink leading-tight mb-2">
             {t('dashboard.welcome', { name: user.fullName || user.username })}
           </h1>
-          <p className="text-slate font-semibold mt-1">{t('dashboard.statistics')}</p>
+          <p className="text-lg text-slate font-semibold">{t('dashboard.statistics')}</p>
         </div>
 
+        {/* Upgrade Prompt */}
         {isFree && (
-          <div className="mb-8">
+          <div className="mb-10">
             <UpgradePrompt feature="unlimited_quizzes" />
           </div>
         )}
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {statCards.map((stat) => (
-            <div key={stat.label} className="card p-5">
-              <div className={`w-11 h-11 rounded-xl ${stat.bg} flex items-center justify-center mb-3 ${stat.color}`}>
+            <div
+              key={stat.label}
+              className="bg-white rounded-2xl border-2 border-gray-200 p-8 hover:shadow-lg hover:border-brand-300 transition-all duration-300 hover:-translate-y-1"
+            >
+              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-100 to-brand-50 flex items-center justify-center mb-4 ${stat.color}`}>
                 {stat.icon}
               </div>
-              <div className="text-2xl font-extrabold text-ink">{stat.value}</div>
-              <div className="text-sm font-bold text-slate">{stat.label}</div>
+              <div className="text-4xl font-black text-ink mb-2">{stat.value}</div>
+              <div className="text-sm font-semibold text-slate">{stat.label}</div>
             </div>
           ))}
         </div>
 
-        <div className="card">
-          <div className="px-6 py-4 border-b-2 border-border flex items-center justify-between">
-            <h2 className="text-lg font-extrabold text-ink flex items-center gap-2">
-              <Flame className="w-5 h-5 text-amber-500" />
+        {/* Recent Activity Section */}
+        <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-sm overflow-hidden">
+          {/* Header */}
+          <div className="px-8 py-7 border-b-2 border-gray-100 flex items-center justify-between bg-gradient-to-r from-white to-gray-50">
+            <h2 className="text-2xl font-black text-ink flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center">
+                <Flame className="w-6 h-6 text-amber-500" />
+              </div>
               {t('dashboard.recentActivity')}
             </h2>
           </div>
 
+          {/* Content */}
           {recentAttempts.length === 0 ? (
-            <div className="p-12 text-center">
-              <div className="w-20 h-20 rounded-full bg-surface flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-10 h-10 text-muted" />
+            <div className="p-16 text-center">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center mx-auto mb-6 border-2 border-gray-200">
+                <BookOpen className="w-12 h-12 text-gray-400" />
               </div>
-              <h3 className="text-lg font-extrabold text-ink mb-2">{t('quiz.noQuizzes')}</h3>
-              <p className="text-slate font-semibold mb-6">
+              <h3 className="text-2xl font-black text-ink mb-3">{t('quiz.noQuizzes')}</h3>
+              <p className="text-slate font-semibold mb-8 max-w-md mx-auto">
                 {t('notes.dragDropFile')}
               </p>
-              <button onClick={() => navigate('/notes')} className="btn-primary">
+              <button
+                onClick={() => navigate('/notes')}
+                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-brand-400 to-brand-600 text-white font-black rounded-2xl hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              >
                 {t('common.submit').toUpperCase()}
               </button>
             </div>
           ) : (
-            <div>
-              {recentAttempts.map((attempt) => (
+            <div className="divide-y-2 divide-gray-100">
+              {recentAttempts.map((attempt, index) => (
                 <div
                   key={attempt.id}
-                  className="px-6 py-4 border-b-2 border-border last:border-0 hover:bg-surface cursor-pointer transition-colors flex items-center justify-between"
+                  className="px-8 py-6 hover:bg-gradient-to-r hover:from-green-50 hover:to-white cursor-pointer transition-all duration-200 flex items-center justify-between group"
                   onClick={() => navigate(`/quiz/${attempt.quizId}/results`)}
                 >
                   <div className="flex-1">
-                    <h3 className="font-bold text-ink">{attempt.quizTitle}</h3>
-                    <p className="text-sm font-semibold text-slate mt-1">
+                    <h3 className="font-black text-ink text-lg group-hover:text-brand-500 transition-colors">
+                      {attempt.quizTitle}
+                    </h3>
+                    <p className="text-sm font-semibold text-slate mt-2">
                       {new Date(attempt.completedAt).toLocaleDateString()} &middot; {attempt.score}/{attempt.totalQuestions} {t('results.correctAnswers').toLowerCase()}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`text-lg font-extrabold px-3 py-1 rounded-xl border-2 ${getScoreBg(attempt.percentage)} ${getScoreColor(attempt.percentage)}`}>
+                  <div className="flex items-center gap-4 ml-4">
+                    <div className={`text-xl font-black px-4 py-2 rounded-full border-2 ${getScoreBg(attempt.percentage)} ${getScoreColor(attempt.percentage)}`}>
                       {attempt.percentage}%
-                    </span>
-                    <ArrowRight className="w-5 h-5 text-muted" />
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-muted group-hover:text-brand-500 transition-colors transform group-hover:translate-x-1" />
                   </div>
                 </div>
               ))}
