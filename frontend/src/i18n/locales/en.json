@@ -16,7 +16,7 @@
     "logout": "Log Out"
   },
   "auth": {
-    "login": "Log In",
+    "login": "Log in",
     "signup": "Sign Up",
     "email": "Email",
     "password": "Password",
@@ -28,7 +28,21 @@
     "loginSuccess": "Login successful!",
     "signupSuccess": "Account created successfully!",
     "invalidCredentials": "Invalid email or password",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "welcomeBack": "Welcome back! Ready to learn?",
+    "usernameOrEmail": "Username or email",
+    "createProfile": "Create your profile",
+    "startLearningSmarter": "Start learning smarter with AI quizzes",
+    "loggingIn": "LOGGING IN...",
+    "signingUp": "SIGNING UP...",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "fullName": "Full Name",
+    "fullNameOptional": "Full name (optional)",
+    "username": "Username",
+    "startLearning": "Start learning smarter with AI quizzes",
+    "creatingAccount": "CREATING ACCOUNT...",
+    "createAccount": "Create Account"
   },
   "dashboard": {
     "welcome": "Hey, {{name}}!",
@@ -79,7 +93,10 @@
     "score": "Score: {{score}}%",
     "allQuestionsAnswered": "All questions answered!",
     "quizSubmitted": "Quiz submitted successfully!",
-    "maxQuizzesReached": "You've reached your quiz limit for this month"
+    "maxQuizzesReached": "You've reached your quiz limit for this month",
+    "loadingQuiz": "Loading quiz...",
+    "preQuizTeaching": "Pre-Quiz Teaching",
+    "keyConcepts": "Key Concepts"
   },
   "results": {
     "results": "Quiz Results",
@@ -92,6 +109,8 @@
     "needsWork": "Keep practicing!",
     "feedback": "AI Feedback",
     "loadingFeedback": "Generating AI feedback...",
+    "loadingResults": "Loading results...",
+    "noResults": "No results found",
     "noFeedback": "Feedback not available",
     "retakeQuiz": "Retake Quiz",
     "backToDashboard": "Back to Dashboard",
@@ -117,9 +136,13 @@
     "analytics": "Analytics",
     "performance": "Performance",
     "progress": "Progress",
+    "title": "Your Learning Analytics",
+    "subtitle": "Track your progress and identify areas for improvement",
     "noData": "No data available",
     "quizzesCompleted": "Quizzes Completed",
     "averageAccuracy": "Average Accuracy",
+    "averageScore": "Average Score",
+    "bestScore": "Best Score",
     "totalTimeSpent": "Total Time Spent",
     "weeklyProgress": "Weekly Progress"
   },
@@ -141,7 +164,11 @@
     "aiTeachingAccess": "AI Teaching Access",
     "selectPlan": "Select Plan",
     "currentlyOnPlan": "You're on the {{plan}} plan",
-    "upgradeBenefits": "Upgrade to unlock premium features"
+    "upgradeBenefits": "Upgrade to unlock premium features",
+    "viewPlans": "View Pricing",
+    "proFeature": "{{feature}} is a Pro Feature",
+    "upgradeDescription": "Upgrade to Pro for unlimited quizzes, AI feedback, and more!",
+    "later": "Later"
   },
   "gamification": {
     "level": "Level {{level}}",
@@ -164,22 +191,28 @@
     "pleaseCheckInternet": "Please check your internet connection"
   },
   "navbar": {
+    "home": "Home",
     "dashboard": "Dashboard",
     "notes": "Notes",
     "quizzes": "Quizzes",
     "analytics": "Analytics",
-    "teaching": "Teaching",
+    "teaching": "AI Teaching",
     "settings": "Settings",
     "profile": "Profile",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "premium": "PREMIUM"
   },
   "landing": {
     "hero": "Learn Smarter, Not Harder",
     "heroSubtitle": "Master any subject with AI-powered quizzes and personalized learning",
+    "uploadNotes": "Upload notes, generate smart quizzes, get personalized AI teaching.",
+    "startFree": "Start free forever — upgrade when you're ready to master anything.",
     "getStarted": "Get Started",
     "features": "Features",
     "pricing": "Pricing",
     "faq": "FAQ",
+    "startLearningFree": "START LEARNING FREE",
+    "alreadyHaveAccount": "I ALREADY HAVE AN ACCOUNT",
     "smartQuizzes": "Smart Quizzes",
     "smartQuizzesDesc": "AI generates personalized quizzes from your notes",
     "instantFeedback": "Instant Feedback",

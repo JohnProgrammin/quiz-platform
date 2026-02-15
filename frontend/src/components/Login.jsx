@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { login } from '../api';
 
 function Login({ onLogin }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -34,7 +36,7 @@ function Login({ onLogin }) {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-slate hover:text-ink transition-colors">
             <ArrowLeft className="w-5 h-5" />
-            <span className="font-bold">Back</span>
+            <span className="font-bold">{t('common.back')}</span>
           </Link>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-brand-500 flex items-center justify-center">
@@ -48,8 +50,8 @@ function Login({ onLogin }) {
 
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <h1 className="text-4xl font-black text-ink text-center mb-2">Log in</h1>
-          <p className="text-slate text-center mb-8 font-semibold text-lg">Welcome back! Ready to learn?</p>
+          <h1 className="text-4xl font-black text-ink text-center mb-2">{t('auth.login')}</h1>
+          <p className="text-slate text-center mb-8 font-semibold text-lg">{t('auth.welcomeBack')}</p>
 
           {error && (
             <div
@@ -63,7 +65,7 @@ function Login({ onLogin }) {
 
           <form onSubmit={handleSubmit} className="space-y-4" aria-label="Login form">
             <div>
-              <label htmlFor="username-input" className="sr-only">Username or email</label>
+              <label htmlFor="username-input" className="sr-only">{t('auth.usernameOrEmail')}</label>
               <input
                 id="username-input"
                 type="text"
@@ -71,14 +73,14 @@ function Login({ onLogin }) {
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 className="w-full px-6 py-3 border border-gray-300 rounded-lg focus:border-brand-500 focus:outline-none transition-colors font-semibold placeholder-gray-500 bg-white"
-                placeholder="Username or email"
+                placeholder={t('auth.usernameOrEmail')}
                 aria-label="Username or email address"
                 aria-required="true"
               />
             </div>
 
             <div>
-              <label htmlFor="password-input" className="sr-only">Password</label>
+              <label htmlFor="password-input" className="sr-only">{t('auth.password')}</label>
               <div className="relative">
                 <input
                   id="password-input"
@@ -87,7 +89,7 @@ function Login({ onLogin }) {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="w-full px-6 py-3 border border-gray-300 rounded-lg focus:border-brand-500 focus:outline-none transition-colors font-semibold placeholder-gray-500 bg-white pr-12"
-                  placeholder="Password"
+                  placeholder={t('auth.password')}
                   aria-label="Password"
                   aria-required="true"
                 />
@@ -95,7 +97,7 @@ function Login({ onLogin }) {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-ink transition-colors"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                   aria-pressed={showPassword}
                 >
                   {showPassword ? (
@@ -113,15 +115,15 @@ function Login({ onLogin }) {
               className="w-full px-6 py-3 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-lg"
               aria-busy={loading}
             >
-              {loading ? 'LOGGING IN...' : 'LOG IN'}
+              {loading ? t('auth.loggingIn') : t('auth.login').toUpperCase()}
             </button>
           </form>
 
           <div className="mt-8 pt-6 border-t border-gray-200 text-center">
             <p className="text-slate font-semibold">
-              Don't have an account?{' '}
+              {t('auth.dontHaveAccount')}{' '}
               <Link to="/signup" className="text-brand-500 font-black hover:underline">
-                SIGN UP
+                {t('auth.signup').toUpperCase()}
               </Link>
             </p>
           </div>

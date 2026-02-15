@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, FileText, Sparkles, LogOut, Menu, X, BarChart3 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import LanguageSwitcher from './LanguageSwitcher';
 
 function Navbar({ user, onLogout }) {
+  const { t } = useTranslation();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -44,14 +46,14 @@ function Navbar({ user, onLogout }) {
   }, [mobileOpen]);
 
   const navItems = [
-    { path: '/dashboard', icon: <Home className="w-5 h-5" />, label: 'Home' },
-    { path: '/notes', icon: <FileText className="w-5 h-5" />, label: 'Notes' },
-    { path: '/analytics', icon: <BarChart3 className="w-5 h-5" />, label: 'Analytics' },
+    { path: '/dashboard', icon: <Home className="w-5 h-5" />, label: t('navbar.home') },
+    { path: '/notes', icon: <FileText className="w-5 h-5" />, label: t('navbar.notes') },
+    { path: '/analytics', icon: <BarChart3 className="w-5 h-5" />, label: t('navbar.analytics') },
     ...(isPremium ? [{
       path: '/teaching',
       icon: <Sparkles className="w-5 h-5" />,
-      label: 'AI Teaching',
-      badge: 'PREMIUM'
+      label: t('navbar.aiTeaching'),
+      badge: t('navbar.premium')
     }] : []),
   ];
 
@@ -121,7 +123,7 @@ function Navbar({ user, onLogout }) {
               <button
                 onClick={onLogout}
                 className="p-2 text-slate hover:text-ink hover:bg-red-50 rounded-lg transition-all duration-200"
-                title="Log out"
+                title={t('navbar.logout')}
               >
                 <LogOut className="w-5 h-5" />
               </button>
@@ -160,7 +162,7 @@ function Navbar({ user, onLogout }) {
               <div className="min-w-0">
                 <div className="font-black text-ink truncate">{user.username}</div>
                 <div className="text-sm font-semibold text-slate mt-0.5">
-                  {isPremium ? '👑 Premium' : isPro ? '⭐ Pro' : 'Free Tier'}
+                  {isPremium ? `👑 ${t('navbar.premium')}` : isPro ? `⭐ ${t('navbar.pro')}` : t('navbar.freeTier')}
                 </div>
               </div>
             </div>
@@ -199,14 +201,14 @@ function Navbar({ user, onLogout }) {
               <div className="w-6 h-6 rounded-full bg-brand-200 flex items-center justify-center">
                 <span className="text-[10px] font-black text-brand-600">{user.username[0].toUpperCase()}</span>
               </div>
-              <span>Profile</span>
+              <span>{t('navbar.profile')}</span>
             </Link>
           </div>
 
           {/* Logout & Language */}
           <div className="p-4 border-t border-gray-200 space-y-2 bg-white">
             <div className="flex items-center justify-between px-4 py-3 rounded-xl">
-              <span className="text-sm font-semibold text-slate">Language</span>
+              <span className="text-sm font-semibold text-slate">{t('navbar.language')}</span>
               <LanguageSwitcher />
             </div>
             <button
@@ -214,7 +216,7 @@ function Navbar({ user, onLogout }) {
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-bold text-danger hover:bg-red-50 transition-all duration-200"
             >
               <LogOut className="w-5 h-5" />
-              <span>Log out</span>
+              <span>{t('navbar.logout')}</span>
             </button>
           </div>
         </div>

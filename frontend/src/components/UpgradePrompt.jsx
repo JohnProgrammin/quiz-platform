@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Lock, Zap, Crown } from 'lucide-react';
 
 function UpgradePrompt({ feature, compact = false, className = '' }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const featureNames = {

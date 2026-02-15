@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useScrollReveal, useStaggerReveal } from '../hooks/useScrollReveal';
 import {
   Upload, Sparkles, Trophy, Brain, Zap, Target,
@@ -30,6 +31,7 @@ function AnimatedCounter({ end, duration = 2000, suffix = '', isVisible }) {
 }
 
 function Landing() {
+  const { t } = useTranslation();
   const [heroRef, heroVisible] = useScrollReveal({ threshold: 0.05 });
   const [featuresHeadRef, featuresHeadVisible] = useScrollReveal();
   const [setFeatureRef, visibleFeatures] = useStaggerReveal(3, { staggerDelay: 150 });
@@ -120,22 +122,22 @@ function Landing() {
   const features = [
     {
       icon: <Gift className="w-7 h-7" />,
-      title: 'Start Free Forever',
-      description: '5 quizzes/month, no credit card. Upgrade when you need unlimited power.',
+      title: t('landing.features.startFree'),
+      description: t('landing.features.startFreeDesc'),
       color: 'text-success',
       bg: 'bg-green-50',
     },
     {
       icon: <Target className="w-7 h-7" />,
-      title: 'Find Your Weaknesses',
-      description: 'AI analyzes your answers and creates targeted mini-quizzes to master tough topics.',
+      title: t('landing.features.findWeaknesses'),
+      description: t('landing.features.findWeaknessesDesc'),
       color: 'text-brand-500',
       bg: 'bg-blue-50',
     },
     {
       icon: <BookOpen className="w-7 h-7" />,
-      title: 'Get Personalized Teaching',
-      description: 'Chat with AI tutor anytime. Ask questions, get explanations, learn at your pace.',
+      title: t('landing.features.personalized'),
+      description: t('landing.features.personalizedDesc'),
       color: 'text-amber-500',
       bg: 'bg-amber-50',
     },
@@ -144,22 +146,22 @@ function Landing() {
   const steps = [
     {
       number: '1',
-      title: 'Upload your notes',
-      description: 'Drag and drop your study materials — PDF, TXT, or Markdown files.',
+      title: t('landing.steps.uploadNotes'),
+      description: t('landing.steps.uploadNotesDesc'),
       icon: <Upload className="w-8 h-8" />,
       color: 'bg-brand-400',
     },
     {
       number: '2',
-      title: 'Generate a quiz',
-      description: 'One click and AI creates 10 tailored multiple-choice questions.',
+      title: t('landing.steps.generateQuiz'),
+      description: t('landing.steps.generateQuizDesc'),
       icon: <Wand2 className="w-8 h-8" />,
       color: 'bg-warning',
     },
     {
       number: '3',
-      title: 'Learn & improve',
-      description: 'Take quizzes, review answers, retake to master every topic.',
+      title: t('landing.steps.learnImprove'),
+      description: t('landing.steps.learnImproveDesc'),
       icon: <Trophy className="w-8 h-8" />,
       color: 'bg-brand-500',
     },
@@ -167,61 +169,61 @@ function Landing() {
 
   const pricingTiers = [
     {
-      name: 'Free',
-      price: 'Free',
-      description: 'Forever free, no credit card required',
+      name: t('landing.pricing.free'),
+      price: t('landing.pricing.freePrice'),
+      description: t('landing.pricing.freeDesc'),
       icon: <Gift className="w-7 h-7" />,
       color: 'text-success',
       bg: 'bg-green-50',
       features: [
-        '5 quizzes/month',
-        '3 notes max',
-        '10 MCQ questions',
-        'Basic results',
-        'Community support',
+        t('landing.pricing.freeFeature1'),
+        t('landing.pricing.freeFeature2'),
+        t('landing.pricing.freeFeature3'),
+        t('landing.pricing.freeFeature4'),
+        t('landing.pricing.freeFeature5'),
       ],
-      cta: 'Get Started',
+      cta: t('landing.pricing.getStarted'),
       href: '/signup',
       badge: '',
     },
     {
-      name: 'Pro',
+      name: t('landing.pricing.pro'),
       price: '$9.99',
-      period: '/month',
-      description: 'For serious learners',
+      period: t('landing.pricing.perMonth'),
+      description: t('landing.pricing.proDesc'),
       icon: <Sparkles className="w-7 h-7" />,
       color: 'text-brand-500',
       bg: 'bg-blue-50',
       solidBg: 'bg-brand-500',
       features: [
-        'Unlimited quizzes & notes',
-        '10-30 smart questions',
-        'MCQ + free-text answers',
-        'AI feedback & analysis',
-        'Weakness mastery quizzes',
+        t('landing.pricing.proFeature1'),
+        t('landing.pricing.proFeature2'),
+        t('landing.pricing.proFeature3'),
+        t('landing.pricing.proFeature4'),
+        t('landing.pricing.proFeature5'),
       ],
-      cta: 'Upgrade to Pro',
+      cta: t('landing.pricing.upgradePro'),
       href: '/signup',
-      badge: 'MOST POPULAR',
+      badge: t('landing.pricing.mostPopular'),
       highlighted: true,
     },
     {
-      name: 'Premium',
+      name: t('landing.pricing.premium'),
       price: '$19.99',
-      period: '/month',
-      description: 'The complete learning AI',
+      period: t('landing.pricing.perMonth'),
+      description: t('landing.pricing.premiumDesc'),
       icon: <Crown className="w-7 h-7" />,
       color: 'text-amber-500',
       bg: 'bg-amber-50',
       solidBg: 'bg-amber-400',
       features: [
-        'Everything in Pro',
-        '✨ Unlimited AI Teaching',
-        'Chat with AI tutor anytime',
-        'Custom quiz settings',
-        'Priority support',
+        t('landing.pricing.premiumFeature1'),
+        t('landing.pricing.premiumFeature2'),
+        t('landing.pricing.premiumFeature3'),
+        t('landing.pricing.premiumFeature4'),
+        t('landing.pricing.premiumFeature5'),
       ],
-      cta: 'Go Premium',
+      cta: t('landing.pricing.goPremium'),
       href: '/signup',
       badge: '',
     },
@@ -229,23 +231,23 @@ function Landing() {
 
   const testimonials = [
     {
-      name: 'Sarah K.',
-      role: 'Medical Student',
-      text: 'Quizly turned my 200-page anatomy notes into quizzes in seconds. My exam scores jumped 20%.',
+      name: t('landing.testimonials.sarah.name'),
+      role: t('landing.testimonials.sarah.role'),
+      text: t('landing.testimonials.sarah.text'),
       avatar: 'S',
       color: 'bg-danger',
     },
     {
-      name: 'James L.',
-      role: 'CS Major',
-      text: 'I upload lecture slides before every exam. The AI questions are surprisingly good and really test understanding.',
+      name: t('landing.testimonials.james.name'),
+      role: t('landing.testimonials.james.role'),
+      text: t('landing.testimonials.james.text'),
       avatar: 'J',
       color: 'bg-brand-400',
     },
     {
-      name: 'Priya M.',
-      role: 'Law Student',
-      text: 'The retake feature is a game-changer. I keep quizzing until I hit 100%. Best study tool I\'ve found.',
+      name: t('landing.testimonials.priya.name'),
+      role: t('landing.testimonials.priya.role'),
+      text: t('landing.testimonials.priya.text'),
       avatar: 'P',
       color: 'bg-purple-500',
     },
@@ -268,10 +270,10 @@ function Landing() {
                 to="/login"
                 className="px-5 py-2 font-bold text-ink hover:text-brand-500 transition-colors text-sm"
               >
-                LOG IN
+                {t('auth.login').toUpperCase()}
               </Link>
               <Link to="/signup" className="btn-primary text-sm py-2 px-5">
-                GET STARTED
+                {t('landing.nav.getStarted').toUpperCase()}
               </Link>
             </div>
           </div>
@@ -287,23 +289,23 @@ function Landing() {
         <div ref={heroRef} className={`reveal ${heroVisible ? 'visible' : ''}`}>
           <div className="max-w-6xl mx-auto text-center relative z-10">
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-ink leading-tight mb-6">
-              AI-powered learning that finds and fixes
+              {t('landing.hero.title')}
               <br />
-              <span className="text-brand-500">your weak spots</span>
+              <span className="text-brand-500">{t('landing.hero.titleSpan')}</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-slate font-semibold max-w-2xl mx-auto mb-10 leading-relaxed">
-              Upload notes, generate smart quizzes, get personalized AI teaching.
+              {t('landing.hero.subtitle')}
               <br />
-              <strong className="text-ink">Start free forever</strong> — upgrade when you're ready to master anything.
+              <strong className="text-ink">{t('landing.hero.subtitleStrong')}</strong> — {t('landing.hero.subtitleCta')}
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
               <Link to="/signup" className="btn-primary text-lg px-8 py-4">
-                START LEARNING FREE
+                {t('landing.hero.startLearning').toUpperCase()}
               </Link>
               <Link to="/login" className="btn-secondary text-lg px-8 py-4 flex items-center gap-2">
-                I ALREADY HAVE AN ACCOUNT
+                {t('landing.hero.alreadyHaveAccount').toUpperCase()}
               </Link>
             </div>
 
@@ -407,12 +409,12 @@ function Landing() {
       <section className="py-20 sm:py-28 px-4 bg-surface">
         <div className="max-w-6xl mx-auto">
           <div ref={featuresHeadRef} className={`reveal ${featuresHeadVisible ? 'visible' : ''} text-center mb-16`}>
-            <span className="text-sm font-black text-brand-500 uppercase tracking-widest">Why Floraquiz?</span>
+            <span className="text-sm font-black text-brand-500 uppercase tracking-widest">{t('landing.features.why')}</span>
             <h2 className="text-3xl sm:text-4xl font-black text-ink mt-3 mb-4">
-              AI that understands how you learn
+              {t('landing.features.title')}
             </h2>
             <p className="text-slate font-semibold max-w-xl mx-auto">
-              From basic quizzes to personalized tutoring. Free to start, powerful when you grow.
+              {t('landing.features.subtitle')}
             </p>
           </div>
 
@@ -438,12 +440,12 @@ function Landing() {
       <section className="py-20 sm:py-28 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div ref={howHeadRef} className={`reveal ${howHeadVisible ? 'visible' : ''} text-center mb-16`}>
-            <span className="text-sm font-black text-brand-500 uppercase tracking-widest">How it works</span>
+            <span className="text-sm font-black text-brand-500 uppercase tracking-widest">{t('landing.steps.how')}</span>
             <h2 className="text-3xl sm:text-4xl font-black text-ink mt-3 mb-4">
-              Three steps to better grades
+              {t('landing.steps.title')}
             </h2>
             <p className="text-slate font-semibold max-w-xl mx-auto">
-              From notes to mastery in minutes. It's really that simple.
+              {t('landing.steps.subtitle')}
             </p>
           </div>
 
@@ -476,12 +478,12 @@ function Landing() {
       <section className="py-20 sm:py-28 px-4 bg-surface">
         <div className="max-w-6xl mx-auto">
           <div ref={pricingHeadRef} className={`reveal ${pricingHeadVisible ? 'visible' : ''} text-center mb-16`}>
-            <span className="text-sm font-black text-brand-500 uppercase tracking-widest">Pricing</span>
+            <span className="text-sm font-black text-brand-500 uppercase tracking-widest">{t('landing.pricing.label')}</span>
             <h2 className="text-3xl sm:text-4xl font-black text-ink mt-3 mb-4">
-              Start free, upgrade when ready
+              {t('landing.pricing.title')}
             </h2>
             <p className="text-slate font-semibold max-w-xl mx-auto">
-              From casual learner to serious student. Plans that grow with your ambitions.
+              {t('landing.pricing.subtitle')}
             </p>
           </div>
 
@@ -555,10 +557,10 @@ function Landing() {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { value: 1000, suffix: '+', label: 'Quizzes Generated' },
-              { value: 500, suffix: '+', label: 'Active Students' },
-              { value: 95, suffix: '%', label: 'Pass Rate' },
-              { value: 10, suffix: 'K+', label: 'Questions Created' },
+              { value: 1000, suffix: '+', label: t('landing.stats.quizzesGenerated') },
+              { value: 500, suffix: '+', label: t('landing.stats.activeStudents') },
+              { value: 95, suffix: '%', label: t('landing.stats.passRate') },
+              { value: 10, suffix: 'K+', label: t('landing.stats.questionsCreated') },
             ].map((stat, i) => (
               <div key={i}>
                 <div className="text-3xl sm:text-5xl font-black mb-2">
@@ -575,9 +577,9 @@ function Landing() {
       <section className="py-20 sm:py-28 px-4 bg-surface">
         <div className="max-w-6xl mx-auto">
           <div ref={testimonialRef} className={`reveal ${testimonialVisible ? 'visible' : ''} text-center mb-16`}>
-            <span className="text-sm font-black text-amber-500 uppercase tracking-widest">Testimonials</span>
+            <span className="text-sm font-black text-amber-500 uppercase tracking-widest">{t('landing.testimonials.label')}</span>
             <h2 className="text-3xl sm:text-4xl font-black text-ink mt-3 mb-4">
-              Loved by students everywhere
+              {t('landing.testimonials.title')}
             </h2>
           </div>
 
@@ -619,15 +621,14 @@ function Landing() {
             <Zap className="w-10 h-10 text-white" />
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-ink mb-4">
-            Ready to stop forgetting?
+            {t('landing.cta.title')}
           </h2>
           <p className="text-lg text-slate font-semibold mb-8 max-w-lg mx-auto">
-            Join students who actually <strong>remember</strong> what they study.
-            AI finds gaps, fixes them, and helps you master anything.
+            {t('landing.cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/signup" className="btn-primary text-lg px-10 py-4">
-              GET STARTED — IT'S FREE
+              {t('landing.cta.cta').toUpperCase()}
             </Link>
           </div>
         </div>
@@ -639,7 +640,7 @@ function Landing() {
           <span className="text-lg font-extrabold text-brand-500">floraquiz</span>
         </div>
         <p className="text-slate font-semibold text-sm">
-          Made with AI. Built for students.
+          {t('landing.footer')}
         </p>
       </footer>
     </div>

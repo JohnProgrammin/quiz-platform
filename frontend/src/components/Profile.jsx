@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import SubscriptionManager from './SubscriptionManager';
 import BillingHistory from './BillingHistory';
@@ -6,6 +7,7 @@ import { getProfile, updateProfile } from '../api';
 import { User, Mail, FileText, Loader } from 'lucide-react';
 
 function Profile({ user, setUser, onLogout }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',

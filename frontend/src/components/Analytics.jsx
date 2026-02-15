@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import { SkeletonAnalytics } from './Skeleton';
 import { getAllAttempts, getQuizzes, getProfile } from '../api';
 import { BarChart3, TrendingUp, Target, Zap, Calendar, Award, Clock } from 'lucide-react';
 
 function Analytics({ user, onLogout }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [attempts, setAttempts] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
@@ -138,8 +140,8 @@ function Analytics({ user, onLogout }) {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-ink">Your Learning Analytics</h1>
-          <p className="text-slate font-semibold mt-2">Track your progress and identify areas for improvement</p>
+          <h1 className="text-3xl font-extrabold text-ink">{t('analytics.title')}</h1>
+          <p className="text-slate font-semibold mt-2">{t('analytics.subtitle')}</p>
         </div>
 
         {/* Key Stats Grid */}
@@ -148,7 +150,7 @@ function Analytics({ user, onLogout }) {
           <div className={`card p-6 border-2 ${perfLevel.border}`}>
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-sm font-semibold text-slate mb-1">Average Score</p>
+                <p className="text-sm font-semibold text-slate mb-1">{t('analytics.averageScore')}</p>
                 <p className={`text-4xl font-black ${perfLevel.color}`}>{stats.averageScore}%</p>
               </div>
               <div className={`w-12 h-12 rounded-2xl ${perfLevel.bg} flex items-center justify-center`}>
@@ -162,14 +164,14 @@ function Analytics({ user, onLogout }) {
           <div className="card p-6 border-2 border-green-500 bg-green-50/30">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-sm font-semibold text-slate mb-1">Best Score</p>
+                <p className="text-sm font-semibold text-slate mb-1">{t('analytics.bestScore')}</p>
                 <p className="text-4xl font-black text-green-500">{stats.bestScore}%</p>
               </div>
               <div className="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center">
                 <Award className="w-6 h-6 text-green-500" />
               </div>
             </div>
-            <p className="text-xs font-semibold text-green-600">Peak Performance</p>
+            <p className="text-xs font-semibold text-green-600">{t('analytics.peakPerformance')}</p>
           </div>
 
           {/* Streak */}

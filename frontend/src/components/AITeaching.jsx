@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import FeatureGate from './FeatureGate';
 import UpgradePrompt from './UpgradePrompt';
@@ -66,6 +67,7 @@ const CopyButton = ({ text }) => {
  * Main AI Teaching Chat Component
  */
 function AITeaching({ user, onLogout }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isPremium } = useSubscription();
   const [sessions, setSessions] = useState([]);
