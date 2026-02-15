@@ -862,11 +862,13 @@ app.get('/api/v1/subscription/history', authenticateToken, async (req, res) => {
 const notesRoutes = require('./routes/notes.routes');
 const quizRoutes = require('./routes/quiz.routes');
 const teachingRoutes = require('./routes/teaching.routes');
+const couponRoutes = require('./routes/coupon.routes');
 
 // Register routes
 app.use('/api/v1/notes', notesRoutes);
 app.use('/api/v1/quiz', quizRoutes);
 app.use('/api/v1/teaching', teachingRoutes);
+app.use('/api/v1/coupons', couponRoutes);
 
 // ============================================
 // WEBHOOK ROUTES
