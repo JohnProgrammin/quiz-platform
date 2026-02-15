@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import UpgradePrompt from './UpgradePrompt';
+import UpgradeQuotaModal from './UpgradeQuotaModal';
 import { uploadNote, getNotes, deleteNote, generateQuiz } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { Upload, FileText, Trash2, Sparkles, Loader, Lock } from 'lucide-react';
@@ -17,6 +18,8 @@ function Notes({ user, onLogout }) {
   const [generatingQuiz, setGeneratingQuiz] = useState(null);
   const [uploadMessage, setUploadMessage] = useState('');
   const [questionCount, setQuestionCount] = useState(15);
+  const [showQuotaModal, setShowQuotaModal] = useState(false);
+  const [quotaError, setQuotaError] = useState(null); // { type: 'notes'|'quizzes', limit, used }
 
   // Tier-based limits
   const isFree = tier === 'free';
@@ -67,6 +70,18 @@ function Notes({ user, onLogout }) {
       loadNotes();
       e.target.value = '';
     } catch (error) {
+      // Handle quota limit (429 status)
+      if (error.response?.status === 429) {
+        const data = error.response.data;
+        setQuotaError({
+          type: 'notes',
+          limit: data.limit || 3,
+          used: data.used || notes.length,
+        });
+        setShowQuotaModal(true);
+        return;
+      }
+
       const errorMsg = error.response?.data?.error || error.response?.data?.details || error.message || 'Unknown error';
       console.error('[Notes] Upload failed:', {
         status: error.response?.status,
@@ -102,6 +117,19 @@ function Notes({ user, onLogout }) {
       // Navigate to new quiz (always a fresh one with unique ID)
       navigate(`/quiz/${response.data.id}`);
     } catch (error) {
+      // Handle quota limit (429 status)
+      if (error.response?.status === 429) {
+        const data = error.response.data;
+        setQuotaError({
+          type: 'quizzes',
+          limit: data.limit || 5,
+          used: data.used || 5,
+        });
+        setShowQuotaModal(true);
+        setGeneratingQuiz(null);
+        return;
+      }
+
       const errorMsg = error.response?.data?.error || error.message || 'Unknown error';
       setUploadMessage('Error generating quiz: ' + errorMsg);
       setGeneratingQuiz(null);
@@ -272,6 +300,16 @@ function Notes({ user, onLogout }) {
           )}
         </div>
       </div>
+
+      {/* Quota Limit Modal */}
+      {showQuotaModal && quotaError && (
+        <UpgradeQuotaModal
+          type={quotaError.type}
+          limit={quotaError.limit}
+          used={quotaError.used}
+          onClose={() => setShowQuotaModal(false)}
+        />
+      )}
     </div>
   );
 }

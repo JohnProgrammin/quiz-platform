@@ -162,5 +162,14 @@ export const getBillingHistory = () => api.get('/v1/subscription/history');
 export const redeemCoupon = (code) => api.post('/v1/coupons/redeem', { code });
 export const getTrialStatus = () => api.get('/v1/coupons/trial-status');
 
+// ============================================
+// QUOTA ENFORCEMENT NOTES
+// ============================================
+// Free user quotas are enforced via middleware:
+// - Quiz generation: 5 per month (checkQuizQuota)
+// - Note uploads: 3 total (checkNoteQuota)
+// When exceeded, endpoints return 429 status with error details.
+// Frontend components handle 429 errors and show UpgradeQuotaModal.
+
 export default api;
 // Force rebuild timestamp: Fri, Feb 13, 2026 10:40:26 AM
