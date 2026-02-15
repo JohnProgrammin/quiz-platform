@@ -27,7 +27,7 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-surface flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
+          <div className="max-w-md w-full bg-white rounded-2xl shadow-sm p-8">
             <div className="flex justify-center mb-4">
               <AlertTriangle className="w-16 h-16 text-danger" />
             </div>
@@ -51,7 +51,7 @@ class ErrorBoundary extends React.Component {
             <div className="flex gap-3">
               <button
                 onClick={() => window.location.reload()}
-                className="flex-1 px-4 py-2 bg-brand-500 text-white font-bold rounded-lg hover:bg-brand-600 transition-colors"
+                className= disabled:opacity-50"flex-1 px-4 py-2 bg-brand-500 text-white font-bold rounded-lg hover:bg-brand-600 transition-colors"
               >
                 Refresh Page
               </button>

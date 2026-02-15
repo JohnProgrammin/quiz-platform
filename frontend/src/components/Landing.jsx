@@ -312,7 +312,7 @@ function Landing() {
               {/* Glow backdrop */}
               <div className="absolute -inset-4 bg-brand-400/5 rounded-3xl blur-2xl -z-10" />
 
-              <div className="card p-6 sm:p-8 shadow-2xl border border-border/50 bg-white">
+              <div className="card p-6 sm:p-8 shadow-sm border border-border/50 bg-white">
                 {/* Browser-like header */}
                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border/40">
                   <div className="flex gap-2">
@@ -345,7 +345,7 @@ function Landing() {
                           : 'opacity-0 pointer-events-none'
                       } ${
                         demoPhase === 3 && i === 1
-                          ? 'border-brand-500 bg-blue-50 text-brand-600 demo-correct shadow-xl'
+                          ? 'border-brand-500 bg-blue-50 text-brand-600 demo-correct shadow-sm'
                           : 'border-border/60 bg-white hover:bg-surface text-slate'
                       }`}
                       style={{
@@ -355,7 +355,7 @@ function Landing() {
                       <span
                         className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs transition-all flex-shrink-0 ${
                           demoPhase === 3 && i === 1
-                            ? 'bg-brand-500 text-white shadow-lg'
+                            ? 'bg-brand-500 text-white shadow-sm'
                             : 'bg-slate-100 text-slate-600'
                         }`}
                       >
@@ -389,7 +389,7 @@ function Landing() {
                 {showBadge && (
                   <div className="flex gap-3 items-center">
                     <div
-                      className="demo-badge inline-flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg"
+                      className= disabled:opacity-50"demo-badge inline-flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-sm"
                     >
                       <CheckCircle className="w-4 h-4" />
                       <span>Correct! +10 points</span>
@@ -421,7 +421,7 @@ function Landing() {
               <div
                 key={i}
                 ref={setFeatureRef(i)}
-                className={`reveal-scale ${visibleFeatures.has(i) ? 'visible' : ''} card p-8 hover:shadow-lg transition-shadow`}
+                className={`reveal-scale ${visibleFeatures.has(i) ? 'visible' : ''} card p-8 hover:shadow-sm transition-shadow`}
               >
                 <div className={`w-14 h-14 rounded-2xl ${feature.bg} flex items-center justify-center mb-5 ${feature.color}`}>
                   {feature.icon}
@@ -490,14 +490,14 @@ function Landing() {
               <div
                 key={i}
                 ref={setPricingRef(i)}
-                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} card p-8 transition-all hover:shadow-xl ${
-                  tier.highlighted ? 'md:scale-105 md:ring-2 md:ring-brand-500 shadow-xl' : ''
+                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} card p-8 transition-all hover:shadow-sm ${
+                  tier.highlighted ? 'md:scale-105 md:ring-2 md:ring-brand-500 shadow-sm' : ''
                 }`}
               >
                 {/* Badge */}
                 {tier.badge && (
                   <div className="flex justify-center mb-4">
-                    <div className="inline-flex items-center gap-1 bg-brand-500 text-white px-3 py-1 rounded-full text-xs font-black">
+                    <div className= disabled:opacity-50"inline-flex items-center gap-1 bg-brand-500 text-white px-3 py-1 rounded-full text-xs font-black">
                       ⭐ {tier.badge}
                     </div>
                   </div>
@@ -535,7 +535,7 @@ function Landing() {
                   to={tier.href}
                   className={`block text-center font-bold py-3 px-6 rounded-xl transition-all ${
                     tier.highlighted
-                      ? 'bg-brand-500 text-white hover:shadow-lg'
+                      ? 'bg-brand-500 text-white hover:shadow-sm'
                       : 'bg-surface border-2 border-border text-ink hover:bg-slate hover:text-white'
                   }`}
                 >
@@ -615,7 +615,7 @@ function Landing() {
           ref={ctaRef}
           className={`reveal-scale ${ctaVisible ? 'visible' : ''} max-w-3xl mx-auto text-center`}
         >
-          <div className="w-20 h-20 rounded-full bg-brand-500 flex items-center justify-center mx-auto mb-6">
+          <div className= disabled:opacity-50"w-20 h-20 rounded-full bg-brand-500 flex items-center justify-center mx-auto mb-6">
             <Zap className="w-10 h-10 text-white" />
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-ink mb-4">

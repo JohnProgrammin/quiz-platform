@@ -69,7 +69,7 @@ function Dashboard({ user, onLogout }) {
       <div className="min-h-screen bg-gray-50">
         <Navbar user={user} onLogout={onLogout} />
         <div className="flex flex-col items-center justify-center h-96">
-          <div className="w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center animate-bounce shadow-lg">
+          <div className= disabled:opacity-50"w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center animate-bounce shadow-sm">
             <span className="text-2xl font-black text-white">Q</span>
           </div>
           <p className="text-slate font-bold mt-6">{t('common.loading')}</p>
@@ -110,7 +110,7 @@ function Dashboard({ user, onLogout }) {
           {statCards.map((stat) => (
             <div
               key={stat.label}
-              className="bg-white rounded-2xl border-2 border-gray-200 p-8 hover:shadow-lg hover:border-brand-300 transition-all duration-300 hover:-translate-y-1"
+              className="bg-white rounded-2xl border-2 border-gray-200 p-8 hover:shadow-sm hover:border-brand-300 transition-all duration-300 hover:-translate-y-1"
             >
               <div className={`w-14 h-14 rounded-2xl bg-brand-500 flex items-center justify-center mb-4 ${stat.color}`}>
                 {stat.icon}
@@ -145,7 +145,7 @@ function Dashboard({ user, onLogout }) {
               </p>
               <button
                 onClick={() => navigate('/notes')}
-                className="inline-flex items-center justify-center px-8 py-4 bg-brand-500 text-white font-black rounded-2xl hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                className= disabled:opacity-50"inline-flex items-center justify-center px-8 py-4 bg-brand-500 text-white font-black rounded-2xl hover:shadow-sm hover:-translate-y-1 transition-all duration-300"
               >
                 {t('common.submit').toUpperCase()}
               </button>

@@ -32,7 +32,7 @@ function LanguageSwitcher() {
         <Globe className="w-5 h-5 text-gray-700" />
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-2 card p-2 min-w-[200px] shadow-xl z-50 ltr:right-0 rtl:left-0">
+        <div className="absolute right-0 mt-2 card p-2 min-w-[200px] shadow-sm z-50 ltr:right-0 rtl:left-0">
           {languages.map((lang) => (
             <button
               key={lang.code}

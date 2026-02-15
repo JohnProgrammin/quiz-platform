@@ -64,7 +64,7 @@ function PaymentCallback() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full">
+      <div className="bg-white rounded-2xl shadow-sm p-8 max-w-md w-full">
         {status === 'verifying' && (
           <div className="text-center">
             <div className="mb-6 flex justify-center">
@@ -110,7 +110,7 @@ function PaymentCallback() {
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => navigate('/pricing')}
-                className="w-full px-4 py-2 bg-brand-500 text-white font-semibold rounded-lg hover:bg-brand-600 transition-colors"
+                className= disabled:opacity-50"w-full px-4 py-2 bg-brand-500 text-white font-semibold rounded-lg hover:bg-brand-600 transition-colors"
               >
                 Try Again
               </button>
@@ -136,7 +136,7 @@ function PaymentCallback() {
             </p>
             <button
               onClick={() => navigate('/dashboard')}
-              className="w-full px-4 py-2 bg-brand-500 text-white font-semibold rounded-lg hover:bg-brand-600 transition-colors"
+              className= disabled:opacity-50"w-full px-4 py-2 bg-brand-500 text-white font-semibold rounded-lg hover:bg-brand-600 transition-colors"
             >
               Go to Dashboard
             </button>

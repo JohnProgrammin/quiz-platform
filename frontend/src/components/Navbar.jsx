@@ -64,7 +64,7 @@ function Navbar({ user, onLogout }) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/dashboard" className="flex items-center gap-3 flex-shrink-0 group">
-              <div className="w-10 h-10 rounded-lg bg-brand-500 flex items-center justify-center group-hover:shadow-md transition-all">
+              <div className= disabled:opacity-50"w-10 h-10 rounded-lg bg-brand-500 flex items-center justify-center group-hover:shadow-md transition-all">
                 <span className="text-lg font-black text-white">Q</span>
               </div>
               <span className="text-2xl font-black text-brand-500 tracking-tight hidden sm:inline">floraquiz</span>
@@ -105,7 +105,7 @@ function Navbar({ user, onLogout }) {
                     : 'text-slate hover:text-ink hover:bg-gray-100'
                 }`}
               >
-                <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0 text-white">
+                <div className= disabled:opacity-50"w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0 text-white">
                   <span className="text-xs font-black">{user.username[0].toUpperCase()}</span>
                 </div>
                 <span className="max-w-[100px] truncate">{user.username}</span>
@@ -120,7 +120,7 @@ function Navbar({ user, onLogout }) {
 
               <button
                 onClick={onLogout}
-                className="p-2 text-slate hover:text-ink hover:bg-red-50 rounded-xl transition-all duration-200"
+                className="p-2 text-slate hover:text-ink hover:bg-red-50 rounded-lg transition-all duration-200"
                 title="Log out"
               >
                 <LogOut className="w-5 h-5" />
@@ -154,7 +154,7 @@ function Navbar({ user, onLogout }) {
           {/* User info */}
           <div className="p-6 border-b border-gray-200 bg-white">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0 text-white shadow-sm">
+              <div className= disabled:opacity-50"w-12 h-12 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0 text-white shadow-sm">
                 <span className="text-base font-black">{user.username[0].toUpperCase()}</span>
               </div>
               <div className="min-w-0">
@@ -211,7 +211,7 @@ function Navbar({ user, onLogout }) {
             </div>
             <button
               onClick={onLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-danger hover:bg-red-50 transition-all duration-200"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-bold text-danger hover:bg-red-50 transition-all duration-200"
             >
               <LogOut className="w-5 h-5" />
               <span>Log out</span>

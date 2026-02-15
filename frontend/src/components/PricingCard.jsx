@@ -36,7 +36,7 @@ function PricingCard({ plan, onSelect, isPopular = false }) {
     <div className={`card relative ${isPopular ? 'ring-4 ring-brand-500 scale-105' : ''}`}>
       {isPopular && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-          <span className="bg-brand-500 text-white text-xs font-black px-4 py-1 rounded-full uppercase tracking-wide">
+          <span className= disabled:opacity-50"bg-brand-500 text-white text-xs font-black px-4 py-1 rounded-full uppercase tracking-wide">
             Most Popular
           </span>
         </div>

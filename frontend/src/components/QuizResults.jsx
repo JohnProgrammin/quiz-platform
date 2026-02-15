@@ -249,7 +249,7 @@ function QuizResults({ user, onLogout }) {
 
                       let classes = 'p-3 rounded-xl border-2 flex items-center gap-3 text-sm font-bold ';
                       if (isCorrectAnswer) {
-                        classes += 'bg-green-50 border-macaw text-brand-500';
+                        classes += 'bg-green-50 border-brand-500 text-brand-500';
                       } else if (isUserAnswer && !isCorrect) {
                         classes += 'bg-red-50 border-danger text-danger';
                       } else {

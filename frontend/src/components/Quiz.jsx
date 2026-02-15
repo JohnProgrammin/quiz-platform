@@ -125,7 +125,7 @@ function Quiz({ user, onLogout }) {
       <div className="min-h-screen bg-gray-50">
         <Navbar user={user} onLogout={onLogout} />
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full p-10 max-h-[80vh] overflow-y-auto border border-gray-300 shadow-2xl">
+          <div className="bg-white rounded-lg max-w-2xl w-full p-10 max-h-[80vh] overflow-y-auto border border-gray-300 shadow-sm">
             <div className="flex items-center gap-3 mb-8">
               <div className="w-12 h-12 rounded-lg bg-brand-50 flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-brand-500" />
@@ -153,7 +153,7 @@ function Quiz({ user, onLogout }) {
 
             <button
               onClick={() => setShowTeaching(false)}
-              className="w-full inline-flex items-center justify-center px-8 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
+              className= disabled:opacity-50"w-full inline-flex items-center justify-center px-8 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
             >
               Start Quiz →
             </button>
@@ -187,7 +187,7 @@ function Quiz({ user, onLogout }) {
           </div>
           <div className="w-full bg-gray-300 rounded-full h-3 overflow-hidden">
             <div
-              className="h-full bg-brand-500 rounded-full transition-all duration-300"
+              className= disabled:opacity-50"h-full bg-brand-500 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -264,14 +264,14 @@ function Quiz({ user, onLogout }) {
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60"
+              className= disabled:opacity-50"flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60"
             >
               {submitting ? 'Submitting...' : 'Submit Quiz'}
             </button>
           ) : (
             <button
               onClick={handleNext}
-              className="flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
+              className= disabled:opacity-50"flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
             >
               Next →
             </button>

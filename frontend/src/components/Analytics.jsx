@@ -202,17 +202,17 @@ function Analytics({ user, onLogout }) {
           </div>
 
           {/* Total Quizzes */}
-          <div className="card p-6 border-2 border-accent-500">
+          <div className="card p-6 border-2 border-brand-500">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-sm font-semibold text-slate mb-1">Quizzes Created</p>
-                <p className="text-4xl font-black text-accent-500">{stats.totalQuizzes}</p>
+                <p className="text-4xl font-black text-brand-500">{stats.totalQuizzes}</p>
               </div>
-              <div className="w-12 h-12 rounded-2xl bg-accent-50 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-accent-500" />
+              <div className="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-brand-500" />
               </div>
             </div>
-            <p className="text-xs font-semibold text-accent-600">From Notes</p>
+            <p className="text-xs font-semibold text-brand-600">From Notes</p>
           </div>
 
           {/* Study Time */}
@@ -239,7 +239,7 @@ function Analytics({ user, onLogout }) {
                 <div className="w-full bg-slate-200/50 rounded-t-lg overflow-hidden flex-1 min-h-12 relative">
                   {day.score > 0 && (
                     <div
-                      className="w-full bg-brand-500 transition-all duration-500 ease-out"
+                      className= disabled:opacity-50"w-full bg-brand-500 transition-all duration-500 ease-out"
                       style={{
                         height: `${(day.score / 100) * 100}%`,
                       }}
