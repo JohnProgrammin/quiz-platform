@@ -119,6 +119,18 @@ function Landing() {
     };
   }, []);
 
+  // Scroll listener for header behavior (Duolingo-style)
+  // Show header CTA after user scrolls past hero section
+  useEffect(() => {
+    const handleScroll = () => {
+      // Trigger header when scrolled more than 400px (past hero CTAs)
+      setScrolled(window.scrollY > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const features = [
     {
       icon: <Gift className="w-7 h-7" />,
@@ -255,7 +267,7 @@ function Landing() {
 
   return (
     <div className="min-h-screen bg-white overflow-hidden">
-      {/* ── Navbar ── */}
+      {/* ── Navbar (Duolingo-style responsive) ── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? 'bg-white/95 backdrop-blur-md border-b-2 border-border shadow-sm' : 'bg-transparent'
       }`}>
@@ -265,7 +277,8 @@ function Landing() {
               <span className="text-2xl font-extrabold text-brand-500 tracking-tight">floraquiz</span>
             </Link>
 
-            <div className="flex items-center gap-3">
+            {/* Desktop: Always show both buttons */}
+            <div className="hidden md:flex items-center gap-3">
               <Link
                 to="/login"
                 className="px-5 py-2 font-bold text-ink hover:text-brand-500 transition-colors text-sm"
@@ -276,6 +289,15 @@ function Landing() {
                 {t('landing.nav.getStarted').toUpperCase()}
               </Link>
             </div>
+
+            {/* Mobile: Only show GET STARTED after scroll (Duolingo pattern) */}
+            {scrolled && (
+              <div className="md:hidden">
+                <Link to="/signup" className="btn-primary text-sm py-2 px-5">
+                  {t('landing.nav.getStarted').toUpperCase()}
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </nav>
