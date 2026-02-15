@@ -8,14 +8,13 @@ const https = require('https');
 
 class CurrencyService {
   constructor() {
-    // Comprehensive currency exchange rates as of Feb 2026
-    // Base: USD = 1.00
+    // Fallback rates (will be updated with real-time data)
     this.exchangeRates = {
       USD: { rate: 1.00, symbol: '$', name: 'US Dollar' },
       GBP: { rate: 0.79, symbol: '£', name: 'British Pound' },
       EUR: { rate: 0.92, symbol: '€', name: 'Euro' },
       INR: { rate: 83.12, symbol: '₹', name: 'Indian Rupee' },
-      NGN: { rate: 1600, symbol: '₦', name: 'Nigerian Naira' },
+      NGN: { rate: 1353.57, symbol: '₦', name: 'Nigerian Naira' },
       KES: { rate: 156, symbol: 'KES ', name: 'Kenyan Shilling' },
       ZAR: { rate: 18.50, symbol: 'R', name: 'South African Rand' },
       AUD: { rate: 1.53, symbol: 'A$', name: 'Australian Dollar' },
@@ -41,11 +40,76 @@ class CurrencyService {
       CH: 'CHF', SE: 'SEK', NZ: 'NZD', SG: 'SGD',
       HK: 'HKD', TH: 'THB', PK: 'PKR', DE: 'EUR',
       FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR',
-      // Add more countries as needed
     };
 
     // Paystack supported currencies (can actually accept payment)
     this.paystackCurrencies = ['NGN', 'USD', 'GBP', 'EUR', 'KES', 'GHS'];
+
+    // Real-time rate tracking
+    this.lastRateUpdate = new Date();
+    this.rateUpdateInterval = 3600000; // Update every 1 hour
+
+    // Start fetching real-time rates immediately
+    this.fetchRealtimeRates();
+  }
+
+  /**
+   * Fetch real-time exchange rates from free API
+   * Uses exchangerate-api.com free tier (1500 requests/month = ~50/day)
+   */
+  async fetchRealtimeRates() {
+    try {
+      return new Promise((resolve) => {
+        const options = {
+          hostname: 'api.exchangerate-api.com',
+          path: '/v4/latest/USD',
+          method: 'GET',
+          timeout: 8000,
+        };
+
+        const req = https.request(options, (res) => {
+          let data = '';
+          res.on('data', chunk => data += chunk);
+          res.on('end', () => {
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.rates) {
+                // Update rates from API
+                Object.keys(this.exchangeRates).forEach(currency => {
+                  if (parsed.rates[currency]) {
+                    this.exchangeRates[currency].rate = parseFloat(parsed.rates[currency].toFixed(2));
+                  }
+                });
+                this.lastRateUpdate = new Date();
+                console.log('✅ Exchange rates updated from API at', this.lastRateUpdate.toISOString());
+              }
+              resolve();
+            } catch (e) {
+              console.warn('⚠️  Failed to parse exchange rate API response');
+              resolve();
+            }
+          });
+        });
+
+        req.on('timeout', () => {
+          req.destroy();
+          console.warn('⚠️  Exchange rate API timeout, using cached rates');
+          resolve();
+        });
+
+        req.on('error', (err) => {
+          console.warn('⚠️  Exchange rate API error:', err.message);
+          resolve(); // Fail silently, use cached rates
+        });
+
+        req.end();
+      });
+    } catch (e) {
+      console.warn('⚠️  Failed to fetch exchange rates:', e.message);
+    }
+
+    // Schedule next update
+    setTimeout(() => this.fetchRealtimeRates(), this.rateUpdateInterval);
   }
 
   /**
