@@ -36,3 +36,4 @@ logs/
 npm-debug.log*
 
 .vercel
+dist/
