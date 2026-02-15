@@ -3,7 +3,7 @@
  * Handles XP awards, level progression, streaks, and achievements
  */
 
-const sql = require('../db');
+const { sql } = require('../config/database.serverless');
 
 // XP reward constants
 const XP_REWARDS = {

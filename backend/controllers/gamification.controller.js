@@ -3,6 +3,7 @@
  * Handles user stats, leaderboard, and achievement endpoints
  */
 
+const { sql } = require('../config/database.serverless');
 const gamificationService = require('../services/gamification.service');
 
 /**
@@ -61,8 +62,6 @@ exports.getLeaderboard = async (req, res) => {
  */
 exports.getAchievements = async (req, res) => {
   try {
-    const sql = require('../db');
-
     const achievements = await sql`
       SELECT
         id,
