@@ -15,7 +15,7 @@ class CurrencyService {
       GBP: { rate: 0.79, symbol: '£', name: 'British Pound' },
       EUR: { rate: 0.92, symbol: '€', name: 'Euro' },
       INR: { rate: 83.12, symbol: '₹', name: 'Indian Rupee' },
-      NGN: { rate: 1550, symbol: '₦', name: 'Nigerian Naira' },
+      NGN: { rate: 1600, symbol: '₦', name: 'Nigerian Naira' },
       KES: { rate: 156, symbol: 'KES ', name: 'Kenyan Shilling' },
       ZAR: { rate: 18.50, symbol: 'R', name: 'South African Rand' },
       AUD: { rate: 1.53, symbol: 'A$', name: 'Australian Dollar' },

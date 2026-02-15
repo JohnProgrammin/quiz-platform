@@ -81,7 +81,7 @@ const createTransaction = async (params) => {
   try {
     const data = {
       email: params.email,
-      amount: params.amount * 100, // Convert to kobo
+      amount: params.amount, // Already in minor units from currencyService.convertPrice()
       metadata: {
         userId: params.userId,
         plan: params.plan,
