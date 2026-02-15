@@ -110,7 +110,7 @@ function PaymentCallback() {
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => navigate('/pricing')}
-                className= disabled:opacity-50"w-full px-4 py-2 bg-brand-500 text-white font-semibold rounded-lg hover:bg-brand-600 transition-colors"
+                className="w-full px-4 py-2 bg-brand-500 text-white font-semibold rounded-lg hover:bg-brand-600 transition-colors"
               >
                 Try Again
               </button>
@@ -136,7 +136,7 @@ function PaymentCallback() {
             </p>
             <button
               onClick={() => navigate('/dashboard')}
-              className= disabled:opacity-50"w-full px-4 py-2 bg-brand-500 text-white font-semibold rounded-lg hover:bg-brand-600 transition-colors"
+              className="w-full px-4 py-2 bg-brand-500 text-white font-semibold rounded-lg hover:bg-brand-600 transition-colors"
             >
               Go to Dashboard
             </button>

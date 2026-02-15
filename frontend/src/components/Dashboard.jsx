@@ -69,7 +69,7 @@ function Dashboard({ user, onLogout }) {
       <div className="min-h-screen bg-gray-50">
         <Navbar user={user} onLogout={onLogout} />
         <div className="flex flex-col items-center justify-center h-96">
-          <div className= disabled:opacity-50"w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center animate-bounce shadow-sm">
+          <div className="w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center animate-bounce shadow-sm">
             <span className="text-2xl font-black text-white">Q</span>
           </div>
           <p className="text-slate font-bold mt-6">{t('common.loading')}</p>
@@ -145,7 +145,7 @@ function Dashboard({ user, onLogout }) {
               </p>
               <button
                 onClick={() => navigate('/notes')}
-                className= disabled:opacity-50"inline-flex items-center justify-center px-8 py-4 bg-brand-500 text-white font-black rounded-2xl hover:shadow-sm hover:-translate-y-1 transition-all duration-300"
+                className="inline-flex items-center justify-center px-6 py-3 bg-brand-500 text-white font-black rounded-lg hover:shadow-sm hover:-translate-y-1 transition-all duration-300 disabled:opacity-50"
               >
                 {t('common.submit').toUpperCase()}
               </button>

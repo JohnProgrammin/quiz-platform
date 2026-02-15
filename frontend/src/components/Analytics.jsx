@@ -239,7 +239,7 @@ function Analytics({ user, onLogout }) {
                 <div className="w-full bg-slate-200/50 rounded-t-lg overflow-hidden flex-1 min-h-12 relative">
                   {day.score > 0 && (
                     <div
-                      className= disabled:opacity-50"w-full bg-brand-500 transition-all duration-500 ease-out"
+                      className="w-full bg-brand-500 transition-all duration-500 ease-out"
                       style={{
                         height: `${(day.score / 100) * 100}%`,
                       }}

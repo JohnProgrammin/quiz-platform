@@ -389,7 +389,7 @@ function Landing() {
                 {showBadge && (
                   <div className="flex gap-3 items-center">
                     <div
-                      className= disabled:opacity-50"demo-badge inline-flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-sm"
+                      className="demo-badge inline-flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-sm"
                     >
                       <CheckCircle className="w-4 h-4" />
                       <span>Correct! +10 points</span>
@@ -497,7 +497,7 @@ function Landing() {
                 {/* Badge */}
                 {tier.badge && (
                   <div className="flex justify-center mb-4">
-                    <div className= disabled:opacity-50"inline-flex items-center gap-1 bg-brand-500 text-white px-3 py-1 rounded-full text-xs font-black">
+                    <div className="inline-flex items-center gap-1 bg-brand-500 text-white px-3 py-1 rounded-full text-xs font-black">
                       ⭐ {tier.badge}
                     </div>
                   </div>
@@ -615,7 +615,7 @@ function Landing() {
           ref={ctaRef}
           className={`reveal-scale ${ctaVisible ? 'visible' : ''} max-w-3xl mx-auto text-center`}
         >
-          <div className= disabled:opacity-50"w-20 h-20 rounded-full bg-brand-500 flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 rounded-full bg-brand-500 flex items-center justify-center mx-auto mb-6">
             <Zap className="w-10 h-10 text-white" />
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-ink mb-4">

@@ -32,7 +32,7 @@ function Login({ onLogin }) {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="border-b border-gray-200 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center">
-          <div className= disabled:opacity-50"w-10 h-10 rounded-lg bg-brand-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-brand-500 flex items-center justify-center">
             <span className="text-lg font-black text-white">Q</span>
           </div>
           <span className="ml-3 text-2xl font-black text-ink tracking-tight hidden sm:inline">floraquiz</span>
@@ -103,7 +103,7 @@ function Login({ onLogin }) {
             <button
               type="submit"
               disabled={loading}
-              className= disabled:opacity-50"w-full px-6 py-3 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-lg"
+              className="w-full px-6 py-3 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-lg"
               aria-busy={loading}
             >
               {loading ? 'LOGGING IN...' : 'LOG IN'}

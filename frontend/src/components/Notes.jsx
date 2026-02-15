@@ -140,7 +140,7 @@ function Notes({ user, onLogout }) {
               </div>
               <button
                 onClick={() => navigate('/pricing')}
-                className= disabled:opacity-50"inline-flex items-center px-6 py-3 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors whitespace-nowrap"
+                className="inline-flex items-center px-6 py-3 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors whitespace-nowrap"
               >
                 {t('subscription.upgrade')}
               </button>

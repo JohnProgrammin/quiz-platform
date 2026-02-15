@@ -153,7 +153,7 @@ function Quiz({ user, onLogout }) {
 
             <button
               onClick={() => setShowTeaching(false)}
-              className= disabled:opacity-50"w-full inline-flex items-center justify-center px-8 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
+              className="w-full inline-flex items-center justify-center px-8 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
             >
               Start Quiz →
             </button>
@@ -187,7 +187,7 @@ function Quiz({ user, onLogout }) {
           </div>
           <div className="w-full bg-gray-300 rounded-full h-3 overflow-hidden">
             <div
-              className= disabled:opacity-50"h-full bg-brand-500 rounded-full transition-all duration-300"
+              className="h-full bg-brand-500 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -264,14 +264,14 @@ function Quiz({ user, onLogout }) {
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className= disabled:opacity-50"flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60"
+              className="flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60"
             >
               {submitting ? 'Submitting...' : 'Submit Quiz'}
             </button>
           ) : (
             <button
               onClick={handleNext}
-              className= disabled:opacity-50"flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
+              className="flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
             >
               Next →
             </button>
