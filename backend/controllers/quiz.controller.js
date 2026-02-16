@@ -141,9 +141,12 @@ exports.getQuiz = async (req, res) => {
         ...quiz,
         questions: questions.map((q) => ({
           id: q.id,
-          text: q.text || q.question, // Handle both field names (text or question)
-          type: q.type,
-          options: q.type === 'mcq' ? q.options : undefined,
+          question: q.question || q.text, // Normalize to 'question' field
+          text: q.text || q.question, // Also keep text for compatibility
+          type: q.type || 'mcq',
+          options: q.options || [],
+          correctAnswer: q.correctAnswer !== undefined ? q.correctAnswer : q.correct_answer,
+          explanation: q.explanation || '',
         })),
       },
     });
@@ -369,6 +372,7 @@ exports.getAttempts = async (req, res) => {
         score,
         total_questions,
         percentage,
+        answers,
         completed_at,
         time_spent_seconds
       FROM quiz_attempts
@@ -376,7 +380,20 @@ exports.getAttempts = async (req, res) => {
       ORDER BY completed_at DESC
     `;
 
-    res.json({ data: result });
+    // Ensure consistent field naming for frontend
+    const normalizedResults = result.map(attempt => ({
+      id: attempt.id,
+      quiz_id: attempt.quiz_id,
+      score: attempt.score,
+      total_questions: attempt.total_questions,
+      percentage: attempt.percentage || Math.round((attempt.score / attempt.total_questions) * 100),
+      answers: attempt.answers || [],
+      completed_at: attempt.completed_at,
+      completedAt: attempt.completed_at, // Alias for compatibility
+      time_spent_seconds: attempt.time_spent_seconds,
+    }));
+
+    res.json({ data: normalizedResults });
   } catch (error) {
     console.error('Get attempts error:', error);
     res.status(500).json({ error: 'Failed to get quiz attempts' });

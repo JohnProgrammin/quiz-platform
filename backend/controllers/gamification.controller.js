@@ -16,15 +16,19 @@ exports.getUserStats = async (req, res) => {
 
     const stats = await gamificationService.getUserStats(userId);
 
-    if (!stats) {
-      return res.status(404).json({
-        error: 'User gamification stats not found',
-      });
-    }
+    // Return default stats if user hasn't been initialized yet
+    const defaultStats = {
+      total_xp: 0,
+      level: 1,
+      current_streak: 0,
+      longest_streak: 0,
+      last_activity_date: null,
+      created_at: new Date(),
+    };
 
     res.json({
       success: true,
-      data: stats,
+      data: stats || defaultStats,
     });
   } catch (error) {
     console.error('Error fetching user stats:', error);

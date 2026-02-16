@@ -210,7 +210,7 @@ function Quiz({ user, onLogout }) {
         <div className="bg-white border border-gray-300 rounded-lg p-10 mb-8 shadow-sm">
           <p className="text-lg font-semibold text-slate mb-2">Question {currentQuestion + 1}</p>
           <h2 className="text-3xl font-black text-ink leading-tight">
-            {question.text || question.q}
+            {question.question || question.text || question.q}
           </h2>
         </div>
 
