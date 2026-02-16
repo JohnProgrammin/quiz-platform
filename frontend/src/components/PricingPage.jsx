@@ -10,6 +10,8 @@ function PricingPage({ user, onLogout }) {
   const [loading, setLoading] = useState(false);
   const [plans, setPlans] = useState([]);
   const [error, setError] = useState('');
+  const [selectedCurrency, setSelectedCurrency] = useState('');
+  const [detectedCurrency, setDetectedCurrency] = useState('');
 
   useEffect(() => {
     loadPlans();
@@ -53,14 +55,18 @@ function PricingPage({ user, onLogout }) {
         ],
       };
 
+      const currency = data.currency || 'USD';
+      setDetectedCurrency(currency);
+      setSelectedCurrency(currency);
+
       setPlans([
-        { tier: 'pro', ...proPlan, currency: data.currency || 'USD' },
-        { tier: 'premium', ...premiumPlan, currency: data.currency || 'USD' },
+        { tier: 'pro', ...proPlan, currency: currency },
+        { tier: 'premium', ...premiumPlan, currency: currency },
       ]);
 
       // Log detection info
       if (data.detected) {
-        console.log(`💱 Auto-detected currency: ${data.currency}`);
+        console.log(`💱 Auto-detected currency: ${currency}`);
       }
     } catch (err) {
       console.error('Error loading plans:', err);
@@ -91,6 +97,7 @@ function PricingPage({ user, onLogout }) {
     try {
       const response = await createCheckoutSession({
         plan: plan.tier,
+        currency: selectedCurrency,
       });
 
       // Redirect to Paystack Checkout
@@ -127,6 +134,36 @@ function PricingPage({ user, onLogout }) {
           <p className="text-xl font-semibold text-slate">
             Unlock unlimited learning potential with AI-powered quizzes
           </p>
+        </div>
+
+        {/* Currency Selector */}
+        <div className="mb-8 flex justify-center">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <label className="block text-sm font-bold text-slate mb-2">
+              💱 Select Currency
+            </label>
+            <select
+              value={selectedCurrency}
+              onChange={(e) => setSelectedCurrency(e.target.value)}
+              className="px-4 py-2 border-2 border-gray-200 rounded-lg font-semibold text-ink focus:outline-none focus:border-brand-500 transition-colors"
+            >
+              <option value="USD">🇺🇸 USD ($)</option>
+              <option value="NGN">🇳🇬 NGN (₦)</option>
+              <option value="GBP">🇬🇧 GBP (£)</option>
+              <option value="EUR">🇪🇺 EUR (€)</option>
+              <option value="INR">🇮🇳 INR (₹)</option>
+              <option value="KRW">🇰🇷 KRW (₩)</option>
+              <option value="JPY">🇯🇵 JPY (¥)</option>
+              <option value="CAD">🇨🇦 CAD ($)</option>
+              <option value="AUD">🇦🇺 AUD ($)</option>
+              <option value="ZAR">🇿🇦 ZAR (R)</option>
+            </select>
+            {detectedCurrency && selectedCurrency !== detectedCurrency && (
+              <p className="text-xs text-slate mt-2">
+                ℹ️ Auto-detected: {detectedCurrency}
+              </p>
+            )}
+          </div>
         </div>
 
         {error && (

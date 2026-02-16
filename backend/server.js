@@ -502,7 +502,7 @@ app.post('/api/v1/auth/logout', authenticateToken, (req, res) => {
  */
 app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) => {
   try {
-    const { plan } = req.body;
+    const { plan, currency } = req.body;
 
     if (!plan || !['pro', 'premium'].includes(plan)) {
       return res.status(400).json({ error: 'Valid plan required (pro or premium)' });
@@ -515,17 +515,26 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Detect user's currency from IP address
-    const clientIP = req.headers['x-forwarded-for']?.split(',')[0].trim() ||
-                     req.connection.remoteAddress ||
-                     req.socket.remoteAddress ||
-                     '127.0.0.1';
+    // Use provided currency or detect from IP
+    let userCurrency = currency;
+    if (!userCurrency) {
+      const clientIP = req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+                       req.connection.remoteAddress ||
+                       req.socket.remoteAddress ||
+                       '127.0.0.1';
 
-    const geoData = await currencyService.detectCountryFromIP(clientIP);
-    const userCurrency = geoData.currency || 'USD';
+      try {
+        const geoData = await currencyService.detectCountryFromIP(clientIP);
+        userCurrency = geoData.currency || 'USD';
+      } catch (geoErr) {
+        console.warn('⚠️ Geolocation detection failed, defaulting to USD:', geoErr.message);
+        userCurrency = 'USD';
+      }
+    }
 
     // Get payment data with proper currency conversion
     const paymentData = currencyService.getPaystackPaymentData(userCurrency, plan);
+    console.log('💳 Payment data prepared:', { currency: paymentData.currency, amount: paymentData.amount, displayPrice: paymentData.displayPrice });
 
     // Import Paystack config
     const { createTransaction } = require('./config/paystack.config');
@@ -545,10 +554,20 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
       },
     });
 
+    // Handle both possible response structures
+    const authUrl = transaction.data?.authorization_url || transaction.authorization_url;
+    const accessCode = transaction.data?.access_code || transaction.access_code;
+    const reference = transaction.data?.reference || transaction.reference;
+
+    if (!authUrl) {
+      console.error('❌ No authorization URL in Paystack response:', JSON.stringify(transaction, null, 2));
+      return res.status(500).json({ error: 'Failed to create payment session: No authorization URL' });
+    }
+
     res.json({
-      authorizationUrl: transaction.data.authorization_url,
-      accessCode: transaction.data.access_code,
-      reference: transaction.data.reference,
+      authorizationUrl: authUrl,
+      accessCode: accessCode,
+      reference: reference,
       paymentInfo: {
         amount: paymentData.amount,
         currency: paymentData.currency,
@@ -558,8 +577,12 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
       },
     });
   } catch (error) {
-    console.error('Paystack transaction error:', error);
-    res.status(500).json({ error: 'Failed to initiate payment' });
+    console.error('❌ Paystack transaction error:', error.message);
+    console.error('   Stack:', error.stack);
+    res.status(500).json({
+      error: 'Failed to initiate payment',
+      details: error.message
+    });
   }
 });
 
