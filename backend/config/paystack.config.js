@@ -79,13 +79,13 @@ const verifyWebhookSignature = (body, signature) => {
  */
 const createTransaction = async (params) => {
   try {
+    // If planId is provided, use Paystack subscription plan
     const data = {
       email: params.email,
-      amount: params.amount, // Already in minor units from currencyService.convertPrice()
-      currency: params.currency || 'NGN', // Currency code required by Paystack
+      plan: params.planId,  // Use Paystack Plan ID for subscriptions
       metadata: {
         userId: params.userId,
-        plan: params.plan,
+        plan: params.plan,  // Our internal plan name (pro/premium)
       },
       callback_url: params.callbackUrl,
     };

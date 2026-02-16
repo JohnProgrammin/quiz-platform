@@ -502,56 +502,40 @@ app.post('/api/v1/auth/logout', authenticateToken, (req, res) => {
  */
 app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) => {
   try {
-    const { plan, currency } = req.body;
+    const { plan } = req.body;
 
     if (!plan || !['pro', 'premium'].includes(plan)) {
       return res.status(400).json({ error: 'Valid plan required (pro or premium)' });
     }
 
-    // Get user email and IP for currency detection
+    // Get user
     const user = await sql`SELECT email FROM users WHERE id = ${req.user.id}`;
 
     if (!user[0]) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Use provided currency or detect from IP
-    let userCurrency = currency;
-    if (!userCurrency) {
-      const clientIP = req.headers['x-forwarded-for']?.split(',')[0].trim() ||
-                       req.connection.remoteAddress ||
-                       req.socket.remoteAddress ||
-                       '127.0.0.1';
+    // Paystack Plan IDs (Nigeria NGN pricing)
+    const paymentPlans = {
+      pro: 'PLN_pv67fcbied84ynz',      // ₦5,000/month
+      premium: 'PLN_pp48a20xxtez4ot',  // ₦10,000/month
+    };
 
-      try {
-        const geoData = await currencyService.detectCountryFromIP(clientIP);
-        userCurrency = geoData.currency || 'USD';
-      } catch (geoErr) {
-        console.warn('⚠️ Geolocation detection failed, defaulting to USD:', geoErr.message);
-        userCurrency = 'USD';
-      }
+    const planId = paymentPlans[plan];
+    if (!planId) {
+      return res.status(400).json({ error: 'Invalid plan' });
     }
-
-    // Get payment data with proper currency conversion
-    const paymentData = currencyService.getPaystackPaymentData(userCurrency, plan);
-    console.log('💳 Payment data prepared:', { currency: paymentData.currency, amount: paymentData.amount, displayPrice: paymentData.displayPrice });
 
     // Import Paystack config
     const { createTransaction } = require('./config/paystack.config');
 
-    // Create Paystack transaction with converted amount
+    // Create Paystack transaction with plan ID
     const transaction = await createTransaction({
       email: user[0].email,
-      amount: paymentData.amount, // Properly converted amount
-      currency: paymentData.currency, // Currency code for Paystack
+      planId: planId,  // Use Paystack Plan ID instead of amount
       plan: plan,
       userId: req.user.id,
       callbackUrl: `${process.env.FRONTEND_URL}/subscription/callback`,
-      metadata: {
-        userCurrency: paymentData.originalCurrency,
-        paystackCurrency: paymentData.currency,
-        conversionRate: paymentData.conversionRate,
-      },
     });
 
     // Handle both possible response structures

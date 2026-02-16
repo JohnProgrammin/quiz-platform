@@ -105,15 +105,15 @@ function PricingPage({ user, onLogout }) {
           {plans.map((plan) => (
             <div
               key={plan.tier}
-              className={`relative rounded-2xl transition-all ${
+              className={`relative rounded-2xl ${
                 plan.isPopular
-                  ? 'ring-2 ring-brand-500 shadow-2xl scale-105 md:scale-100'
+                  ? 'ring-2 ring-brand-500'
                   : 'border-2 border-border'
               } bg-white overflow-hidden`}
             >
               {/* Popular Badge */}
               {plan.isPopular && (
-                <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-brand-500 to-brand-600 text-white py-2 text-center font-bold text-sm">
+                <div className="absolute top-0 left-0 right-0 bg-brand-500 text-white py-2 text-center font-bold text-sm">
                   MOST POPULAR
                 </div>
               )}
