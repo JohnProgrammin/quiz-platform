@@ -27,19 +27,15 @@ body {
   display: inline-block;
   text-align: center;
   font-size: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 .btn-primary:hover {
   background-color: #16a34a;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
 }
 .btn-primary:active {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .btn-secondary {
@@ -54,14 +50,11 @@ body {
   cursor: pointer;
   display: inline-block;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 .btn-secondary:hover {
   border-color: #22c55e;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
 }
 .btn-secondary:active {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-danger {
@@ -87,7 +80,6 @@ body {
   padding: 0.75rem 1.5rem;
   border-radius: 14px;
   border: none;
-  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
   transition: all 150ms ease;
   user-select: none;
   cursor: pointer;
@@ -95,7 +87,6 @@ body {
   text-align: center;
 }
 .btn-accent:hover {
-  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.35);
   transform: translateY(-1px);
 }
 .btn-accent:active { transform: translateY(0); }
@@ -105,7 +96,6 @@ body {
   background-color: #ffffff;
   border-radius: 20px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 /* ── Input ── */
@@ -125,7 +115,6 @@ body {
 .input-field::placeholder { color: #94a3b8; }
 .input-field:focus {
   border-color: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
   outline: none;
 }
 
@@ -134,8 +123,6 @@ body {
 .input-field:-webkit-autofill:hover,
 .input-field:-webkit-autofill:focus {
   -webkit-text-fill-color: #1f2937;
-  -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
   border-color: #22c55e;
   transition: background-color 5000s ease-in-out 0s;
 }
@@ -251,11 +238,9 @@ body {
 @keyframes progressExpand {
   from {
     width: 40%;
-    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.5);
   }
   to {
     width: 60%;
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
   }
 }
 
@@ -282,7 +267,6 @@ body {
 
 .demo-option:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .demo-correct {
