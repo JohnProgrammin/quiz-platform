@@ -191,16 +191,19 @@
     "pleaseCheckInternet": "Please check your internet connection"
   },
   "navbar": {
-    "home": "Home",
-    "dashboard": "Dashboard",
+    "home": "Accueil",
+    "dashboard": "Tableau de bord",
     "notes": "Notes",
-    "quizzes": "Quizzes",
-    "analytics": "Analytics",
-    "teaching": "AI Teaching",
-    "settings": "Settings",
-    "profile": "Profile",
-    "logout": "Log Out",
-    "premium": "PREMIUM"
+    "quizzes": "Quiz",
+    "analytics": "Analytique",
+    "teaching": "Enseignement IA",
+    "settings": "Paramètres",
+    "profile": "Profil",
+    "logout": "Déconnexion",
+    "premium": "PREMIUM",
+    "pro": "PRO",
+    "freeTier": "Tier Gratuit",
+    "aiTeaching": "Enseignement IA"
   },
   "landing": {
     "nav": {

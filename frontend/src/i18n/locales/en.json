@@ -200,7 +200,10 @@
     "settings": "Settings",
     "profile": "Profile",
     "logout": "Log Out",
-    "premium": "PREMIUM"
+    "premium": "PREMIUM",
+    "pro": "PRO",
+    "freeTier": "Free Tier",
+    "aiTeaching": "AI Teaching"
   },
   "landing": {
     "nav": {

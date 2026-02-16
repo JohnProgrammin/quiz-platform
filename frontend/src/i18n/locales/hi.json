@@ -191,16 +191,19 @@
     "pleaseCheckInternet": "Please check your internet connection"
   },
   "navbar": {
-    "home": "Home",
-    "dashboard": "Dashboard",
-    "notes": "Notes",
-    "quizzes": "Quizzes",
-    "analytics": "Analytics",
-    "teaching": "AI Teaching",
-    "settings": "Settings",
-    "profile": "Profile",
-    "logout": "Log Out",
-    "premium": "PREMIUM"
+    "home": "घर",
+    "dashboard": "डैशबोर्ड",
+    "notes": "नोट्स",
+    "quizzes": "प्रश्नोत्तरी",
+    "analytics": "विश्लेषण",
+    "teaching": "AI शिक्षण",
+    "settings": "सेटिंग्स",
+    "profile": "प्रोफाइल",
+    "logout": "लॉग आउट",
+    "premium": "PREMIUM",
+    "pro": "PRO",
+    "freeTier": "मुफ्त स्तर",
+    "aiTeaching": "AI शिक्षण"
   },
   "landing": {
     "nav": {
