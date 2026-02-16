@@ -29,7 +29,7 @@ function LanguageSwitcher() {
         <Globe className="w-5 h-5 text-gray-700" />
       </button>
       {isOpen && (
-        <div className="fixed md:absolute top-1/2 left-1/2 md:left-auto md:top-full md:mt-1 -translate-x-1/2 md:translate-x-0 md:right-0 bg-white border border-gray-200 rounded-lg p-2 min-w-[180px] md:min-w-[160px] z-50 shadow-lg md:shadow-none" style={{ right: '0' }}>
+        <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-lg p-2 min-w-[160px] z-50 shadow-lg">
           {languages.map((lang) => (
             <button
               key={lang.code}
