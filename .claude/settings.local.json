@@ -68,7 +68,8 @@
       "Bash(then)",
       "Bash(echo:*)",
       "Bash(else)",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(wc:*)"
     ]
   }
 }

@@ -357,7 +357,8 @@
     "premium": "PREMIUM",
     "pro": "PRO",
     "freeTier": "Free Tier",
-    "aiTeaching": "AI Teaching"
+    "aiTeaching": "AI Teaching",
+    "language": "Language"
   },
   "landing": {
     "nav": {
