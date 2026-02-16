@@ -203,23 +203,40 @@
     "premium": "PREMIUM"
   },
   "landing": {
-    "hero": "Learn Smarter, Not Harder",
-    "heroSubtitle": "Master any subject with AI-powered quizzes and personalized learning",
-    "uploadNotes": "Upload notes, generate smart quizzes, get personalized AI teaching.",
-    "startFree": "Start free forever — upgrade when you're ready to master anything.",
-    "getStarted": "Get Started",
-    "features": "Features",
-    "pricing": "Pricing",
-    "faq": "FAQ",
-    "startLearningFree": "START LEARNING FREE",
-    "alreadyHaveAccount": "I ALREADY HAVE AN ACCOUNT",
-    "smartQuizzes": "Smart Quizzes",
-    "smartQuizzesDesc": "AI generates personalized quizzes from your notes",
-    "instantFeedback": "Instant Feedback",
-    "instantFeedbackDesc": "Get detailed AI feedback on every quiz",
-    "aiTeacher": "AI Teacher",
-    "aiTeacherDesc": "Chat with an AI tutor anytime, anywhere",
-    "gamified": "Gamified Learning",
-    "gamifiedDesc": "Earn XP, unlock achievements, and build streaks"
+    "hero": {
+      "title": "Learn Smarter,",
+      "titleSpan": "Not Harder",
+      "subtitle": "Master any subject with",
+      "subtitleStrong": "AI-powered quizzes",
+      "subtitleCta": "and personalized learning",
+      "startLearning": "START LEARNING FREE",
+      "alreadyHaveAccount": "I ALREADY HAVE AN ACCOUNT"
+    },
+    "features": {
+      "startFree": "Upload notes, generate smart quizzes, get personalized AI teaching.",
+      "startFreeDesc": "Start free forever — upgrade when you're ready to master anything.",
+      "findWeaknesses": "Find Weaknesses",
+      "findWeaknessesDesc": "AI identifies topics you need to master",
+      "personalized": "Personalized Learning",
+      "personalizedDesc": "Tailored quizzes and teaching based on your level"
+    },
+    "steps": {
+      "uploadNotes": "Upload Your Notes",
+      "uploadNotesDesc": "Upload PDFs, documents, or paste text",
+      "generateQuiz": "Get AI-Powered Quiz",
+      "generateQuizDesc": "Our AI creates personalized questions",
+      "learnImprove": "Learn & Improve",
+      "learnImproveDesc": "Get feedback and master weak topics"
+    },
+    "pricing": {
+      "free": "Free",
+      "freePrice": "Free forever",
+      "freeDesc": "5 quizzes/month, 3 notes",
+      "freeFeature1": "Up to 5 quizzes per month",
+      "freeFeature2": "Up to 3 notes",
+      "freeFeature3": "Basic results",
+      "freeFeature4": "See your progress",
+      "freeFeature5": "See what you're missing"
+    }
   }
 }
