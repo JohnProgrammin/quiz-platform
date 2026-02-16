@@ -13,48 +13,63 @@ body {
   color: #1f2937;
 }
 
-/* ── Buttons — Exact Duolingo-style (minimal shadow) ── */
+/* ── Buttons — Duolingo-style (larger, more prominent) ── */
 .btn-primary {
   background-color: #22c55e;
   color: #ffffff;
   font-weight: 900;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem;
+  padding: 1rem 2rem;
+  border-radius: 0.875rem;
   border: none;
   transition: all 150ms ease;
   user-select: none;
   cursor: pointer;
   display: inline-block;
   text-align: center;
-  font-size: 1rem;
+  font-size: 1.025rem;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .btn-primary:hover {
   background-color: #16a34a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
 }
 .btn-primary:active {
+  transform: translateY(0);
 }
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
 .btn-secondary {
   background-color: #ffffff;
   color: #1e1b4b;
   font-weight: 900;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem;
+  padding: 1rem 2rem;
+  border-radius: 0.875rem;
   border: 2px solid #d1d5db;
   transition: all 150ms ease;
   user-select: none;
   cursor: pointer;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  font-size: 1.025rem;
+  min-height: 48px;
 }
 .btn-secondary:hover {
   border-color: #22c55e;
+  color: #22c55e;
+  transform: translateY(-2px);
 }
 .btn-secondary:active {
+  transform: translateY(0);
 }
 
 .btn-danger {

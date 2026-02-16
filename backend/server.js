@@ -79,7 +79,7 @@ if (missingOptional.length > 0) {
 }
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 
 // ============================================
 // GLOBAL MIDDLEWARE STACK

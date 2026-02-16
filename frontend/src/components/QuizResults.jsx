@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import confetti from 'canvas-confetti';
 import Navbar from './Navbar';
 import UpgradePrompt from './UpgradePrompt';
 import GamificationDisplay from './GamificationDisplay';
@@ -31,6 +32,20 @@ function QuizResults({ user, onLogout }) {
   useEffect(() => {
     loadResults();
   }, [id]);
+
+  // Trigger celebration animation for good scores
+  useEffect(() => {
+    if (!loading && selectedAttempt && selectedAttempt.percentage >= 70) {
+      // Confetti animation for good score
+      setTimeout(() => {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }, 500);
+    }
+  }, [loading, selectedAttempt]);
 
   const loadResults = async () => {
     try {
