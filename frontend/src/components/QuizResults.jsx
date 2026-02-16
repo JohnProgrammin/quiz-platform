@@ -113,9 +113,18 @@ function QuizResults({ user, onLogout }) {
   }
 
   const latestAttempt = selectedAttempt || attempts[0];
-  const percentage = latestAttempt.percentage;
-  const bestScore = Math.max(...attempts.map(a => a.percentage));
-  const avgScore = Math.round(attempts.reduce((sum, a) => sum + a.percentage, 0) / attempts.length);
+
+  // Safely calculate percentage - handle missing or undefined values
+  const percentage = latestAttempt?.percentage ?? (latestAttempt?.score && latestAttempt?.total_questions
+    ? Math.round((latestAttempt.score / latestAttempt.total_questions) * 100)
+    : 0);
+
+  // Filter out attempts without valid percentages
+  const validAttempts = attempts.filter(a => a.percentage !== undefined && a.percentage !== null);
+  const bestScore = validAttempts.length > 0 ? Math.max(...validAttempts.map(a => a.percentage)) : 0;
+  const avgScore = validAttempts.length > 0
+    ? Math.round(validAttempts.reduce((sum, a) => sum + a.percentage, 0) / validAttempts.length)
+    : 0;
 
   return (
     <div className="min-h-screen bg-surface">
@@ -240,7 +249,8 @@ function QuizResults({ user, onLogout }) {
           <div className="lg:col-span-2 space-y-4">
             <h2 className="text-lg font-extrabold text-ink">Question Review</h2>
             {quiz.questions.map((question, index) => {
-              const userAnswer = latestAttempt.answers[index];
+              const answers = latestAttempt.answers || [];
+              const userAnswer = Array.isArray(answers) ? answers[index] : null;
               const isCorrect = userAnswer === question.correctAnswer;
               const optionLabels = ['A', 'B', 'C', 'D'];
 
@@ -313,12 +323,12 @@ function QuizResults({ user, onLogout }) {
                       <span className="text-sm font-bold text-slate">
                         Attempt #{attempts.length - index}
                       </span>
-                      <span className={`text-lg font-extrabold ${getScoreColor(attempt.percentage)}`}>
-                        {attempt.percentage}%
+                      <span className={`text-lg font-extrabold ${getScoreColor(attempt.percentage || 0)}`}>
+                        {attempt.percentage || (attempt.score && attempt.total_questions ? Math.round((attempt.score / attempt.total_questions) * 100) : 0)}%
                       </span>
                     </div>
                     <div className="text-xs font-semibold text-muted">
-                      {new Date(attempt.completedAt).toLocaleString()}
+                      {attempt.completed_at ? new Date(attempt.completed_at).toLocaleString() : new Date(attempt.completedAt || Date.now()).toLocaleString()}
                     </div>
                   </button>
                 ))}
