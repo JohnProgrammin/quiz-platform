@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import { SkeletonAnalytics } from './Skeleton';
-import { getAllAttempts, getQuizzes, getProfile } from '../api';
+import { getQuizHistory, getQuizzes, getProfile } from '../api';
 import { BarChart3, TrendingUp, Target, Zap, Calendar, Award, Clock } from 'lucide-react';
 
 function Analytics({ user, onLogout }) {
@@ -29,7 +29,7 @@ function Analytics({ user, onLogout }) {
   const loadAnalytics = async () => {
     try {
       const [attemptsRes, quizzesRes] = await Promise.all([
-        getAllAttempts(),
+        getQuizHistory(),
         getQuizzes(),
       ]);
 

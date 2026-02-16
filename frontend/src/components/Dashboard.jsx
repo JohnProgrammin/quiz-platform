@@ -8,7 +8,7 @@ import TrialCountdown from './TrialCountdown';
 import { SkeletonDashboard } from './Skeleton';
 import XPBar from './XPBar';
 import StreakIndicator from './StreakIndicator';
-import { getAllAttempts, getQuizzes, getNotes, getTrialStatus, getUserStats } from '../api';
+import { getQuizHistory, getQuizzes, getNotes, getTrialStatus, getUserStats } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { FileText, BookOpen, Target, Trophy, ArrowRight, Flame, Gift } from 'lucide-react';
 
@@ -36,7 +36,7 @@ function Dashboard({ user, onLogout }) {
   const loadDashboardData = async () => {
     try {
       const [attemptsRes, quizzesRes, notesRes, gamificationRes] = await Promise.all([
-        getAllAttempts(),
+        getQuizHistory(),
         getQuizzes(),
         getNotes(),
         getUserStats().catch(() => ({ data: null })), // Gamification is optional
