@@ -391,11 +391,11 @@ exports.getHistory = async (req, res) => {
     const userId = req.user.id;
 
     const result = await sql`
-      SELECT qa.id, q.title, qa.percentage, qa.score, qa.created_at
+      SELECT qa.id, q.title, qa.percentage, qa.score, qa.completed_at
       FROM quiz_attempts qa
       JOIN quizzes q ON qa.quiz_id = q.id
       WHERE qa.user_id = ${userId}
-      ORDER BY qa.created_at DESC
+      ORDER BY qa.completed_at DESC
       LIMIT 50
     `;
 

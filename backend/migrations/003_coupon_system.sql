@@ -26,6 +26,7 @@ CREATE INDEX idx_user_coupon_expires ON user_coupon_usage(expires_at);
 
 -- Insert sample coupons (these can be managed later via admin panel)
 INSERT INTO coupons (code, max_uses, is_active) VALUES
+  ('LEARN8HOURS', 999, true),
   ('FLORA8HOUR', 999, true),
   ('PREMIUM7DAYS', 50, true),
   ('BETA2024', 100, true)
