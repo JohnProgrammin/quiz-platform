@@ -203,6 +203,9 @@
     "premium": "PREMIUM"
   },
   "landing": {
+    "nav": {
+      "getStarted": "Get Started"
+    },
     "hero": {
       "title": "Learn Smarter,",
       "titleSpan": "Not Harder",
@@ -213,14 +216,20 @@
       "alreadyHaveAccount": "I ALREADY HAVE AN ACCOUNT"
     },
     "features": {
-      "startFree": "Upload notes, generate smart quizzes, get personalized AI teaching.",
-      "startFreeDesc": "Start free forever — upgrade when you're ready to master anything.",
+      "why": "Why floraquiz",
+      "title": "Smarter Learning Features",
+      "subtitle": "Everything you need to master any subject",
+      "startFree": "Start Free",
+      "startFreeDesc": "Upload notes, generate smart quizzes, get personalized AI teaching.",
       "findWeaknesses": "Find Weaknesses",
       "findWeaknessesDesc": "AI identifies topics you need to master",
       "personalized": "Personalized Learning",
       "personalizedDesc": "Tailored quizzes and teaching based on your level"
     },
     "steps": {
+      "how": "How It Works",
+      "title": "Three Steps to Mastery",
+      "subtitle": "Simple, effective learning in minutes",
       "uploadNotes": "Upload Your Notes",
       "uploadNotesDesc": "Upload PDFs, documents, or paste text",
       "generateQuiz": "Get AI-Powered Quiz",
@@ -229,6 +238,9 @@
       "learnImproveDesc": "Get feedback and master weak topics"
     },
     "pricing": {
+      "label": "Simple Pricing",
+      "title": "Choose Your Plan",
+      "subtitle": "Upgrade anytime. No long-term contracts.",
       "free": "Free",
       "freePrice": "Free forever",
       "freeDesc": "5 quizzes/month, 3 notes",
@@ -236,7 +248,59 @@
       "freeFeature2": "Up to 3 notes",
       "freeFeature3": "Basic results",
       "freeFeature4": "See your progress",
-      "freeFeature5": "See what you're missing"
-    }
+      "freeFeature5": "See what you're missing",
+      "getStarted": "Get Started",
+      "pro": "Pro",
+      "proPrice": "$9.99",
+      "proDesc": "Everything you need to learn faster",
+      "proFeature1": "Unlimited quizzes & notes",
+      "proFeature2": "AI-powered teaching summaries",
+      "proFeature3": "Advanced AI feedback",
+      "proFeature4": "Weakness mastery mini-quizzes",
+      "proFeature5": "Enhanced analytics & PDF export",
+      "upgradePro": "Upgrade to Pro",
+      "mostPopular": "Most Popular",
+      "premium": "Premium",
+      "premiumPrice": "$19.99",
+      "premiumDesc": "For serious learners who want it all",
+      "premiumFeature1": "Everything in Pro",
+      "premiumFeature2": "Unlimited AI Teaching sessions",
+      "premiumFeature3": "Custom quiz settings",
+      "premiumFeature4": "API access for developers",
+      "premiumFeature5": "Priority support",
+      "goPremium": "Go Premium",
+      "perMonth": "/month"
+    },
+    "stats": {
+      "quizzesGenerated": "Quizzes Generated",
+      "activeStudents": "Active Students",
+      "passRate": "Student Success Rate",
+      "questionsCreated": "Questions Created"
+    },
+    "testimonials": {
+      "label": "Loved by students",
+      "title": "What Students Say",
+      "sarah": {
+        "name": "Sarah Chen",
+        "role": "Medical Student",
+        "text": "floraquiz helped me ace my exams. The AI feedback is so accurate!"
+      },
+      "james": {
+        "name": "James Rodriguez",
+        "role": "CS Major",
+        "text": "Best study tool I've ever used. The personalized quizzes actually work."
+      },
+      "priya": {
+        "name": "Priya Sharma",
+        "role": "Language Learner",
+        "text": "Finally, an app that understands how I learn. Highly recommended!"
+      }
+    },
+    "cta": {
+      "title": "Ready to learn smarter?",
+      "subtitle": "Join thousands of students mastering their subjects with AI",
+      "cta": "Start Free Today"
+    },
+    "footer": "Learn smarter with AI-powered quizzes and personalized teaching. © 2026 floraquiz. All rights reserved."
   }
 }

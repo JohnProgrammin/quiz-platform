@@ -203,23 +203,104 @@
     "premium": "PREMIUM"
   },
   "landing": {
-    "hero": "Learn Smarter, Not Harder",
-    "heroSubtitle": "Master any subject with AI-powered quizzes and personalized learning",
-    "uploadNotes": "Upload notes, generate smart quizzes, get personalized AI teaching.",
-    "startFree": "Start free forever — upgrade when you're ready to master anything.",
-    "getStarted": "Get Started",
-    "features": "Features",
-    "pricing": "Pricing",
-    "faq": "FAQ",
-    "startLearningFree": "START LEARNING FREE",
-    "alreadyHaveAccount": "I ALREADY HAVE AN ACCOUNT",
-    "smartQuizzes": "Smart Quizzes",
-    "smartQuizzesDesc": "AI generates personalized quizzes from your notes",
-    "instantFeedback": "Instant Feedback",
-    "instantFeedbackDesc": "Get detailed AI feedback on every quiz",
-    "aiTeacher": "AI Teacher",
-    "aiTeacherDesc": "Chat with an AI tutor anytime, anywhere",
-    "gamified": "Gamified Learning",
-    "gamifiedDesc": "Earn XP, unlock achievements, and build streaks"
+    "nav": {
+      "getStarted": "Commencer"
+    },
+    "hero": {
+      "title": "Apprenez plus intelligemment,",
+      "titleSpan": "pas plus dur",
+      "subtitle": "Maîtrisez n'importe quel sujet avec",
+      "subtitleStrong": "des quiz alimentés par l'IA",
+      "subtitleCta": "et l'apprentissage personnalisé",
+      "startLearning": "COMMENCER L'APPRENTISSAGE GRATUIT",
+      "alreadyHaveAccount": "J'AI DÉJÀ UN COMPTE"
+    },
+    "features": {
+      "why": "Pourquoi floraquiz",
+      "title": "Fonctionnalités d'apprentissage plus intelligentes",
+      "subtitle": "Tout ce dont vous avez besoin pour maîtriser n'importe quel sujet",
+      "startFree": "Commencer gratuitement",
+      "startFreeDesc": "Téléchargez des notes, générez des quiz intelligents, obtenez un enseignement IA personnalisé.",
+      "findWeaknesses": "Trouver les faiblesses",
+      "findWeaknessesDesc": "L'IA identifie les sujets que vous devez maîtriser",
+      "personalized": "Apprentissage personnalisé",
+      "personalizedDesc": "Des quiz et un enseignement adaptés à votre niveau"
+    },
+    "steps": {
+      "how": "Comment ça fonctionne",
+      "title": "Trois étapes vers la maîtrise",
+      "subtitle": "Apprentissage simple et efficace en quelques minutes",
+      "uploadNotes": "Téléchargez vos notes",
+      "uploadNotesDesc": "Téléchargez des PDF, des documents ou collez du texte",
+      "generateQuiz": "Obtenir un quiz alimenté par l'IA",
+      "generateQuizDesc": "Notre IA crée des questions personnalisées",
+      "learnImprove": "Apprendre et s'améliorer",
+      "learnImproveDesc": "Obtenez des commentaires et maîtrisez les sujets faibles"
+    },
+    "pricing": {
+      "label": "Tarification simple",
+      "title": "Choisissez votre forfait",
+      "subtitle": "Mettez à niveau à tout moment. Pas de contrats à long terme.",
+      "free": "Gratuit",
+      "freePrice": "Gratuit pour toujours",
+      "freeDesc": "5 quiz/mois, 3 notes",
+      "freeFeature1": "Jusqu'à 5 quiz par mois",
+      "freeFeature2": "Jusqu'à 3 notes",
+      "freeFeature3": "Résultats de base",
+      "freeFeature4": "Voyez votre progrès",
+      "freeFeature5": "Voir ce qui vous manque",
+      "getStarted": "Commencer",
+      "pro": "Pro",
+      "proPrice": "9,99 €",
+      "proDesc": "Tout ce dont vous avez besoin pour apprendre plus vite",
+      "proFeature1": "Quiz et notes illimités",
+      "proFeature2": "Résumés d'enseignement alimentés par l'IA",
+      "proFeature3": "Retour d'information avancé de l'IA",
+      "proFeature4": "Mini-quiz de maîtrise des faiblesses",
+      "proFeature5": "Analytique améliorée et export PDF",
+      "upgradePro": "Passer à Pro",
+      "mostPopular": "Plus populaire",
+      "premium": "Premium",
+      "premiumPrice": "19,99 €",
+      "premiumDesc": "Pour les apprenants sérieux qui veulent tout",
+      "premiumFeature1": "Tout ce qui est en Pro",
+      "premiumFeature2": "Sessions d'enseignement IA illimitées",
+      "premiumFeature3": "Paramètres de quiz personnalisés",
+      "premiumFeature4": "Accès à l'API pour les développeurs",
+      "premiumFeature5": "Support prioritaire",
+      "goPremium": "Passer Premium",
+      "perMonth": "/mois"
+    },
+    "stats": {
+      "quizzesGenerated": "Quiz générés",
+      "activeStudents": "Étudiants actifs",
+      "passRate": "Taux de réussite des étudiants",
+      "questionsCreated": "Questions créées"
+    },
+    "testimonials": {
+      "label": "Aimé par les étudiants",
+      "title": "Ce que disent les étudiants",
+      "sarah": {
+        "name": "Sarah Chen",
+        "role": "Étudiante en médecine",
+        "text": "floraquiz m'a aidée à réussir mes examens. Les commentaires de l'IA sont si précis!"
+      },
+      "james": {
+        "name": "James Rodriguez",
+        "role": "Majeure en informatique",
+        "text": "Le meilleur outil d'étude que j'ai jamais utilisé. Les quiz personnalisés fonctionnent vraiment."
+      },
+      "priya": {
+        "name": "Priya Sharma",
+        "role": "Apprenant de langues",
+        "text": "Enfin, une application qui comprend comment j'apprends. Hautement recommandé!"
+      }
+    },
+    "cta": {
+      "title": "Prêt à apprendre plus intelligemment?",
+      "subtitle": "Rejoignez des milliers d'étudiants qui maîtrisent leurs sujets avec l'IA",
+      "cta": "Commencer gratuitement aujourd'hui"
+    },
+    "footer": "Apprenez plus intelligemment avec des quiz alimentés par l'IA et un enseignement personnalisé. © 2026 floraquiz. Tous droits réservés."
   }
 }

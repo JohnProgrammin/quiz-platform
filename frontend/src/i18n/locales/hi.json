@@ -203,23 +203,104 @@
     "premium": "PREMIUM"
   },
   "landing": {
-    "hero": "Learn Smarter, Not Harder",
-    "heroSubtitle": "Master any subject with AI-powered quizzes and personalized learning",
-    "uploadNotes": "Upload notes, generate smart quizzes, get personalized AI teaching.",
-    "startFree": "Start free forever — upgrade when you're ready to master anything.",
-    "getStarted": "Get Started",
-    "features": "Features",
-    "pricing": "Pricing",
-    "faq": "FAQ",
-    "startLearningFree": "START LEARNING FREE",
-    "alreadyHaveAccount": "I ALREADY HAVE AN ACCOUNT",
-    "smartQuizzes": "Smart Quizzes",
-    "smartQuizzesDesc": "AI generates personalized quizzes from your notes",
-    "instantFeedback": "Instant Feedback",
-    "instantFeedbackDesc": "Get detailed AI feedback on every quiz",
-    "aiTeacher": "AI Teacher",
-    "aiTeacherDesc": "Chat with an AI tutor anytime, anywhere",
-    "gamified": "Gamified Learning",
-    "gamifiedDesc": "Earn XP, unlock achievements, and build streaks"
+    "nav": {
+      "getStarted": "शुरू करो"
+    },
+    "hero": {
+      "title": "और स्मार्ट सीखो,",
+      "titleSpan": "मेहनत मत करो",
+      "subtitle": "कृत्रिम बुद्धिमत्ता के साथ किसी भी विषय में महारत हासिल करो",
+      "subtitleStrong": "AI-संचालित प्रश्नोत्तरी",
+      "subtitleCta": "और व्यक्तिगत सीखना",
+      "startLearning": "मुफ्त सीखना शुरू करो",
+      "alreadyHaveAccount": "मेरे पास पहले से खाता है"
+    },
+    "features": {
+      "why": "floraquiz क्यों",
+      "title": "स्मार्टर लर्निंग फीचर्स",
+      "subtitle": "किसी भी विषय में महारत हासिल करने के लिए आपको जो कुछ चाहिए",
+      "startFree": "मुफ्त शुरू करो",
+      "startFreeDesc": "नोट्स अपलोड करो, स्मार्ट प्रश्नोत्तरी उत्पन्न करो, व्यक्तिगत एआई शिक्षण प्राप्त करो।",
+      "findWeaknesses": "कमजोरियाँ खोजो",
+      "findWeaknessesDesc": "एआई उन विषयों की पहचान करता है जिन पर आपको महारत हासिल करनी है",
+      "personalized": "व्यक्तिगत सीखना",
+      "personalizedDesc": "आपके स्तर के अनुसार तैयार प्रश्नोत्तरी और शिक्षण"
+    },
+    "steps": {
+      "how": "यह कैसे काम करता है",
+      "title": "महारत के लिए तीन कदम",
+      "subtitle": "मिनटों में सरल और प्रभावी सीखना",
+      "uploadNotes": "अपने नोट्स अपलोड करो",
+      "uploadNotesDesc": "PDF, दस्तावेज़ अपलोड करो या पाठ चिपकाओ",
+      "generateQuiz": "एआई द्वारा संचालित प्रश्नोत्तरी प्राप्त करो",
+      "generateQuizDesc": "हमारी एआई व्यक्तिगत प्रश्न बनाती है",
+      "learnImprove": "सीखो और सुधारो",
+      "learnImproveDesc": "प्रतिक्रिया प्राप्त करो और कमजोर विषयों में महारत हासिल करो"
+    },
+    "pricing": {
+      "label": "सरल मूल्य निर्धारण",
+      "title": "अपनी योजना चुनो",
+      "subtitle": "किसी भी समय अपग्रेड करो। कोई दीर्घकालीन समझौते नहीं।",
+      "free": "मुफ्त",
+      "freePrice": "हमेशा के लिए मुफ्त",
+      "freeDesc": "5 प्रश्नोत्तरी/महीना, 3 नोट्स",
+      "freeFeature1": "प्रति माह 5 प्रश्नोत्तरी तक",
+      "freeFeature2": "3 नोट्स तक",
+      "freeFeature3": "बुनियादी परिणाम",
+      "freeFeature4": "अपनी प्रगति देखो",
+      "freeFeature5": "देखो क्या तुम्हें याद नहीं है",
+      "getStarted": "शुरू करो",
+      "pro": "Pro",
+      "proPrice": "$9.99",
+      "proDesc": "तेजी से सीखने के लिए आपको जो कुछ चाहिए",
+      "proFeature1": "असीमित प्रश्नोत्तरी और नोट्स",
+      "proFeature2": "एआई द्वारा संचालित शिक्षण सारांश",
+      "proFeature3": "उन्नत एआई प्रतिक्रिया",
+      "proFeature4": "कमजोरी महारत मिनी-प्रश्नोत्तरी",
+      "proFeature5": "उन्नत विश्लेषण और पीडीएफ निर्यात",
+      "upgradePro": "Pro में अपग्रेड करो",
+      "mostPopular": "सबसे लोकप्रिय",
+      "premium": "Premium",
+      "premiumPrice": "$19.99",
+      "premiumDesc": "गंभीर शिक्षार्थियों के लिए जो सब कुछ चाहते हैं",
+      "premiumFeature1": "Pro में सब कुछ",
+      "premiumFeature2": "असीमित एआई शिक्षण सत्र",
+      "premiumFeature3": "कस्टम प्रश्नोत्तरी सेटिंग्स",
+      "premiumFeature4": "डेवलपर्स के लिए एपीआई पहुंच",
+      "premiumFeature5": "प्राथमिकता सहायता",
+      "goPremium": "Premium जाओ",
+      "perMonth": "/महीना"
+    },
+    "stats": {
+      "quizzesGenerated": "उत्पन्न प्रश्नोत्तरी",
+      "activeStudents": "सक्रिय छात्र",
+      "passRate": "छात्र सफलता दर",
+      "questionsCreated": "बनाए गए प्रश्न"
+    },
+    "testimonials": {
+      "label": "छात्रों द्वारा पसंद किया गया",
+      "title": "छात्र क्या कहते हैं",
+      "sarah": {
+        "name": "Sarah Chen",
+        "role": "मेडिकल छात्रा",
+        "text": "floraquiz ने मुझे परीक्षाएँ पास करने में मदद की। एआई प्रतिक्रिया बहुत सटीक है!"
+      },
+      "james": {
+        "name": "James Rodriguez",
+        "role": "कंप्यूटर विज्ञान विशेषज्ञ",
+        "text": "मैंने कभी सबसे अच्छा अध्ययन उपकरण का उपयोग किया है। व्यक्तिगत प्रश्नोत्तरी वास्तव में काम करते हैं।"
+      },
+      "priya": {
+        "name": "Priya Sharma",
+        "role": "भाषा सीखने वाला",
+        "text": "अंत में, एक ऐप जो समझता है कि मैं कैसे सीखता हूँ। अत्यधिक अनुशंसित!"
+      }
+    },
+    "cta": {
+      "title": "क्या तुम स्मार्ट सीखने के लिए तैयार हो?",
+      "subtitle": "हजारों छात्रों से जुड़ो जो एआई के साथ अपने विषयों में महारत हासिल कर रहे हैं",
+      "cta": "आज ही मुफ्त शुरू करो"
+    },
+    "footer": "एआई द्वारा संचालित प्रश्नोत्तरी और व्यक्तिगत शिक्षण के साथ स्मार्ट सीखो। © 2026 floraquiz। सर्वाधिकार सुरक्षित।"
   }
 }

@@ -203,23 +203,104 @@
     "premium": "PREMIUM"
   },
   "landing": {
-    "hero": "Learn Smarter, Not Harder",
-    "heroSubtitle": "Master any subject with AI-powered quizzes and personalized learning",
-    "uploadNotes": "Upload notes, generate smart quizzes, get personalized AI teaching.",
-    "startFree": "Start free forever — upgrade when you're ready to master anything.",
-    "getStarted": "Get Started",
-    "features": "Features",
-    "pricing": "Pricing",
-    "faq": "FAQ",
-    "startLearningFree": "START LEARNING FREE",
-    "alreadyHaveAccount": "I ALREADY HAVE AN ACCOUNT",
-    "smartQuizzes": "Smart Quizzes",
-    "smartQuizzesDesc": "AI generates personalized quizzes from your notes",
-    "instantFeedback": "Instant Feedback",
-    "instantFeedbackDesc": "Get detailed AI feedback on every quiz",
-    "aiTeacher": "AI Teacher",
-    "aiTeacherDesc": "Chat with an AI tutor anytime, anywhere",
-    "gamified": "Gamified Learning",
-    "gamifiedDesc": "Earn XP, unlock achievements, and build streaks"
+    "nav": {
+      "getStarted": "ابدأ الآن"
+    },
+    "hero": {
+      "title": "تعلم بذكاء أكثر،",
+      "titleSpan": "وليس بجهد أكثر",
+      "subtitle": "أتقن أي موضوع باستخدام",
+      "subtitleStrong": "الاختبارات المدعومة بالذكاء الاصطناعي",
+      "subtitleCta": "والتعلم الشخصي",
+      "startLearning": "ابدأ التعلم مجانًا",
+      "alreadyHaveAccount": "لديّ حساب بالفعل"
+    },
+    "features": {
+      "why": "لماذا floraquiz",
+      "title": "ميزات التعلم الأذكى",
+      "subtitle": "كل ما تحتاجه لإتقان أي موضوع",
+      "startFree": "ابدأ مجانًا",
+      "startFreeDesc": "قم بتحميل الملاحظات وإنشاء اختبارات ذكية والحصول على تعليم شخصي يدعمه الذكاء الاصطناعي.",
+      "findWeaknesses": "العثور على نقاط الضعف",
+      "findWeaknessesDesc": "يحدد الذكاء الاصطناعي المواضيع التي تحتاج إلى إتقانها",
+      "personalized": "التعلم الشخصي",
+      "personalizedDesc": "اختبارات وتعليم مخصص لمستواك"
+    },
+    "steps": {
+      "how": "كيف تعمل",
+      "title": "ثلاث خطوات للإتقان",
+      "subtitle": "تعلم بسيط وفعال في دقائق",
+      "uploadNotes": "قم بتحميل ملاحظاتك",
+      "uploadNotesDesc": "قم بتحميل ملفات PDF أو المستندات أو الصق النص",
+      "generateQuiz": "احصل على اختبار مدعوم بالذكاء الاصطناعي",
+      "generateQuizDesc": "يقوم الذكاء الاصطناعي الخاص بنا بإنشاء أسئلة مخصصة",
+      "learnImprove": "تعلم وتحسن",
+      "learnImproveDesc": "احصل على ملاحظات وأتقن المواضيع الضعيفة"
+    },
+    "pricing": {
+      "label": "التسعير البسيط",
+      "title": "اختر خطتك",
+      "subtitle": "قم بالترقية في أي وقت. بدون عقود طويلة الأجل.",
+      "free": "مجاني",
+      "freePrice": "مجاني إلى الأبد",
+      "freeDesc": "5 اختبارات/شهر، 3 ملاحظات",
+      "freeFeature1": "حتى 5 اختبارات في الشهر",
+      "freeFeature2": "حتى 3 ملاحظات",
+      "freeFeature3": "النتائج الأساسية",
+      "freeFeature4": "انظر إلى تقدمك",
+      "freeFeature5": "انظر ما الذي يخصك",
+      "getStarted": "ابدأ الآن",
+      "pro": "Pro",
+      "proPrice": "$9.99",
+      "proDesc": "كل ما تحتاجه للتعلم بشكل أسرع",
+      "proFeature1": "اختبارات وملاحظات غير محدودة",
+      "proFeature2": "ملخصات التعليم المدعومة بالذكاء الاصطناعي",
+      "proFeature3": "ملاحظات متقدمة من الذكاء الاصطناعي",
+      "proFeature4": "اختبارات صغيرة لإتقان نقاط الضعف",
+      "proFeature5": "تحليلات محسّنة وتصدير PDF",
+      "upgradePro": "الترقية إلى Pro",
+      "mostPopular": "الأكثر شعبية",
+      "premium": "Premium",
+      "premiumPrice": "$19.99",
+      "premiumDesc": "للدارسين الجادين الذين يريدون كل شيء",
+      "premiumFeature1": "كل شيء في Pro",
+      "premiumFeature2": "جلسات تعليم ذكاء اصطناعي غير محدودة",
+      "premiumFeature3": "إعدادات اختبار مخصصة",
+      "premiumFeature4": "وصول API للمطورين",
+      "premiumFeature5": "دعم ذو أولوية",
+      "goPremium": "اذهب إلى Premium",
+      "perMonth": "/شهر"
+    },
+    "stats": {
+      "quizzesGenerated": "الاختبارات التي تم إنشاؤها",
+      "activeStudents": "الطلاب النشطين",
+      "passRate": "معدل نجاح الطالب",
+      "questionsCreated": "الأسئلة المنشأة"
+    },
+    "testimonials": {
+      "label": "محبوب من قبل الطلاب",
+      "title": "ماذا يقول الطلاب",
+      "sarah": {
+        "name": "Sarah Chen",
+        "role": "طالبة الطب",
+        "text": "ساعدني floraquiz على اجتياز الامتحانات. ملاحظات الذكاء الاصطناعي دقيقة جداً!"
+      },
+      "james": {
+        "name": "James Rodriguez",
+        "role": "متخصص في علوم الحاسوب",
+        "text": "أفضل أداة دراسة استخدمتها على الإطلاق. الاختبارات المخصصة تعمل حقاً."
+      },
+      "priya": {
+        "name": "Priya Sharma",
+        "role": "متعلم اللغة",
+        "text": "أخيراً، تطبيق يفهم كيفية تعلمي. موصى به بشدة!"
+      }
+    },
+    "cta": {
+      "title": "هل أنت مستعد للتعلم بذكاء أكثر؟",
+      "subtitle": "انضم إلى آلاف الطلاب الذين يتقنون مواضيعهم باستخدام الذكاء الاصطناعي",
+      "cta": "ابدأ مجانًا اليوم"
+    },
+    "footer": "تعلم بذكاء أكثر باستخدام الاختبارات المدعومة بالذكاء الاصطناعي والتعليم الشخصي. © 2026 floraquiz. جميع الحقوق محفوظة."
   }
 }
