@@ -51,11 +51,13 @@ const getProgressToNextLevel = (totalXP, currentLevel) => {
  */
 exports.awardXP = async (userId, amount, reason, metadata = {}) => {
   try {
-    // Award XP
+    // Award XP - use UPSERT to create record if doesn't exist
     await sql`
-      UPDATE user_gamification
-      SET total_xp = total_xp + ${amount}, updated_at = CURRENT_TIMESTAMP
-      WHERE user_id = ${userId}
+      INSERT INTO user_gamification (user_id, total_xp, level)
+      VALUES (${userId}, ${amount}, 1)
+      ON CONFLICT (user_id) DO UPDATE SET
+        total_xp = user_gamification.total_xp + ${amount},
+        updated_at = CURRENT_TIMESTAMP
     `;
 
     // Log transaction
@@ -70,7 +72,13 @@ exports.awardXP = async (userId, amount, reason, metadata = {}) => {
     `;
 
     if (!result || result.length === 0) {
-      throw new Error('User gamification record not found');
+      // Fallback: should never happen with UPSERT, but just in case
+      return {
+        xpAwarded: amount,
+        leveledUp: false,
+        newLevel: 1,
+        totalXP: amount,
+      };
     }
 
     const { total_xp: newTotalXP } = result[0];

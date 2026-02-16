@@ -47,8 +47,16 @@ function Dashboard({ user, onLogout }) {
       const notes = Array.isArray(notesRes.data) ? notesRes.data : (notesRes.data?.data || []);
       const quizzes = Array.isArray(quizzesRes.data) ? quizzesRes.data : (quizzesRes.data?.data || []);
 
-      const avgScore = attempts.length > 0
-        ? Math.round(attempts.reduce((sum, a) => sum + a.percentage, 0) / attempts.length)
+      // Filter attempts with valid percentages, skip undefined/null/NaN
+      const validAttempts = attempts.filter(a =>
+        typeof a.percentage === 'number' &&
+        !isNaN(a.percentage) &&
+        a.percentage !== null &&
+        a.percentage !== undefined
+      );
+
+      const avgScore = validAttempts.length > 0
+        ? Math.round(validAttempts.reduce((sum, a) => sum + a.percentage, 0) / validAttempts.length)
         : 0;
 
       setStats({
