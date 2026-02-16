@@ -448,6 +448,17 @@
         "text": "Enfin, une application qui comprend comment j'apprends. Hautement recommandé!"
       }
     },
+    "demo": {
+      "question": "Quelle est la fonction principale des mitochondries dans une cellule?",
+      "optionA": "Stocker les informations génétiques",
+      "optionB": "Produire l'énergie (ATP)",
+      "optionC": "Synthétiser les protéines",
+      "optionD": "Décomposer les déchets",
+      "category": "Sciences • Biologie",
+      "questionProgress": "Progression de la question",
+      "correctBadge": "Correct! +10 points",
+      "xpReward": "+5 XP"
+    },
     "cta": {
       "title": "Prêt à apprendre plus intelligemment?",
       "subtitle": "Rejoignez des milliers d'étudiants qui maîtrisent leurs sujets avec l'IA",

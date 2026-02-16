@@ -454,6 +454,17 @@
         "text": "Finally, app that understand how I learn. Highly recommended!"
       }
     },
+    "demo": {
+      "question": "Wetin be the main function of mitochondria for cell?",
+      "optionA": "Keep genetic information",
+      "optionB": "Make energy (ATP)",
+      "optionC": "Build protein",
+      "optionD": "Break down refuse",
+      "category": "Science • Biology",
+      "questionProgress": "Question Progress",
+      "correctBadge": "Correct! +10 points",
+      "xpReward": "+5 XP"
+    },
     "cta": {
       "title": "Ready to learn smarter?",
       "subtitle": "Join thousands of students mastering their subjects with AI",

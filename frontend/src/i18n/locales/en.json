@@ -454,6 +454,17 @@
         "text": "Finally, an app that understands how I learn. Highly recommended!"
       }
     },
+    "demo": {
+      "question": "What is the primary function of mitochondria in a cell?",
+      "optionA": "Store genetic information",
+      "optionB": "Produce energy (ATP)",
+      "optionC": "Synthesize proteins",
+      "optionD": "Break down waste",
+      "category": "Science • Biology",
+      "questionProgress": "Question Progress",
+      "correctBadge": "Correct! +10 points",
+      "xpReward": "+5 XP"
+    },
     "cta": {
       "title": "Ready to learn smarter?",
       "subtitle": "Join thousands of students mastering their subjects with AI",

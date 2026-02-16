@@ -61,7 +61,8 @@ function Landing() {
     const runDemoSequence = async () => {
       while (isMounted) {
         // Phase 1: Type question with natural speed (0-1.8s)
-        const fullQuestion = "What is the primary function of mitochondria in a cell?";
+        // Use translation for demo question based on current language
+        const fullQuestion = t('landing.demo.question');
         for (let i = 0; i <= fullQuestion.length; i++) {
           if (!isMounted) return;
           setQuestionText(fullQuestion.slice(0, i));
@@ -118,7 +119,7 @@ function Landing() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [t]);
 
   // Scroll listener for header behavior (Duolingo-style)
   // Show header CTA after user scrolls past hero section
@@ -292,12 +293,20 @@ function Landing() {
               </Link>
             </div>
 
-            {/* Mobile: Only show GET STARTED after scroll (Duolingo pattern) */}
+            {/* Mobile: Show language switcher and GET STARTED after scroll (Duolingo pattern) */}
             {scrolled && (
-              <div className="md:hidden">
+              <div className="md:hidden flex items-center gap-2">
+                <LanguageSwitcher />
                 <Link to="/signup" className="btn-primary text-sm py-2 px-5">
                   {t('landing.nav.getStarted').toUpperCase()}
                 </Link>
+              </div>
+            )}
+
+            {/* Mobile: Always show language switcher (not scrolled) */}
+            {!scrolled && (
+              <div className="md:hidden">
+                <LanguageSwitcher />
               </div>
             )}
           </div>
@@ -357,12 +366,17 @@ function Landing() {
                       <span className="animate-pulse ml-1 text-brand-500">|</span>
                     )}
                   </p>
-                  <p className="text-xs font-semibold text-slate/60 mt-2">Science • Biology</p>
+                  <p className="text-xs font-semibold text-slate/60 mt-2">{t('landing.demo.category')}</p>
                 </div>
 
                 {/* Options with premium animations */}
                 <div className="space-y-3 mb-6">
-                  {['Store genetic information', 'Produce energy (ATP)', 'Synthesize proteins', 'Break down waste'].map((opt, i) => (
+                  {[
+                    t('landing.demo.optionA'),
+                    t('landing.demo.optionB'),
+                    t('landing.demo.optionC'),
+                    t('landing.demo.optionD'),
+                  ].map((opt, i) => (
                     <div
                       key={i}
                       className={`demo-option p-4 rounded-2xl border-2 flex items-center gap-4 font-bold text-sm cursor-pointer transition-all ${
@@ -398,7 +412,7 @@ function Landing() {
                 {/* Enhanced progress bar */}
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-2">
-                    <p className="text-xs font-semibold text-slate/70">Question Progress</p>
+                    <p className="text-xs font-semibold text-slate/70">{t('landing.demo.questionProgress')}</p>
                     <p className="text-xs font-bold text-brand-500">{Math.round((progressWidth - 40) / 0.2)}%</p>
                   </div>
                   <div className="progress-bar overflow-hidden h-2 bg-slate-200/50 rounded-full border border-border/30">
@@ -418,9 +432,9 @@ function Landing() {
                       className="demo-badge inline-flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-sm"
                     >
                       <CheckCircle className="w-4 h-4" />
-                      <span>Correct! +10 points</span>
+                      <span>{t('landing.demo.correctBadge')}</span>
                     </div>
-                    <div className="text-sm font-bold text-brand-500">+5 XP</div>
+                    <div className="text-sm font-bold text-brand-500">{t('landing.demo.xpReward')}</div>
                   </div>
                 )}
               </div>
