@@ -490,6 +490,51 @@ app.post('/api/v1/auth/logout', authenticateToken, (req, res) => {
   res.json({ message: 'Logged out successfully' });
 });
 
+/**
+ * Reset Account to Clean Slate
+ * POST /api/v1/account/reset
+ * Deletes all notes, clears coupon usage, resets to free tier
+ */
+app.post('/api/v1/account/reset', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Delete all notes
+    await sql`DELETE FROM notes WHERE user_id = ${userId}`;
+
+    // Delete all quizzes
+    await sql`DELETE FROM quizzes WHERE user_id = ${userId}`;
+
+    // Delete all quiz attempts
+    await sql`DELETE FROM quiz_attempts WHERE user_id = ${userId}`;
+
+    // Clear coupon usage (if table exists)
+    try {
+      await sql`DELETE FROM user_coupon_usage WHERE user_id = ${userId}`;
+    } catch (e) {
+      // Table might not exist, ignore
+    }
+
+    // Reset to free tier
+    await sql`
+      UPDATE users
+      SET subscription_tier = 'free'
+      WHERE id = ${userId}
+    `;
+
+    res.json({
+      message: 'Account reset successfully. All notes, quizzes, and subscription data cleared.',
+      subscription_tier: 'free',
+    });
+  } catch (error) {
+    console.error('❌ Account reset error:', error.message);
+    res.status(500).json({
+      error: 'Failed to reset account',
+      details: error.message,
+    });
+  }
+});
+
 // ============================================
 // SUBSCRIPTION/PAYMENT ROUTES
 // ============================================
@@ -552,13 +597,6 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
       authorizationUrl: authUrl,
       accessCode: accessCode,
       reference: reference,
-      paymentInfo: {
-        amount: paymentData.amount,
-        currency: paymentData.currency,
-        originalCurrency: paymentData.originalCurrency,
-        displayPrice: paymentData.displayPrice,
-        conversionRate: paymentData.conversionRate,
-      },
     });
   } catch (error) {
     console.error('❌ Paystack transaction error:', error.message);
@@ -878,14 +916,12 @@ app.get('/api/v1/subscription/history', authenticateToken, async (req, res) => {
 const notesRoutes = require('./routes/notes.routes');
 const quizRoutes = require('./routes/quiz.routes');
 const teachingRoutes = require('./routes/teaching.routes');
-const couponRoutes = require('./routes/coupon.routes');
 const gamificationRoutes = require('./routes/gamification.routes');
 
 // Register routes
 app.use('/api/v1/notes', notesRoutes);
 app.use('/api/v1/quiz', quizRoutes);
 app.use('/api/v1/teaching', teachingRoutes);
-app.use('/api/v1/coupons', couponRoutes);
 app.use('/api/v1/gamification', gamificationRoutes);
 
 // ============================================

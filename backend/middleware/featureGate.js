@@ -60,18 +60,6 @@ exports.checkQuizQuota = async (req, res, next) => {
   }
 
   try {
-    // Check if user has an active coupon/trial - treat as Pro
-    const activeTrialCheck = await sql`
-      SELECT expires_at FROM user_coupon_usage
-      WHERE user_id = ${req.user.id} AND expires_at > NOW()
-      LIMIT 1
-    `;
-
-    if (activeTrialCheck.length > 0) {
-      // User has active trial - allow unlimited quizzes
-      return next();
-    }
-
     // Check if free user has remaining quizzes for this month
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -107,7 +95,6 @@ exports.checkQuizQuota = async (req, res, next) => {
  * Check note upload limits for free users
  * Free tier: 3 notes maximum
  * Pro/Premium: Unlimited
- * Active Coupon/Trial: Treated as Pro (unlimited)
  */
 exports.checkNoteQuota = async (req, res, next) => {
   const userTier = req.user?.subscription_tier || 'free';
@@ -118,18 +105,6 @@ exports.checkNoteQuota = async (req, res, next) => {
   }
 
   try {
-    // Check if user has an active coupon/trial - treat as Pro
-    const activeTrialCheck = await sql`
-      SELECT expires_at FROM user_coupon_usage
-      WHERE user_id = ${req.user.id} AND expires_at > NOW()
-      LIMIT 1
-    `;
-
-    if (activeTrialCheck.length > 0) {
-      // User has active trial - allow unlimited notes
-      return next();
-    }
-
     // Check if free user has reached 3 notes limit
     const result = await sql`
       SELECT COUNT(*) as count FROM notes WHERE user_id = ${req.user.id}

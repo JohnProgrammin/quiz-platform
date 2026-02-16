@@ -164,10 +164,9 @@ export const getLeaderboard = (limit = 100) => api.get(`/v1/gamification/leaderb
 export const getAchievements = () => api.get('/v1/gamification/achievements');
 
 // ============================================
-// COUPON / TRIAL ENDPOINTS
+// ACCOUNT MANAGEMENT
 // ============================================
-export const redeemCoupon = (code) => api.post('/v1/coupons/redeem', { code });
-export const getTrialStatus = () => api.get('/v1/coupons/trial-status');
+export const resetAccount = () => api.post('/v1/account/reset');
 
 // ============================================
 // QUOTA ENFORCEMENT NOTES
