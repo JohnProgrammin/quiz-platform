@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useScrollReveal, useStaggerReveal } from '../hooks/useScrollReveal';
+import LanguageSwitcher from './LanguageSwitcher';
 import {
   Upload, Sparkles, Trophy, Brain, Zap, Target,
   BookOpen, BarChart3, ArrowRight, CheckCircle, Star,
@@ -279,6 +280,7 @@ function Landing() {
 
             {/* Desktop: Always show both buttons */}
             <div className="hidden md:flex items-center gap-3">
+              <LanguageSwitcher />
               <Link
                 to="/login"
                 className="px-5 py-2 font-bold text-ink hover:text-brand-500 transition-colors text-sm"

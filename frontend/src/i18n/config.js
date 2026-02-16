@@ -3,8 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 import en from './locales/en.json';
-import fr from './locales/fr.json';
-import ko from './locales/ko.json';
+import pidgin from './locales/pidgin.json';
 
 i18n
   .use(LanguageDetector)
@@ -12,8 +11,7 @@ i18n
   .init({
     resources: {
       en: { translation: en },
-      fr: { translation: fr },
-      ko: { translation: ko },
+      yo: { translation: pidgin }, // Yoruba/Pidgin code for Nigerian Pidgin
     },
     fallbackLng: 'en',
     lng: localStorage.getItem('language') || 'en',

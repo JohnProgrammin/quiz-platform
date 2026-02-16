@@ -3,9 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'ko', name: '한국어', flag: '🇰🇷' },
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'yo', name: 'Pidgin', flag: '🇳🇬' },
 ];
 
 function LanguageSwitcher() {
