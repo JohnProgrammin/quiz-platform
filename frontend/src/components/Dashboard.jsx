@@ -3,14 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import UpgradePrompt from './UpgradePrompt';
-import CouponInput from './CouponInput';
-import TrialCountdown from './TrialCountdown';
 import { SkeletonDashboard } from './Skeleton';
 import XPBar from './XPBar';
 import StreakIndicator from './StreakIndicator';
-import { getQuizHistory, getQuizzes, getNotes, getTrialStatus, getUserStats } from '../api';
+import { getQuizHistory, getQuizzes, getNotes, getUserStats } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
-import { FileText, BookOpen, Target, Trophy, ArrowRight, Flame, Gift } from 'lucide-react';
+import { FileText, BookOpen, Target, Trophy, ArrowRight, Flame } from 'lucide-react';
 
 function Dashboard({ user, onLogout }) {
   const { t } = useTranslation();
@@ -22,15 +20,12 @@ function Dashboard({ user, onLogout }) {
   });
   const [recentAttempts, setRecentAttempts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showCouponModal, setShowCouponModal] = useState(false);
-  const [trialStatus, setTrialStatus] = useState({ hasActiveTrial: false });
   const [gamificationStats, setGamificationStats] = useState(null);
   const navigate = useNavigate();
   const { isFree } = useSubscription();
 
   useEffect(() => {
     loadDashboardData();
-    loadTrialStatus();
   }, []);
 
   const loadDashboardData = async () => {
@@ -79,15 +74,6 @@ function Dashboard({ user, onLogout }) {
     }
   };
 
-  const loadTrialStatus = async () => {
-    try {
-      const response = await getTrialStatus();
-      setTrialStatus(response.data);
-    } catch (error) {
-      console.error('Error loading trial status:', error);
-    }
-  };
-
   const getScoreColor = (percentage) => {
     if (percentage >= 80) return 'text-brand-500';
     if (percentage >= 60) return 'text-amber-500';
@@ -131,45 +117,8 @@ function Dashboard({ user, onLogout }) {
           <p className="text-lg text-slate font-semibold">{t('dashboard.statistics')}</p>
         </div>
 
-        {/* Trial Countdown */}
-        {trialStatus.hasActiveTrial && (
-          <div className="mb-10">
-            <TrialCountdown
-              expiresAt={trialStatus.expiresAt}
-              onExpired={() => loadTrialStatus()}
-            />
-          </div>
-        )}
-
-        {/* Coupon Redemption for Free Users */}
-        {isFree && !trialStatus.hasActiveTrial && (
-          <div className="mb-10">
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
-                    <Gift className="w-6 h-6 text-amber-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-black text-ink text-lg">Have a Coupon Code?</h3>
-                    <p className="text-amber-700 font-semibold text-sm mt-1">
-                      Redeem your code for 8-hour access to all Premium features
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowCouponModal(true)}
-                  className="bg-brand-500 hover:bg-green-600 text-white font-black px-6 py-3 rounded-lg transition-all duration-200"
-                >
-                  REDEEM
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Upgrade Prompt */}
-        {isFree && !trialStatus.hasActiveTrial && (
+        {isFree && (
           <div className="mb-10">
             <UpgradePrompt feature="unlimited_quizzes" />
           </div>
@@ -264,17 +213,6 @@ function Dashboard({ user, onLogout }) {
           )}
         </div>
       </div>
-
-      {/* Coupon Input Modal */}
-      {showCouponModal && (
-        <CouponInput
-          onSuccess={() => {
-            setShowCouponModal(false);
-            loadTrialStatus();
-          }}
-          onClose={() => setShowCouponModal(false)}
-        />
-      )}
     </div>
   );
 }

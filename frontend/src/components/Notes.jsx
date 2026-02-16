@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import UpgradePrompt from './UpgradePrompt';
 import UpgradeQuotaModal from './UpgradeQuotaModal';
-import { uploadNote, getNotes, deleteNote, generateQuiz, getTrialStatus } from '../api';
+import { uploadNote, getNotes, deleteNote, generateQuiz } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { Upload, FileText, Trash2, Sparkles, Loader, Lock } from 'lucide-react';
 
@@ -20,28 +20,15 @@ function Notes({ user, onLogout }) {
   const [questionCount, setQuestionCount] = useState(15);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
   const [quotaError, setQuotaError] = useState(null); // { type: 'notes'|'quizzes', limit, used }
-  const [hasActiveTrial, setHasActiveTrial] = useState(false);
 
-  // Tier-based limits (consider active trial as Pro)
-  const effectiveTier = hasActiveTrial ? 'pro' : tier;
-  const isFree = effectiveTier === 'free';
+  // Tier-based limits
+  const isFree = tier === 'free';
   const noteLimit = isFree ? 3 : Infinity;
   const canUploadMore = notes.length < noteLimit;
 
   useEffect(() => {
     loadNotes();
-    checkTrialStatus();
   }, []);
-
-  const checkTrialStatus = async () => {
-    try {
-      const response = await getTrialStatus();
-      setHasActiveTrial(response.data?.hasActiveTrial || false);
-    } catch (error) {
-      console.error('Error checking trial status:', error);
-      setHasActiveTrial(false);
-    }
-  };
 
   const loadNotes = async () => {
     try {
