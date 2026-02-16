@@ -171,7 +171,7 @@ function Analytics({ user, onLogout }) {
                 <Award className="w-6 h-6 text-green-500" />
               </div>
             </div>
-            <p className="text-xs font-semibold text-green-600">{t('analytics.peakPerformance')}</p>
+            <p className="text-xs font-semibold text-green-600">{t('analytics.bestScore')}</p>
           </div>
 
           {/* Streak */}
