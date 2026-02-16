@@ -1,28 +1,21 @@
-const jwt = require('jsonwebtoken');
-const { sql } = require('../config/database.serverless');
+const { supabase } = require('../config/supabase');
 require('dotenv').config();
 
 /**
- * Authentication Middleware
- * Handles JWT token verification and user identity verification
+ * Authentication Middleware (Supabase Edition)
+ * Uses Supabase Auth for JWT verification and Row-Level Security
  */
 
 /**
- * Verify JWT token and attach user to request
+ * Verify Supabase JWT token and attach user to request
  * Checks:
  * - Token exists in Authorization header
- * - Token is valid and not expired
- * - User exists in database
- * - User's subscription status is valid
+ * - Token is valid Supabase JWT
+ * - User exists in Supabase Auth
+ * - User profile exists in public.users table
  */
 const authenticateToken = async (req, res, next) => {
   try {
-    // Validate JWT_SECRET is configured
-    if (!process.env.JWT_SECRET) {
-      console.error('CRITICAL: JWT_SECRET environment variable not set');
-      return res.status(500).json({ error: 'Server configuration error' });
-    }
-
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Extract token from "Bearer <token>"
 
@@ -30,71 +23,63 @@ const authenticateToken = async (req, res, next) => {
       return res.status(401).json({ error: 'Access token required' });
     }
 
-    // Verify JWT token
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-      if (err) {
-        return res.status(403).json({ error: 'Invalid or expired token' });
+    // Verify token with Supabase
+    const { data, error } = await supabase.auth.getUser(token);
+
+    if (error || !data.user) {
+      console.warn('Auth verification failed:', error?.message);
+      return res.status(403).json({ error: 'Invalid or expired token' });
+    }
+
+    try {
+      // Get user profile from public.users table (includes subscription info)
+      const { data: userProfile, error: profileError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+
+      if (profileError) {
+        console.error('Profile lookup error:', profileError.message);
+        return res.status(404).json({ error: 'User profile not found' });
       }
 
-      try {
-        // Get user from database to verify they still exist and get fresh data
-        let users;
-        try {
-          users = await sql`
-            SELECT id, username, email, full_name, subscription_tier, subscription_status,
-                   monthly_quiz_count, monthly_quiz_reset_at, created_at
-            FROM users WHERE id = ${decoded.id}
-          `;
-        } catch (dbError) {
-          console.error('Database query error in auth:', {
-            userId: decoded.id,
-            error: dbError.message,
-            code: dbError.code,
-          });
-          // If database fails, return specific error
-          return res.status(503).json({
-            error: 'Database connection failed. Please try again.',
-            details: dbError.message
-          });
-        }
+      // Check subscription status if subscription exists
+      const { data: subscription } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', data.user.id)
+        .single();
 
-        const user = users[0] || null;
+      // Attach user to request for use in controllers
+      req.user = {
+        id: data.user.id,
+        email: data.user.email,
+        username: userProfile.username,
+        fullName: userProfile.full_name,
+        avatarUrl: userProfile.avatar_url,
+        subscriptionTier: subscription?.tier || 'free',
+        subscriptionStatus: subscription?.status || 'active',
+        createdAt: userProfile.created_at,
+        supabaseUser: data.user, // Store full Supabase user for RLS context
+      };
 
-        if (!user) {
-          console.warn('User not found in database:', { userId: decoded.id });
-          return res.status(404).json({ error: 'User not found in database' });
-        }
-
-        // Check if subscription is valid
-        if (user.subscription_status && !['active', 'trialing'].includes(user.subscription_status)) {
-          return res.status(403).json({
-            error: 'Subscription is not active',
-            status: user.subscription_status,
-          });
-        }
-
-        // Attach user to request for use in controllers
-        req.user = {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          fullName: user.full_name,
-          subscriptionTier: user.subscription_tier || 'free',
-          subscriptionStatus: user.subscription_status || 'active',
-          monthlyQuizCount: user.monthly_quiz_count || 0,
-          monthlyQuizResetAt: user.monthly_quiz_reset_at,
-          createdAt: user.created_at,
-        };
-
-        next();
-      } catch (error) {
-        console.error('Unexpected auth middleware error:', {
-          message: error.message,
-          stack: error.stack,
+      // Check if subscription is valid
+      if (subscription && !['active', 'trialing'].includes(subscription.status)) {
+        return res.status(403).json({
+          error: 'Subscription is not active',
+          status: subscription.status,
         });
-        res.status(500).json({ error: 'Authentication error', details: error.message });
       }
-    });
+
+      next();
+    } catch (error) {
+      console.error('Unexpected auth middleware error:', {
+        message: error.message,
+        userId: data.user.id,
+      });
+      res.status(500).json({ error: 'Authentication error', details: error.message });
+    }
   } catch (error) {
     console.error('Token verification error:', error);
     res.status(401).json({ error: 'Invalid token' });
@@ -130,6 +115,46 @@ const checkSubscriptionTier = (requiredTier) => {
 };
 
 /**
+ * Check daily quiz quota for free users
+ * Free tier: 5 quizzes per month
+ */
+const checkQuizQuota = async (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  // Pro and Premium users have unlimited quizzes
+  if (req.user.subscriptionTier !== 'free') {
+    return next();
+  }
+
+  try {
+    // Get free user's quiz count this month
+    const { data: attempts, error } = await supabase
+      .from('quiz_attempts')
+      .select('id', { count: 'exact' })
+      .eq('user_id', req.user.id)
+      .gte('completed_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+
+    if (error) throw error;
+
+    if (attempts && attempts.length >= 5) {
+      return res.status(403).json({
+        error: 'Monthly quiz limit reached',
+        message: 'Free users can create 5 quizzes per month. Upgrade to Pro for unlimited quizzes.',
+        quizzesUsed: attempts.length,
+        quizzesLimit: 5,
+      });
+    }
+
+    next();
+  } catch (error) {
+    console.error('Quiz quota check error:', error);
+    res.status(500).json({ error: 'Failed to check quiz quota' });
+  }
+};
+
+/**
  * Check if user has access to a specific feature
  * Features are mapped to tiers via database feature_flags table
  */
@@ -140,13 +165,15 @@ const checkFeatureAccess = (featureName) => {
     }
 
     try {
-      // Get feature from database
-      const features = await sql`
-        SELECT required_tier FROM feature_flags WHERE flag_name = ${featureName} AND enabled = true
-      `;
-      const feature = features[0] || null;
+      // Get feature from Supabase
+      const { data: feature, error } = await supabase
+        .from('feature_flags')
+        .select('*')
+        .eq('flag_name', featureName)
+        .eq('enabled', true)
+        .single();
 
-      if (!feature) {
+      if (error || !feature) {
         return res.status(404).json({ error: 'Feature not found' });
       }
 
@@ -176,7 +203,8 @@ const checkFeatureAccess = (featureName) => {
 
 /**
  * Verify ownership of a resource
- * Ensures user can only access their own resources
+ * NOTE: With Supabase Row-Level Security, this is largely handled automatically
+ * This middleware provides explicit ownership checks when needed
  */
 const verifyOwnership = (resourceField = 'user_id') => {
   return async (req, res, next) => {
@@ -194,38 +222,27 @@ const verifyOwnership = (resourceField = 'user_id') => {
       // Determine table name from route
       const path = req.path.split('/');
       const resource = path[path.length - 2]; // e.g., 'quizzes' from /api/quizzes/:id
-      const table = resource.slice(0, -1); // Remove trailing 's' for table name
+      const tableName = resource; // e.g., 'quizzes'
 
       // For security, validate table name against known tables
-      const validTables = ['quiz', 'note', 'teaching_session', 'weakness_quiz'];
-      if (!validTables.includes(table)) {
+      const validTables = ['quizzes', 'notes', 'teaching_sessions', 'weakness_quizzes', 'quiz_attempts'];
+      if (!validTables.includes(tableName)) {
         return res.status(400).json({ error: 'Invalid resource type' });
       }
 
-      // Query database to check ownership
-      // Note: Using separate queries for each table to avoid SQL injection
-      let result;
-      try {
-        if (table === 'quiz') {
-          result = await sql`SELECT user_id FROM quizzes WHERE id = ${resourceId}`;
-        } else if (table === 'note') {
-          result = await sql`SELECT user_id FROM notes WHERE id = ${resourceId}`;
-        } else if (table === 'teaching_session') {
-          result = await sql`SELECT user_id FROM teaching_sessions WHERE id = ${resourceId}`;
-        } else if (table === 'weakness_quiz') {
-          result = await sql`SELECT user_id FROM weakness_quizzes WHERE id = ${resourceId}`;
-        }
-      } catch (error) {
-        console.error('Database query error:', error);
-        return res.status(500).json({ error: 'Failed to verify ownership' });
-      }
+      // Query Supabase to check ownership
+      const { data: result, error } = await supabase
+        .from(tableName)
+        .select('user_id')
+        .eq('id', resourceId)
+        .single();
 
-      if (!result || result.length === 0) {
+      if (error || !result) {
         return res.status(404).json({ error: 'Resource not found' });
       }
 
       // Verify user owns the resource
-      if (result[0].user_id !== req.user.id) {
+      if (result.user_id !== req.user.id) {
         return res.status(403).json({ error: 'Unauthorized: You do not own this resource' });
       }
 
@@ -241,7 +258,7 @@ const verifyOwnership = (resourceField = 'user_id') => {
  * Optional authentication (allows both authenticated and unauthenticated users)
  * Populates req.user if token exists, otherwise continues
  */
-const optionalAuth = (req, res, next) => {
+const optionalAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -250,14 +267,37 @@ const optionalAuth = (req, res, next) => {
       return next(); // Continue without user
     }
 
-    jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production', (err, decoded) => {
-      if (err) {
-        return next(); // Continue without user
-      }
+    // Verify token with Supabase
+    const { data, error } = await supabase.auth.getUser(token);
 
-      req.user = decoded;
-      next();
-    });
+    if (error || !data.user) {
+      return next(); // Continue without user
+    }
+
+    // Get user profile
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', data.user.id)
+      .single();
+
+    req.user = {
+      id: data.user.id,
+      email: data.user.email,
+      username: userProfile?.username,
+      fullName: userProfile?.full_name,
+      avatarUrl: userProfile?.avatar_url,
+      subscriptionTier: subscription?.tier || 'free',
+      subscriptionStatus: subscription?.status || 'active',
+    };
+
+    next();
   } catch (error) {
     // Silently continue
     next();
@@ -267,6 +307,7 @@ const optionalAuth = (req, res, next) => {
 module.exports = {
   authenticateToken,
   checkSubscriptionTier,
+  checkQuizQuota,
   checkFeatureAccess,
   verifyOwnership,
   optionalAuth,

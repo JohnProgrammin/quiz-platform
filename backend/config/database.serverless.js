@@ -1,39 +1,22 @@
 /**
- * Neon Serverless Database Configuration
- * Uses Neon's HTTP-based serverless driver for stateless connections
- * Perfect for Vercel and other serverless environments
+ * Supabase PostgreSQL Database Configuration
+ * Uses Supabase's managed PostgreSQL with built-in Auth and Row-Level Security
+ * Perfect for serverless and production environments
  *
- * Advantages over connection pooling:
- * - No connection pool overhead
- * - Stateless (good for serverless)
- * - Automatic scaling
- * - Better for short-lived functions
+ * Advantages:
+ * - Built-in authentication and RLS
+ * - Automatic connection pooling
+ * - REST API and real-time subscriptions
+ * - Integrated storage
+ * - Zero DevOps overhead
  *
  * Usage:
- * const { sql } = require('./database.serverless');
- * const result = await sql`SELECT * FROM users WHERE id = ${userId}`;
+ * const { supabase } = require('./database.serverless');
+ * const { data, error } = await supabase.from('users').select('*').eq('id', userId);
  */
 
-const { neon } = require('@neondatabase/serverless');
+const { supabase } = require('./supabase');
 require('dotenv').config();
-
-// Validate DATABASE_URL
-const DATABASE_URL = process.env.DATABASE_URL;
-if (!DATABASE_URL) {
-  console.error('❌ ERROR: DATABASE_URL environment variable is not set!');
-  console.error('   Please add DATABASE_URL to your .env file');
-  process.exit(1);
-}
-
-// Initialize Neon SQL client
-let sql;
-try {
-  sql = neon(DATABASE_URL);
-  console.log('✅ Neon client initialized');
-} catch (error) {
-  console.error('❌ Failed to initialize Neon client:', error.message);
-  process.exit(1);
-}
 
 /**
  * Test database connection
@@ -41,21 +24,24 @@ try {
  */
 const testConnection = async () => {
   try {
-    console.log('Testing database connection...');
-    const result = await sql`SELECT NOW()`;
-    console.log('✅ Database connection successful (Neon Serverless)');
+    console.log('Testing Supabase connection...');
+    const { data, error } = await supabase
+      .from('users')
+      .select('id')
+      .limit(1);
+
+    if (error) throw error;
+    console.log('✅ Database connection successful (Supabase PostgreSQL)');
     return true;
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
-    console.error('   DATABASE_URL:', DATABASE_URL?.substring(0, 50) + '...');
 
     // Provide helpful error messages
-    if (error.message.includes('fetch failed')) {
+    if (error.message.includes('Failed to fetch')) {
       console.error('   Possible causes:');
-      console.error('   1. Neon database endpoint is unreachable');
-      console.error('   2. DATABASE_URL is incorrect or expired');
+      console.error('   1. Supabase endpoint is unreachable');
+      console.error('   2. SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is incorrect');
       console.error('   3. Network connectivity issue');
-      console.error('   4. Firewall blocking connection');
     }
 
     return false;
@@ -63,38 +49,59 @@ const testConnection = async () => {
 };
 
 /**
- * Helper function to get single row from query result
- * @param {string} query - SQL query using template literal
+ * Helper function to get single row from Supabase query
+ * @param {Promise} query - Supabase query promise
  * @returns {object} Single row or null
  */
 const getOne = async (query) => {
   try {
-    const result = await query;
-    return result && result.length > 0 ? result[0] : null;
+    const { data, error } = await query;
+    if (error) throw error;
+    return data && data.length > 0 ? data[0] : null;
   } catch (error) {
-    console.error('Database query error:', error);
+    console.error('Database query error:', error.message);
     throw error;
   }
 };
 
 /**
- * Helper function to get all rows from query result
- * @param {string} query - SQL query using template literal
+ * Helper function to get all rows from Supabase query
+ * @param {Promise} query - Supabase query promise
  * @returns {array} Array of rows
  */
 const getAll = async (query) => {
   try {
-    const result = await query;
-    return result || [];
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
   } catch (error) {
-    console.error('Database query error:', error);
+    console.error('Database query error:', error.message);
+    throw error;
+  }
+};
+
+/**
+ * Execute raw SQL query (for complex queries)
+ * Uses Supabase's rpc() function to execute custom PostgreSQL functions
+ * @param {string} functionName - Name of PostgreSQL function
+ * @param {object} params - Function parameters
+ * @returns {Promise} Query result
+ */
+const executeFunction = async (functionName, params = {}) => {
+  try {
+    const { data, error } = await supabase.rpc(functionName, params);
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Database function error:', error.message);
     throw error;
   }
 };
 
 module.exports = {
-  sql,
+  supabase,
   testConnection,
   getOne,
   getAll,
+  executeFunction,
 };
