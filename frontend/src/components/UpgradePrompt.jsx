@@ -49,7 +49,6 @@ function UpgradePrompt({ feature, compact = false, className = '' }) {
           onClick={() => navigate('/pricing')}
           className="btn-primary inline-flex items-center justify-center gap-2"
         >
-          <Zap className="w-5 h-5" />
           View Pricing
         </button>
 

@@ -639,9 +639,6 @@ function Landing() {
           ref={ctaRef}
           className={`reveal-scale ${ctaVisible ? 'visible' : ''} max-w-3xl mx-auto text-center`}
         >
-          <div className="w-20 h-20 rounded-full bg-brand-500 flex items-center justify-center mx-auto mb-6">
-            <Zap className="w-10 h-10 text-white" />
-          </div>
           <h2 className="text-3xl sm:text-5xl font-black text-ink mb-4">
             {t('landing.cta.title')}
           </h2>

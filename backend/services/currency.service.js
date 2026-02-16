@@ -331,18 +331,19 @@ class CurrencyService {
       return currency;
     }
     // Fallback mapping for unsupported currencies
+    // Default to NGN (Nigerian Naira - Paystack native currency)
     const fallback = {
-      AUD: 'USD',
-      CAD: 'USD',
-      NZD: 'USD',
-      JPY: 'USD',
-      CNY: 'USD',
-      MXN: 'USD',
-      BRL: 'USD',
-      GHS: 'GHS', // Ghana
+      AUD: 'NGN',
+      CAD: 'NGN',
+      NZD: 'NGN',
+      JPY: 'NGN',
+      CNY: 'NGN',
+      MXN: 'NGN',
+      BRL: 'NGN',
+      GHS: 'GHS', // Ghana uses GHS
       // Add more as Paystack adds support
     };
-    return fallback[currency] || 'USD';
+    return fallback[currency] || 'NGN'; // Default to NGN (Paystack's native currency)
   }
 
   /**

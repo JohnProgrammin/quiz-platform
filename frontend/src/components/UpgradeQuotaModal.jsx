@@ -76,7 +76,6 @@ function UpgradeQuotaModal({ type = 'quizzes', limit = 5, used = 5, onClose }) {
             onClick={() => navigate('/pricing')}
             className="w-full bg-brand-500 hover:bg-green-600 text-white font-black py-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
           >
-            <Zap className="w-5 h-5" />
             {config.ctaText} - $9.99/month
           </button>
           <button
