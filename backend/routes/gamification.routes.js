@@ -1,6 +1,5 @@
 const express = require('express');
 const { authenticateToken } = require('../middleware/auth');
-const { rateLimiter } = require('../middleware/rateLimiter');
 const gamificationController = require('../controllers/gamification.controller');
 
 const router = express.Router();
@@ -11,12 +10,12 @@ const router = express.Router();
  */
 
 // Get current user's gamification stats (requires auth)
-router.get('/stats', authenticateToken, rateLimiter(100), gamificationController.getUserStats);
+router.get('/stats', authenticateToken, gamificationController.getUserStats);
 
-// Get global leaderboard (public, rate limited)
-router.get('/leaderboard', rateLimiter(50), gamificationController.getLeaderboard);
+// Get global leaderboard (public)
+router.get('/leaderboard', gamificationController.getLeaderboard);
 
-// Get all achievements catalog (public, rate limited)
-router.get('/achievements', rateLimiter(50), gamificationController.getAchievements);
+// Get all achievements catalog (public)
+router.get('/achievements', gamificationController.getAchievements);
 
 module.exports = router;
