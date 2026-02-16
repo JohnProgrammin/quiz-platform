@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import UpgradePrompt from './UpgradePrompt';
 import UpgradeQuotaModal from './UpgradeQuotaModal';
-import { uploadNote, getNotes, deleteNote, generateQuiz } from '../api';
+import { uploadNote, getNotes, deleteNote, generateQuiz, getTrialStatus } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { Upload, FileText, Trash2, Sparkles, Loader, Lock } from 'lucide-react';
 
@@ -20,15 +20,28 @@ function Notes({ user, onLogout }) {
   const [questionCount, setQuestionCount] = useState(15);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
   const [quotaError, setQuotaError] = useState(null); // { type: 'notes'|'quizzes', limit, used }
+  const [hasActiveTrial, setHasActiveTrial] = useState(false);
 
-  // Tier-based limits
-  const isFree = tier === 'free';
+  // Tier-based limits (consider active trial as Pro)
+  const effectiveTier = hasActiveTrial ? 'pro' : tier;
+  const isFree = effectiveTier === 'free';
   const noteLimit = isFree ? 3 : Infinity;
   const canUploadMore = notes.length < noteLimit;
 
   useEffect(() => {
     loadNotes();
+    checkTrialStatus();
   }, []);
+
+  const checkTrialStatus = async () => {
+    try {
+      const response = await getTrialStatus();
+      setHasActiveTrial(response.data?.hasActiveTrial || false);
+    } catch (error) {
+      console.error('Error checking trial status:', error);
+      setHasActiveTrial(false);
+    }
+  };
 
   const loadNotes = async () => {
     try {
@@ -150,16 +163,23 @@ function Notes({ user, onLogout }) {
             </h1>
             <p className="text-lg text-slate font-semibold">{t('notes.dragDropFile')}</p>
           </div>
-          {isFree && (
-            <div className="bg-white border border-gray-300 rounded-lg px-6 py-4 text-right shadow-sm hidden sm:block">
-              <p className="font-black text-ink text-lg">{notes.length}/3</p>
-              <p className="text-xs font-semibold text-slate mt-1">{t('subscription.free')} {t('subscription.plan')}</p>
-            </div>
-          )}
+          <div className="bg-white border border-gray-300 rounded-lg px-6 py-4 text-right shadow-sm hidden sm:block">
+            {isFree ? (
+              <>
+                <p className="font-black text-ink text-lg">{notes.length}/3</p>
+                <p className="text-xs font-semibold text-slate mt-1">{t('subscription.free')} {t('subscription.plan')}</p>
+              </>
+            ) : (
+              <>
+                <p className="font-black text-brand-500 text-lg">∞</p>
+                <p className="text-xs font-semibold text-brand-600 mt-1">Unlimited Notes</p>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Tier Limits Banner */}
-        {!canUploadMore && (
+        {!canUploadMore && !hasActiveTrial && (
           <div className="bg-red-50 border border-red-300 rounded-lg p-6 mb-10 shadow-sm">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
