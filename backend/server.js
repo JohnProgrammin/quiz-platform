@@ -1075,6 +1075,46 @@ if (process.env.NODE_ENV === 'development') {
       });
     }
   });
+
+  /**
+   * Test Groq API Connection
+   * GET /api/v1/test/groq-api
+   * Verifies the Groq API key is valid and working
+   */
+  app.get('/api/v1/test/groq-api', async (req, res) => {
+    try {
+      console.log('🔍 Testing Groq API connection...');
+      console.log(`API Key exists: ${!!process.env.GROQ_API_KEY}`);
+      console.log(`API Key starts with: ${process.env.GROQ_API_KEY?.substring(0, 10)}...`);
+
+      const aiService = require('./services/ai.service');
+
+      // Try a simple AI call to test the API key
+      const testPrompt = 'Say hello briefly';
+      const response = await aiService.groq.chat.completions.create({
+        messages: [{ role: 'user', content: testPrompt }],
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 50,
+      });
+
+      console.log('✅ Groq API test successful!');
+      res.json({
+        status: 'success',
+        message: 'Groq API is working correctly',
+        apiKeyValid: true,
+        response: response.choices[0]?.message?.content,
+      });
+    } catch (error) {
+      console.error('❌ Groq API test failed:', error.message);
+      res.status(500).json({
+        status: 'error',
+        message: 'Groq API test failed',
+        error: error.message,
+        apiKeyExists: !!process.env.GROQ_API_KEY,
+        suggestion: 'Check if GROQ_API_KEY is valid in Render environment variables',
+      });
+    }
+  });
 }
 
 // ============================================
