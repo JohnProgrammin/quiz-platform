@@ -3,7 +3,7 @@
  * Handles coupon validation and redemption for trial access
  */
 
-const sql = require('../db');
+const { sql } = require('../config/database.serverless');
 
 class CouponService {
   /**
