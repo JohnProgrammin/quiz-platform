@@ -76,14 +76,34 @@ const asyncHandler = (fn) => (req, res, next) => {
 };
 
 /**
- * 404 Not Found handler
+ * 404 Not Found handler - SPA Fallback
+ * Serves index.html for SPA routes (client-side routing)
+ * Returns JSON for API routes
  * Should be the second-to-last middleware
  */
 const notFoundHandler = (req, res) => {
-  res.status(404).json({
-    error: `Route not found: ${req.method} ${req.path}`,
-    status: 404,
-    timestamp: new Date().toISOString(),
+  // If it's an API route, return 404 JSON
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({
+      error: `API route not found: ${req.method} ${req.path}`,
+      status: 404,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  // For SPA routes, serve index.html (let React Router handle the routing)
+  // This fixes the 404 on page refresh issue
+  const path = require('path');
+  const indexPath = path.join(__dirname, '../..', 'frontend', 'public', 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      // Fallback if index.html not found
+      res.status(404).json({
+        error: `Resource not found: ${req.path}`,
+        status: 404,
+        timestamp: new Date().toISOString(),
+      });
+    }
   });
 };
 
