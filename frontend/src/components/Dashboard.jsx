@@ -42,14 +42,18 @@ function Dashboard({ user, onLogout }) {
         getUserStats().catch(() => ({ data: null })), // Gamification is optional
       ]);
 
-      const attempts = attemptsRes.data;
+      // Handle both response structures: { data: [...] } and { data: { data: [...] } }
+      const attempts = Array.isArray(attemptsRes.data) ? attemptsRes.data : (attemptsRes.data?.data || []);
+      const notes = Array.isArray(notesRes.data) ? notesRes.data : (notesRes.data?.data || []);
+      const quizzes = Array.isArray(quizzesRes.data) ? quizzesRes.data : (quizzesRes.data?.data || []);
+
       const avgScore = attempts.length > 0
         ? Math.round(attempts.reduce((sum, a) => sum + a.percentage, 0) / attempts.length)
         : 0;
 
       setStats({
-        totalNotes: notesRes.data.length,
-        totalQuizzes: quizzesRes.data.length,
+        totalNotes: notes.length,
+        totalQuizzes: quizzes.length,
         totalAttempts: attempts.length,
         averageScore: avgScore,
       });

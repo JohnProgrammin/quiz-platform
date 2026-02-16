@@ -25,12 +25,14 @@ function Quiz({ user, onLogout }) {
   const loadQuiz = async () => {
     try {
       const response = await getQuiz(id);
-      setQuiz(response.data);
+      // API returns { data: { ...quiz, questions: [...] } }
+      const quizData = response.data.data || response.data;
+      setQuiz(quizData);
 
       // Load teaching summary for Pro+ users
-      if (tier !== 'free' && response.data.note_id) {
+      if (tier !== 'free' && quizData?.note_id) {
         try {
-          const teachingRes = await getPreQuizSummary(response.data.note_id);
+          const teachingRes = await getPreQuizSummary(quizData.note_id);
           setTeaching(teachingRes.data);
         } catch (err) {
           console.warn('Failed to load teaching summary:', err);
@@ -111,13 +113,13 @@ function Quiz({ user, onLogout }) {
     );
   }
 
-  if (!quiz) {
+  if (!quiz || !quiz.questions || quiz.questions.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar user={user} onLogout={onLogout} />
         <div className="flex flex-col items-center justify-center h-96">
           <X className="w-16 h-16 text-danger mb-4" />
-          <p className="text-ink font-black text-2xl">Quiz not found</p>
+          <p className="text-ink font-black text-2xl">Quiz not found or has no questions</p>
         </div>
       </div>
     );
