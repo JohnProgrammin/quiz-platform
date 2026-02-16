@@ -60,7 +60,7 @@ function Notes({ user, onLogout }) {
 
     // Check tier limits
     if (!canUploadMore) {
-      setUploadMessage(`Note limit reached (${noteLimit} max for ${tier} users). Upgrade to Pro for unlimited notes.`);
+      setUploadMessage(`Note limit reached (${noteLimit} max for ${effectiveTier} users). Upgrade to Pro for unlimited notes.`);
       return;
     }
 
