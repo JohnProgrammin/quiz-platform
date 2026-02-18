@@ -3,7 +3,7 @@
  * Handles user stats, leaderboard, and achievement endpoints
  */
 
-const { sql } = require('../config/database.serverless');
+const { supabase } = require('../config/database.serverless');
 const gamificationService = require('../services/gamification.service');
 
 /**
@@ -66,18 +66,15 @@ exports.getLeaderboard = async (req, res) => {
  */
 exports.getAchievements = async (req, res) => {
   try {
-    const achievements = await sql`
-      SELECT
-        id,
-        key,
-        name,
-        description,
-        icon,
-        tier,
-        xp_reward
-      FROM achievements
-      ORDER BY tier ASC, xp_reward DESC
-    `;
+    const { data: achievements, error } = await supabase
+      .from('achievements')
+      .select('id, key, name, description, icon, tier, xp_reward')
+      .order('tier', { ascending: true })
+      .order('xp_reward', { ascending: false });
+
+    if (error) {
+      throw new Error(error.message);
+    }
 
     res.json({
       success: true,

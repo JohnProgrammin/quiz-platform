@@ -7,7 +7,7 @@ const aiService = require('../services/ai.service');
  */
 exports.getPreQuizSummary = async (req, res) => {
   try {
-    const { sql } = require('../config/database.serverless');
+    const { supabase } = require('../config/database.serverless');
     const { noteId } = req.body;
 
     if (!noteId) {
@@ -15,12 +15,13 @@ exports.getPreQuizSummary = async (req, res) => {
     }
 
     // Get note
-    const notes = await sql`
-      SELECT content FROM notes
-      WHERE id = ${noteId} AND user_id = ${req.user.id}
-    `;
+    const { data: notes, error } = await supabase
+      .from('notes')
+      .select('content')
+      .eq('id', noteId)
+      .eq('user_id', req.user.id);
 
-    if (notes.length === 0) {
+    if (error || !notes || notes.length === 0) {
       return res.status(404).json({ error: 'Note not found' });
     }
 
@@ -48,7 +49,7 @@ exports.getPreQuizSummary = async (req, res) => {
  */
 exports.generateWeaknessMasteryQuiz = async (req, res) => {
   try {
-    const { sql } = require('../config/database.serverless');
+    const { supabase } = require('../config/database.serverless');
     const userId = req.user.id;
     const { attemptId, weakTopics } = req.body;
 
@@ -59,24 +60,26 @@ exports.generateWeaknessMasteryQuiz = async (req, res) => {
     }
 
     // Get original attempt to find the quiz
-    const attempts = await sql`
-      SELECT quiz_id FROM quiz_attempts
-      WHERE id = ${attemptId} AND user_id = ${userId}
-    `;
+    const { data: attempts, error: attemptError } = await supabase
+      .from('quiz_attempts')
+      .select('quiz_id')
+      .eq('id', attemptId)
+      .eq('user_id', userId);
 
-    if (attempts.length === 0) {
+    if (attemptError || !attempts || attempts.length === 0) {
       return res.status(404).json({ error: 'Attempt not found' });
     }
 
     const quizId = attempts[0].quiz_id;
 
     // Get quiz content
-    const quizzes = await sql`
-      SELECT id, questions FROM quizzes
-      WHERE id = ${quizId} AND user_id = ${userId}
-    `;
+    const { data: quizzes, error: quizError } = await supabase
+      .from('quizzes')
+      .select('id, questions')
+      .eq('id', quizId)
+      .eq('user_id', userId);
 
-    if (quizzes.length === 0) {
+    if (quizError || !quizzes || quizzes.length === 0) {
       return res.status(404).json({ error: 'Quiz not found' });
     }
 
@@ -97,10 +100,20 @@ exports.generateWeaknessMasteryQuiz = async (req, res) => {
     const weaknessQuizId = uuidv4();
 
     // Save weakness quiz
-    await sql`
-      INSERT INTO weakness_quizzes (id, user_id, quiz_attempt_id, topic, questions, created_at)
-      VALUES (${weaknessQuizId}, ${userId}, ${attemptId}, ${weakTopics.join(', ')}, ${JSON.stringify(weaknessQuiz)}, NOW())
-    `;
+    const { error: insertError } = await supabase
+      .from('weakness_quizzes')
+      .insert([{
+        id: weaknessQuizId,
+        user_id: userId,
+        quiz_attempt_id: attemptId,
+        topic: weakTopics.join(', '),
+        questions: JSON.stringify(weaknessQuiz),
+        created_at: new Date().toISOString()
+      }]);
+
+    if (insertError) {
+      throw new Error(insertError.message);
+    }
 
     res.status(201).json({
       data: {
@@ -127,7 +140,7 @@ exports.generateWeaknessMasteryQuiz = async (req, res) => {
  */
 exports.createSession = async (req, res) => {
   try {
-    const { sql } = require('../config/database.serverless');
+    const { supabase } = require('../config/database.serverless');
     const userId = req.user.id;
     const { topic, noteId } = req.body;
 
@@ -137,11 +150,20 @@ exports.createSession = async (req, res) => {
 
     const sessionId = uuidv4();
 
-    const sessions = await sql`
-      INSERT INTO teaching_sessions (id, user_id, topic, note_id, conversation_history)
-      VALUES (${sessionId}, ${userId}, ${topic}, ${noteId || null}, '[]'::jsonb)
-      RETURNING *
-    `;
+    const { data: sessions, error } = await supabase
+      .from('teaching_sessions')
+      .insert([{
+        id: sessionId,
+        user_id: userId,
+        topic: topic,
+        note_id: noteId || null,
+        conversation_history: []
+      }])
+      .select();
+
+    if (error || !sessions || sessions.length === 0) {
+      throw new Error(error?.message || 'Failed to create session');
+    }
 
     res.status(201).json({
       message: 'Teaching session created',
@@ -158,18 +180,20 @@ exports.createSession = async (req, res) => {
  */
 exports.listSessions = async (req, res) => {
   try {
-    const { sql } = require('../config/database.serverless');
+    const { supabase } = require('../config/database.serverless');
     const userId = req.user.id;
 
-    const sessions = await sql`
-      SELECT id, topic, note_id, message_count, session_status,
-             created_at, last_message_at
-      FROM teaching_sessions
-      WHERE user_id = ${userId}
-      ORDER BY last_message_at DESC
-    `;
+    const { data: sessions, error } = await supabase
+      .from('teaching_sessions')
+      .select('id, topic, note_id, message_count, session_status, created_at, last_message_at')
+      .eq('user_id', userId)
+      .order('last_message_at', { ascending: false });
 
-    res.json({ data: sessions });
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    res.json({ data: sessions || [] });
   } catch (error) {
     console.error('List sessions error:', error);
     res.status(500).json({ error: 'Failed to list teaching sessions' });
@@ -181,16 +205,17 @@ exports.listSessions = async (req, res) => {
  */
 exports.getSession = async (req, res) => {
   try {
-    const { sql } = require('../config/database.serverless');
+    const { supabase } = require('../config/database.serverless');
     const userId = req.user.id;
     const { id } = req.params;
 
-    const sessions = await sql`
-      SELECT * FROM teaching_sessions
-      WHERE id = ${id} AND user_id = ${userId}
-    `;
+    const { data: sessions, error } = await supabase
+      .from('teaching_sessions')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', userId);
 
-    if (sessions.length === 0) {
+    if (error || !sessions || sessions.length === 0) {
       return res.status(404).json({ error: 'Session not found' });
     }
 
@@ -219,7 +244,7 @@ exports.getSession = async (req, res) => {
  */
 exports.sendMessage = async (req, res) => {
   try {
-    const { sql } = require('../config/database.serverless');
+    const { supabase } = require('../config/database.serverless');
     const userId = req.user.id;
     const { id } = req.params;
     const { message } = req.body;
@@ -239,12 +264,13 @@ exports.sendMessage = async (req, res) => {
     }
 
     // 1. Get session
-    const sessions = await sql`
-      SELECT * FROM teaching_sessions
-      WHERE id = ${id} AND user_id = ${userId}
-    `;
+    const { data: sessions, error: sessionError } = await supabase
+      .from('teaching_sessions')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', userId);
 
-    if (sessions.length === 0) {
+    if (sessionError || !sessions || sessions.length === 0) {
       return res.status(404).json({ error: 'Session not found' });
     }
 
@@ -281,10 +307,12 @@ exports.sendMessage = async (req, res) => {
     // 3. Get note content if linked
     let noteContent = '';
     if (session.note_id) {
-      const notes = await sql`
-        SELECT content FROM notes WHERE id = ${session.note_id}
-      `;
-      if (notes.length > 0) {
+      const { data: notes, error: noteError } = await supabase
+        .from('notes')
+        .select('content')
+        .eq('id', session.note_id);
+
+      if (!noteError && notes && notes.length > 0) {
         noteContent = notes[0].content || '';
       }
     }
@@ -317,15 +345,20 @@ exports.sendMessage = async (req, res) => {
     );
 
     // 7. Update database
-    await sql`
-      UPDATE teaching_sessions
-      SET conversation_history = ${JSON.stringify(updatedHistory)}::jsonb,
-          message_count = ${updatedHistory.length},
-          tokens_used = tokens_used + ${estimatedTokens},
-          last_message_at = NOW(),
-          updated_at = NOW()
-      WHERE id = ${id}
-    `;
+    const { error: updateError } = await supabase
+      .from('teaching_sessions')
+      .update({
+        conversation_history: updatedHistory,
+        message_count: updatedHistory.length,
+        tokens_used: (session.tokens_used || 0) + estimatedTokens,
+        last_message_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id);
+
+    if (updateError) {
+      throw new Error(updateError.message);
+    }
 
     res.json({
       message: 'Message sent successfully',
@@ -355,7 +388,7 @@ exports.sendMessage = async (req, res) => {
  */
 exports.updateSessionStatus = async (req, res) => {
   try {
-    const { sql } = require('../config/database.serverless');
+    const { supabase } = require('../config/database.serverless');
     const userId = req.user.id;
     const { id } = req.params;
     const { status } = req.body;
@@ -369,15 +402,17 @@ exports.updateSessionStatus = async (req, res) => {
       });
     }
 
-    const result = await sql`
-      UPDATE teaching_sessions
-      SET session_status = ${status},
-          updated_at = NOW()
-      WHERE id = ${id} AND user_id = ${userId}
-      RETURNING id, session_status
-    `;
+    const { data: result, error } = await supabase
+      .from('teaching_sessions')
+      .update({
+        session_status: status,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .eq('user_id', userId)
+      .select('id, session_status');
 
-    if (result.length === 0) {
+    if (error || !result || result.length === 0) {
       return res.status(404).json({ error: 'Session not found' });
     }
 

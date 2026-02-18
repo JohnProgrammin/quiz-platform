@@ -3,7 +3,7 @@
  * Handles XP awards, level progression, streaks, and achievements
  */
 
-const { sql } = require('../config/database.serverless');
+const { supabase } = require('../config/database.serverless');
 
 // XP reward constants
 const XP_REWARDS = {
@@ -52,26 +52,40 @@ const getProgressToNextLevel = (totalXP, currentLevel) => {
 exports.awardXP = async (userId, amount, reason, metadata = {}) => {
   try {
     // Award XP - use UPSERT to create record if doesn't exist
-    await sql`
-      INSERT INTO user_gamification (user_id, total_xp, level)
-      VALUES (${userId}, ${amount}, 1)
-      ON CONFLICT (user_id) DO UPDATE SET
-        total_xp = user_gamification.total_xp + ${amount},
-        updated_at = CURRENT_TIMESTAMP
-    `;
+    const { error: upsertError } = await supabase
+      .from('user_gamification')
+      .upsert([{
+        user_id: userId,
+        total_xp: amount,
+        level: 1
+      }], { onConflict: 'user_id' });
+
+    if (upsertError) {
+      throw new Error(upsertError.message);
+    }
 
     // Log transaction
-    await sql`
-      INSERT INTO xp_transactions (user_id, amount, reason, metadata)
-      VALUES (${userId}, ${amount}, ${reason}, ${JSON.stringify(metadata)})
-    `;
+    const { error: insertError } = await supabase
+      .from('xp_transactions')
+      .insert([{
+        user_id: userId,
+        amount: amount,
+        reason: reason,
+        metadata: JSON.stringify(metadata)
+      }]);
+
+    if (insertError) {
+      throw new Error(insertError.message);
+    }
 
     // Get updated stats
-    const result = await sql`
-      SELECT total_xp, level FROM user_gamification WHERE user_id = ${userId}
-    `;
+    const { data: result, error: selectError } = await supabase
+      .from('user_gamification')
+      .select('total_xp, level')
+      .eq('user_id', userId)
+      .single();
 
-    if (!result || result.length === 0) {
+    if (selectError || !result) {
       // Fallback: should never happen with UPSERT, but just in case
       return {
         xpAwarded: amount,
@@ -81,18 +95,24 @@ exports.awardXP = async (userId, amount, reason, metadata = {}) => {
       };
     }
 
-    const { total_xp: newTotalXP } = result[0];
+    const { total_xp: newTotalXP } = result;
     const newLevel = calculateLevelFromXP(newTotalXP);
-    const oldLevel = result[0].level;
+    const oldLevel = result.level;
     const leveledUp = newLevel > oldLevel;
 
     // Update level if leveled up
     if (leveledUp) {
-      await sql`
-        UPDATE user_gamification
-        SET level = ${newLevel}, updated_at = CURRENT_TIMESTAMP
-        WHERE user_id = ${userId}
-      `;
+      const { error: updateError } = await supabase
+        .from('user_gamification')
+        .update({
+          level: newLevel,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', userId);
+
+      if (updateError) {
+        throw new Error(updateError.message);
+      }
 
       // Unlock "level_X" achievements
       await checkAchievements(userId, [
@@ -127,17 +147,17 @@ exports.updateStreak = async (userId) => {
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
     // Get current streak info
-    const result = await sql`
-      SELECT current_streak, longest_streak, last_activity_date
-      FROM user_gamification
-      WHERE user_id = ${userId}
-    `;
+    const { data: result, error: selectError } = await supabase
+      .from('user_gamification')
+      .select('current_streak, longest_streak, last_activity_date')
+      .eq('user_id', userId)
+      .single();
 
-    if (!result || result.length === 0) {
+    if (selectError || !result) {
       throw new Error('User gamification record not found');
     }
 
-    const { current_streak: oldStreak, longest_streak: longestStreak, last_activity_date: lastDate } = result[0];
+    const { current_streak: oldStreak, longest_streak: longestStreak, last_activity_date: lastDate } = result;
     let newStreak = oldStreak;
     let newLongestStreak = longestStreak;
 
@@ -164,15 +184,19 @@ exports.updateStreak = async (userId) => {
     }
 
     // Update database
-    await sql`
-      UPDATE user_gamification
-      SET
-        current_streak = ${newStreak},
-        longest_streak = ${newLongestStreak},
-        last_activity_date = ${today.toISOString().split('T')[0]},
-        updated_at = CURRENT_TIMESTAMP
-      WHERE user_id = ${userId}
-    `;
+    const { error: updateError } = await supabase
+      .from('user_gamification')
+      .update({
+        current_streak: newStreak,
+        longest_streak: newLongestStreak,
+        last_activity_date: today.toISOString().split('T')[0],
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_id', userId);
+
+    if (updateError) {
+      throw new Error(updateError.message);
+    }
 
     // Check streak achievements
     await checkAchievements(userId, [
@@ -199,27 +223,37 @@ const checkAchievements = async (userId, achievements) => {
       if (!condition) continue;
 
       // Get achievement ID
-      const achievementResult = await sql`
-        SELECT id FROM achievements WHERE key = ${key}
-      `;
+      const { data: achievementResult, error: achieveError } = await supabase
+        .from('achievements')
+        .select('id')
+        .eq('key', key)
+        .single();
 
-      if (!achievementResult || achievementResult.length === 0) continue;
+      if (achieveError || !achievementResult) continue;
 
-      const achievementId = achievementResult[0].id;
+      const achievementId = achievementResult.id;
 
       // Check if already unlocked
-      const existing = await sql`
-        SELECT id FROM user_achievements
-        WHERE user_id = ${userId} AND achievement_id = ${achievementId}
-      `;
+      const { data: existing, error: existError } = await supabase
+        .from('user_achievements')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('achievement_id', achievementId)
+        .single();
 
-      if (existing && existing.length > 0) continue; // Already unlocked
+      if (!existError && existing) continue; // Already unlocked
 
       // Unlock achievement
-      await sql`
-        INSERT INTO user_achievements (user_id, achievement_id)
-        VALUES (${userId}, ${achievementId})
-      `;
+      const { error: insertError } = await supabase
+        .from('user_achievements')
+        .insert([{
+          user_id: userId,
+          achievement_id: achievementId
+        }]);
+
+      if (insertError) {
+        console.warn('Failed to insert achievement:', insertError);
+      }
     }
   } catch (error) {
     console.error('Error checking achievements:', error);
@@ -234,31 +268,41 @@ const checkAchievements = async (userId, achievements) => {
 exports.checkAchievement = async (userId, achievementKey, metadata = {}) => {
   try {
     // Get achievement details
-    const achievementResult = await sql`
-      SELECT id, xp_reward FROM achievements WHERE key = ${achievementKey}
-    `;
+    const { data: achievementResult, error: achieveError } = await supabase
+      .from('achievements')
+      .select('id, xp_reward')
+      .eq('key', achievementKey)
+      .single();
 
-    if (!achievementResult || achievementResult.length === 0) {
+    if (achieveError || !achievementResult) {
       return null; // Achievement doesn't exist
     }
 
-    const { id: achievementId, xp_reward: xpReward } = achievementResult[0];
+    const { id: achievementId, xp_reward: xpReward } = achievementResult;
 
     // Check if already unlocked
-    const existing = await sql`
-      SELECT id FROM user_achievements
-      WHERE user_id = ${userId} AND achievement_id = ${achievementId}
-    `;
+    const { data: existing, error: existError } = await supabase
+      .from('user_achievements')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('achievement_id', achievementId)
+      .single();
 
-    if (existing && existing.length > 0) {
+    if (!existError && existing) {
       return null; // Already unlocked
     }
 
     // Unlock achievement
-    await sql`
-      INSERT INTO user_achievements (user_id, achievement_id)
-      VALUES (${userId}, ${achievementId})
-    `;
+    const { error: insertError } = await supabase
+      .from('user_achievements')
+      .insert([{
+        user_id: userId,
+        achievement_id: achievementId
+      }]);
+
+    if (insertError) {
+      throw new Error(insertError.message);
+    }
 
     // Award XP for achievement
     if (xpReward > 0) {
@@ -281,34 +325,30 @@ exports.checkAchievement = async (userId, achievementKey, metadata = {}) => {
  */
 exports.getUserStats = async (userId) => {
   try {
-    const gameResult = await sql`
-      SELECT
-        total_xp,
-        level,
-        current_streak,
-        longest_streak,
-        last_activity_date,
-        created_at
-      FROM user_gamification
-      WHERE user_id = ${userId}
-    `;
+    const { data: gameResult, error: gameError } = await supabase
+      .from('user_gamification')
+      .select('total_xp, level, current_streak, longest_streak, last_activity_date, created_at')
+      .eq('user_id', userId)
+      .single();
 
-    if (!gameResult || gameResult.length === 0) {
+    if (gameError || !gameResult) {
       return null;
     }
 
-    const stats = gameResult[0];
+    const stats = gameResult;
     const nextLevelXP = calculateXpForLevel(stats.level + 1);
     const progress = getProgressToNextLevel(stats.total_xp, stats.level);
 
     // Get achievements
-    const achievementsResult = await sql`
-      SELECT a.key, a.name, a.description, a.icon, a.tier, a.xp_reward, ua.unlocked_at
-      FROM user_achievements ua
-      JOIN achievements a ON ua.achievement_id = a.id
-      WHERE ua.user_id = ${userId}
-      ORDER BY ua.unlocked_at DESC
-    `;
+    const { data: achievementsResult, error: achieveError } = await supabase
+      .from('user_achievements')
+      .select('achievements(key, name, description, icon, tier, xp_reward), unlocked_at')
+      .eq('user_id', userId)
+      .order('unlocked_at', { ascending: false });
+
+    if (achieveError) {
+      console.error('Error fetching achievements:', achieveError);
+    }
 
     return {
       totalXP: stats.total_xp,
@@ -319,7 +359,10 @@ exports.getUserStats = async (userId) => {
       createdAt: stats.created_at,
       nextLevelXP,
       progressToNextLevel: progress,
-      achievements: achievementsResult || [],
+      achievements: (achievementsResult || []).map(ua => ({
+        ...ua.achievements,
+        unlocked_at: ua.unlocked_at
+      })),
     };
   } catch (error) {
     console.error('Error getting user stats:', error);
@@ -332,24 +375,35 @@ exports.getUserStats = async (userId) => {
  */
 exports.getLeaderboard = async (limit = 100) => {
   try {
-    const result = await sql`
-      SELECT
-        u.id,
-        u.username,
-        ug.level,
-        ug.total_xp,
-        ug.current_streak,
-        ug.longest_streak,
-        COUNT(DISTINCT ua.id) as achievement_count
-      FROM user_gamification ug
-      JOIN users u ON ug.user_id = u.id
-      LEFT JOIN user_achievements ua ON ug.user_id = ua.user_id
-      GROUP BY u.id, u.username, ug.level, ug.total_xp, ug.current_streak, ug.longest_streak
-      ORDER BY ug.level DESC, ug.total_xp DESC
-      LIMIT ${limit}
-    `;
+    const { data: result, error } = await supabase
+      .from('user_gamification')
+      .select(`
+        user_id,
+        level,
+        total_xp,
+        current_streak,
+        longest_streak,
+        users(id, username),
+        user_achievements(id)
+      `)
+      .order('level', { ascending: false })
+      .order('total_xp', { ascending: false })
+      .limit(limit);
 
-    return result || [];
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    // Transform the result to match expected format
+    return (result || []).map(row => ({
+      id: row.users?.id,
+      username: row.users?.username,
+      level: row.level,
+      total_xp: row.total_xp,
+      current_streak: row.current_streak,
+      longest_streak: row.longest_streak,
+      achievement_count: (row.user_achievements || []).length
+    }));
   } catch (error) {
     console.error('Error getting leaderboard:', error);
     throw error;
@@ -362,12 +416,17 @@ exports.getLeaderboard = async (limit = 100) => {
  */
 exports.initializeUser = async (userId) => {
   try {
-    const result = await sql`
-      INSERT INTO user_gamification (user_id)
-      VALUES (${userId})
-      ON CONFLICT (user_id) DO NOTHING
-      RETURNING id
-    `;
+    const { data: result, error } = await supabase
+      .from('user_gamification')
+      .insert([{
+        user_id: userId
+      }], { onConflict: 'user_id' })
+      .select('id');
+
+    if (error && !error.message.includes('duplicate')) {
+      throw new Error(error.message);
+    }
+
     return result && result.length > 0;
   } catch (error) {
     console.error('Error initializing user gamification:', error);

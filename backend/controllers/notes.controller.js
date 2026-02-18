@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const { sql } = require('../config/database.serverless');
+const { supabase } = require('../config/database.serverless');
 const storageService = require('../services/storage.service');
 const aiService = require('../services/ai.service');
 
@@ -40,30 +40,33 @@ exports.uploadNote = async (req, res) => {
       fileUrl = `file://${file.originalname}`;
     }
 
-    // Save to database using Neon serverless syntax
-    const result = await sql`
-      INSERT INTO notes (id, user_id, title, filename, file_size, file_type, storage_key, storage_url, content, content_length, word_count, created_at, updated_at)
-      VALUES (
-        ${noteId},
-        ${userId},
-        ${file.originalname},
-        ${file.originalname},
-        ${file.size || 0},
-        ${file.mimetype || 'text/plain'},
-        ${'notes/' + userId + '/' + noteId + '/' + file.originalname},
-        ${fileUrl},
-        ${contentText},
-        ${contentText.length},
-        ${contentText.split(/\s+/).length},
-        NOW(),
-        NOW()
-      )
-      RETURNING *
-    `;
+    // Save to database using Supabase
+    const { data, error } = await supabase
+      .from('notes')
+      .insert([{
+        id: noteId,
+        user_id: userId,
+        title: file.originalname,
+        filename: file.originalname,
+        file_size: file.size || 0,
+        file_type: file.mimetype || 'text/plain',
+        storage_key: 'notes/' + userId + '/' + noteId + '/' + file.originalname,
+        storage_url: fileUrl,
+        content: contentText,
+        content_length: contentText.length,
+        word_count: contentText.split(/\s+/).length,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }])
+      .select();
+
+    if (error) {
+      throw new Error(error.message);
+    }
 
     res.status(201).json({
       message: 'Note uploaded successfully',
-      data: result[0],
+      data: data?.[0],
       remainingQuota: req.remainingNotes,
     });
   } catch (error) {
@@ -82,15 +85,18 @@ exports.getNotes = async (req, res) => {
     const userId = req.user.id;
     const userTier = req.user?.subscription_tier || 'free';
 
-    // Get notes for user using Neon serverless syntax
-    const notes = await sql`
-      SELECT id, title, filename, storage_url, content, created_at
-      FROM notes
-      WHERE user_id = ${userId}
-      ORDER BY created_at DESC
-    `;
+    // Get notes for user using Supabase
+    const { data: notes, error } = await supabase
+      .from('notes')
+      .select('id, title, filename, storage_url, content, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
 
-    res.status(200).json({ data: notes });
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    res.status(200).json({ data: notes || [] });
   } catch (error) {
     console.error('Get notes error:', error);
     res.status(500).json({ error: 'Failed to get notes' });
@@ -105,16 +111,18 @@ exports.getNote = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    const result = await sql`
-      SELECT * FROM notes
-      WHERE id = ${id} AND user_id = ${userId}
-    `;
+    const { data: result, error } = await supabase
+      .from('notes')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .single();
 
-    if (result.length === 0) {
+    if (error || !result) {
       return res.status(404).json({ error: 'Note not found' });
     }
 
-    res.json({ data: result[0] });
+    res.json({ data: result });
   } catch (error) {
     console.error('Get note error:', error);
     res.status(500).json({ error: 'Failed to get note' });
@@ -129,30 +137,37 @@ exports.deleteNote = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    // Get note to find file URL using Neon serverless syntax
-    const result = await sql`
-      SELECT storage_url FROM notes
-      WHERE id = ${id} AND user_id = ${userId}
-    `;
+    // Get note to find file URL using Supabase
+    const { data: result, error: selectError } = await supabase
+      .from('notes')
+      .select('storage_url')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .single();
 
-    if (result.length === 0) {
+    if (selectError || !result) {
       return res.status(404).json({ error: 'Note not found' });
     }
 
-    const fileUrl = result[0].storage_url;
+    const fileUrl = result.storage_url;
 
     // Delete from R2
     try {
       await storageService.deleteFile(fileUrl);
-    } catch (error) {
-      console.warn('R2 deletion failed:', error);
+    } catch (storageError) {
+      console.warn('R2 deletion failed:', storageError);
     }
 
-    // Delete from database using Neon serverless syntax
-    await sql`
-      DELETE FROM notes
-      WHERE id = ${id} AND user_id = ${userId}
-    `;
+    // Delete from database using Supabase
+    const { error: deleteError } = await supabase
+      .from('notes')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId);
+
+    if (deleteError) {
+      throw new Error(deleteError.message);
+    }
 
     res.json({ message: 'Note deleted successfully' });
   } catch (error) {

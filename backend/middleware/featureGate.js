@@ -3,7 +3,7 @@
  * Controls access to features based on subscription tier
  */
 
-const { sql } = require('../config/database.serverless');
+const { supabase } = require('../config/database.serverless');
 
 const TIER_LEVELS = {
   free: 0,
@@ -64,13 +64,17 @@ exports.checkQuizQuota = async (req, res, next) => {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const result = await sql`
-      SELECT COUNT(*) as count FROM quizzes
-      WHERE user_id = ${req.user.id} AND created_at >= ${monthStart.toISOString()}
-    `;
+    const { count: quizzesThisMonth, error } = await supabase
+      .from('quizzes')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', req.user.id)
+      .gte('created_at', monthStart.toISOString());
 
-    const quizzesThisMonth = parseInt(result[0]?.count || 0);
-    const remainingQuizzes = 5 - quizzesThisMonth;
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const remainingQuizzes = 5 - (quizzesThisMonth || 0);
 
     if (remainingQuizzes <= 0) {
       return res.status(429).json({
@@ -106,12 +110,16 @@ exports.checkNoteQuota = async (req, res, next) => {
 
   try {
     // Check if free user has reached 3 notes limit
-    const result = await sql`
-      SELECT COUNT(*) as count FROM notes WHERE user_id = ${req.user.id}
-    `;
+    const { count: noteCount, error } = await supabase
+      .from('notes')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', req.user.id);
 
-    const noteCount = parseInt(result[0]?.count || 0);
-    const remainingNotes = 3 - noteCount;
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const remainingNotes = 3 - (noteCount || 0);
 
     if (remainingNotes <= 0) {
       return res.status(429).json({
