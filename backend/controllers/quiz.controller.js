@@ -57,6 +57,11 @@ exports.generateQuiz = async (req, res) => {
       return res.status(400).json({ error: 'Failed to generate quiz questions' });
     }
 
+    // Assign unique IDs to AI-generated questions
+    questions.forEach((q, i) => {
+      if (!q.id) q.id = `q_${i + 1}`;
+    });
+
     console.log(`✅ Generated ${questions.length} questions successfully`);
 
     // Save quiz to database
@@ -361,6 +366,7 @@ exports.getResults = async (req, res) => {
 
     if (userTier !== 'free') {
       aiFeedback = await aiService.generateQuizFeedback(
+        '', // noteContent — not available in results endpoint
         questions,
         gradedAnswers
       );

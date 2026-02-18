@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const aiService = require('../services/ai.service');
+const { supabase } = require('../config/database.serverless');
 
 /**
  * Get pre-quiz teaching summary
@@ -7,7 +8,6 @@ const aiService = require('../services/ai.service');
  */
 exports.getPreQuizSummary = async (req, res) => {
   try {
-    const { supabase } = require('../config/database.serverless');
     const { noteId } = req.body;
 
     if (!noteId) {
@@ -49,7 +49,6 @@ exports.getPreQuizSummary = async (req, res) => {
  */
 exports.generateWeaknessMasteryQuiz = async (req, res) => {
   try {
-    const { supabase } = require('../config/database.serverless');
     const userId = req.user.id;
     const { attemptId, weakTopics } = req.body;
 
@@ -140,7 +139,6 @@ exports.generateWeaknessMasteryQuiz = async (req, res) => {
  */
 exports.createSession = async (req, res) => {
   try {
-    const { supabase } = require('../config/database.serverless');
     const userId = req.user.id;
     const { topic, noteId } = req.body;
 
@@ -180,7 +178,6 @@ exports.createSession = async (req, res) => {
  */
 exports.listSessions = async (req, res) => {
   try {
-    const { supabase } = require('../config/database.serverless');
     const userId = req.user.id;
 
     const { data: sessions, error } = await supabase
@@ -205,7 +202,6 @@ exports.listSessions = async (req, res) => {
  */
 exports.getSession = async (req, res) => {
   try {
-    const { supabase } = require('../config/database.serverless');
     const userId = req.user.id;
     const { id } = req.params;
 
@@ -244,7 +240,6 @@ exports.getSession = async (req, res) => {
  */
 exports.sendMessage = async (req, res) => {
   try {
-    const { supabase } = require('../config/database.serverless');
     const userId = req.user.id;
     const { id } = req.params;
     const { message } = req.body;

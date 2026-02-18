@@ -69,7 +69,7 @@ exports.gradeAnswers = async (questions, answers, userTier) => {
           } catch (error) {
             console.warn('AI grading failed for question:', question.id);
             // Fallback: keyword matching
-            graded = this.fallbackTextGrading(
+            graded = exports.fallbackTextGrading(
               graded,
               question.modelAnswer || question.sampleAnswer,
               userAnswer
@@ -125,9 +125,8 @@ exports.fallbackTextGrading = (graded, modelAnswer, userAnswer) => {
     ...graded,
     isCorrect,
     score,
-    feedback: `Answer ${
-      isCorrect ? 'is mostly correct' : 'is partially correct'
-    }. Key concepts matched: ${matchCount}/${keywords.length}`,
+    feedback: `Answer ${isCorrect ? 'is mostly correct' : 'is partially correct'
+      }. Key concepts matched: ${matchCount}/${keywords.length}`,
   };
 };
 

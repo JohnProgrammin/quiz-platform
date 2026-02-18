@@ -93,7 +93,7 @@ app.set('trust proxy', 1);
 // Security
 app.use(helmetConfig);
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (process.env.FRONTEND_URL || 'http://localhost:5173').split(',').map(u => u.trim()),
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -160,9 +160,9 @@ app.get('/api/v1/subscription/plans', async (req, res) => {
   try {
     // Get user's IP address (works on all platforms)
     const clientIP = req.headers['x-forwarded-for']?.split(',')[0].trim() ||
-                     req.connection.remoteAddress ||
-                     req.socket.remoteAddress ||
-                     '127.0.0.1';
+      req.connection.remoteAddress ||
+      req.socket.remoteAddress ||
+      '127.0.0.1';
 
     // Check if currency is explicitly requested
     const requestedCurrency = req.query.currency?.toUpperCase();
@@ -1099,10 +1099,11 @@ if (process.env.NODE_ENV === 'development') {
    */
   app.get('/api/v1/test/db', async (req, res) => {
     try {
-      const result = await sql`SELECT NOW()`;
+      const { data, error } = await supabase.from('users').select('id').limit(1);
+      if (error) throw error;
       res.json({
         status: 'connected',
-        timestamp: result[0].now,
+        timestamp: new Date().toISOString(),
       });
     } catch (error) {
       res.status(500).json({
@@ -1171,13 +1172,13 @@ if (process.env.NODE_ENV === 'development') {
       }
 
       // Delete quiz attempts
-      await sql`DELETE FROM quiz_attempts WHERE user_id = ${userId}`;
+      await supabase.from('quiz_attempts').delete().eq('user_id', userId);
 
       // Delete quizzes
-      await sql`DELETE FROM quizzes WHERE user_id = ${userId}`;
+      await supabase.from('quizzes').delete().eq('user_id', userId);
 
       // Reset monthly quiz count
-      await sql`UPDATE users SET monthly_quiz_count = 0, monthly_quiz_reset_at = NOW() WHERE id = ${userId}`;
+      await supabase.from('users').update({ monthly_quiz_count: 0, monthly_quiz_reset_at: new Date().toISOString() }).eq('id', userId);
 
       res.json({
         status: 'success',
@@ -1321,8 +1322,11 @@ startServer();
 
 process.on('SIGINT', async () => {
   console.log('\n🛑 Shutting down gracefully...');
-  await pool.end();
-  await cacheService.disconnect();
+  try {
+    await cacheService.disconnect();
+  } catch (e) {
+    console.warn('Cache disconnect error:', e.message);
+  }
   process.exit(0);
 });
 

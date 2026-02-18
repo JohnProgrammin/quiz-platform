@@ -1,17 +1,17 @@
-const { supabase } = require('../config/supabase');
+const jwt = require('jsonwebtoken');
+const { supabase } = require('../config/database.serverless');
 require('dotenv').config();
 
 /**
- * Authentication Middleware (Supabase Edition)
- * Uses Supabase Auth for JWT verification and Row-Level Security
+ * Authentication Middleware
+ * Uses jsonwebtoken to verify JWTs created by signup/login endpoints
  */
 
 /**
- * Verify Supabase JWT token and attach user to request
+ * Verify JWT token and attach user to request
  * Checks:
  * - Token exists in Authorization header
- * - Token is valid Supabase JWT
- * - User exists in Supabase Auth
+ * - Token is valid JWT signed with JWT_SECRET
  * - User profile exists in public.users table
  */
 const authenticateToken = async (req, res, next) => {
@@ -23,11 +23,12 @@ const authenticateToken = async (req, res, next) => {
       return res.status(401).json({ error: 'Access token required' });
     }
 
-    // Verify token with Supabase
-    const { data, error } = await supabase.auth.getUser(token);
-
-    if (error || !data.user) {
-      console.warn('Auth verification failed:', error?.message);
+    // Verify token with jsonwebtoken
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      console.warn('Auth verification failed:', err.message);
       return res.status(403).json({ error: 'Invalid or expired token' });
     }
 
@@ -36,11 +37,11 @@ const authenticateToken = async (req, res, next) => {
       const { data: userProfile, error: profileError } = await supabase
         .from('users')
         .select('*')
-        .eq('id', data.user.id)
+        .eq('id', decoded.id)
         .single();
 
-      if (profileError) {
-        console.error('Profile lookup error:', profileError.message);
+      if (profileError || !userProfile) {
+        console.error('Profile lookup error:', profileError?.message);
         return res.status(404).json({ error: 'User profile not found' });
       }
 
@@ -48,20 +49,22 @@ const authenticateToken = async (req, res, next) => {
       const { data: subscription } = await supabase
         .from('subscriptions')
         .select('*')
-        .eq('user_id', data.user.id)
+        .eq('user_id', decoded.id)
         .single();
 
       // Attach user to request for use in controllers
       req.user = {
-        id: data.user.id,
-        email: data.user.email,
-        username: userProfile.username,
+        id: decoded.id,
+        email: userProfile.email,
+        username: userProfile.username || decoded.username,
         fullName: userProfile.full_name,
         avatarUrl: userProfile.avatar_url,
-        subscriptionTier: subscription?.tier || 'free',
+        subscriptionTier: subscription?.tier || userProfile.subscription_tier || 'free',
+        subscription_tier: subscription?.tier || userProfile.subscription_tier || 'free',
         subscriptionStatus: subscription?.status || 'active',
         createdAt: userProfile.created_at,
-        supabaseUser: data.user, // Store full Supabase user for RLS context
+        monthly_quiz_count: userProfile.monthly_quiz_count,
+        monthly_quiz_reset_at: userProfile.monthly_quiz_reset_at,
       };
 
       // Check if subscription is valid
@@ -76,9 +79,9 @@ const authenticateToken = async (req, res, next) => {
     } catch (error) {
       console.error('Unexpected auth middleware error:', {
         message: error.message,
-        userId: data.user.id,
+        userId: decoded.id,
       });
-      res.status(500).json({ error: 'Authentication error', details: error.message });
+      res.status(500).json({ error: 'Authentication error' });
     }
   } catch (error) {
     console.error('Token verification error:', error);
@@ -112,46 +115,6 @@ const checkSubscriptionTier = (requiredTier) => {
 
     next();
   };
-};
-
-/**
- * Check daily quiz quota for free users
- * Free tier: 5 quizzes per month
- */
-const checkQuizQuota = async (req, res, next) => {
-  if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required' });
-  }
-
-  // Pro and Premium users have unlimited quizzes
-  if (req.user.subscriptionTier !== 'free') {
-    return next();
-  }
-
-  try {
-    // Get free user's quiz count this month
-    const { data: attempts, error } = await supabase
-      .from('quiz_attempts')
-      .select('id', { count: 'exact' })
-      .eq('user_id', req.user.id)
-      .gte('completed_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
-
-    if (error) throw error;
-
-    if (attempts && attempts.length >= 5) {
-      return res.status(403).json({
-        error: 'Monthly quiz limit reached',
-        message: 'Free users can create 5 quizzes per month. Upgrade to Pro for unlimited quizzes.',
-        quizzesUsed: attempts.length,
-        quizzesLimit: 5,
-      });
-    }
-
-    next();
-  } catch (error) {
-    console.error('Quiz quota check error:', error);
-    res.status(500).json({ error: 'Failed to check quiz quota' });
-  }
 };
 
 /**
@@ -203,7 +166,6 @@ const checkFeatureAccess = (featureName) => {
 
 /**
  * Verify ownership of a resource
- * NOTE: With Supabase Row-Level Security, this is largely handled automatically
  * This middleware provides explicit ownership checks when needed
  */
 const verifyOwnership = (resourceField = 'user_id') => {
@@ -267,10 +229,11 @@ const optionalAuth = async (req, res, next) => {
       return next(); // Continue without user
     }
 
-    // Verify token with Supabase
-    const { data, error } = await supabase.auth.getUser(token);
-
-    if (error || !data.user) {
+    // Verify token with jsonwebtoken
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
       return next(); // Continue without user
     }
 
@@ -278,22 +241,23 @@ const optionalAuth = async (req, res, next) => {
     const { data: userProfile } = await supabase
       .from('users')
       .select('*')
-      .eq('id', data.user.id)
+      .eq('id', decoded.id)
       .single();
 
     const { data: subscription } = await supabase
       .from('subscriptions')
       .select('*')
-      .eq('user_id', data.user.id)
+      .eq('user_id', decoded.id)
       .single();
 
     req.user = {
-      id: data.user.id,
-      email: data.user.email,
-      username: userProfile?.username,
+      id: decoded.id,
+      email: userProfile?.email,
+      username: userProfile?.username || decoded.username,
       fullName: userProfile?.full_name,
       avatarUrl: userProfile?.avatar_url,
-      subscriptionTier: subscription?.tier || 'free',
+      subscriptionTier: subscription?.tier || userProfile?.subscription_tier || 'free',
+      subscription_tier: subscription?.tier || userProfile?.subscription_tier || 'free',
       subscriptionStatus: subscription?.status || 'active',
     };
 
@@ -307,7 +271,6 @@ const optionalAuth = async (req, res, next) => {
 module.exports = {
   authenticateToken,
   checkSubscriptionTier,
-  checkQuizQuota,
   checkFeatureAccess,
   verifyOwnership,
   optionalAuth,

@@ -101,13 +101,18 @@ const sanitizeInput = mongoSanitize({
  * Allows multipart/form-data for file uploads
  */
 const validateJson = (req, res, next) => {
+  // Skip webhook endpoints (they use raw body)
+  if (req.path.startsWith('/api/v1/webhooks')) {
+    return next();
+  }
+  // Skip preflight and safe methods
+  if (req.method === 'GET' || req.method === 'DELETE' || req.method === 'OPTIONS') {
+    return next();
+  }
   if (req.is('application/json')) {
     return next();
   }
   if (req.is('multipart/form-data')) {
-    return next();
-  }
-  if (req.method === 'GET' || req.method === 'DELETE') {
     return next();
   }
   res.status(400).json({ error: 'Content-Type must be application/json or multipart/form-data' });

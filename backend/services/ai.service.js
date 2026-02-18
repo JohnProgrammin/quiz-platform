@@ -275,7 +275,7 @@ Return ONLY JSON array with 5 questions. Each must be multiple-choice with 4 opt
       // Build conversation messages
       const messages = [
         {
-          role: 'user',
+          role: 'system',
           content: `You are a patient, knowledgeable tutor. A student is learning about "${topic}".
 ${noteContent ? `They have study material about this: ${noteContent.substring(0, 1000)}` : ''}
 
