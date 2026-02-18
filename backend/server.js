@@ -594,14 +594,14 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
 
     const user = userData;
 
-    // Paystack Plan IDs (Nigeria NGN pricing)
+    // Paystack Plan IDs and amounts in kobo (Nigeria NGN pricing)
     const paymentPlans = {
-      pro: 'PLN_pv67fcbied84ynz',      // ₦5,000/month
-      premium: 'PLN_pp48a20xxtez4ot',  // ₦10,000/month
+      pro: { planId: 'PLN_pv67fcbied84ynz', amount: 500000 },       // ₦5,000/month = 500,000 kobo
+      premium: { planId: 'PLN_pp48a20xxtez4ot', amount: 1000000 },  // ₦10,000/month = 1,000,000 kobo
     };
 
-    const planId = paymentPlans[plan];
-    if (!planId) {
+    const selectedPlan = paymentPlans[plan];
+    if (!selectedPlan) {
       return res.status(400).json({ error: 'Invalid plan' });
     }
 
@@ -611,10 +611,11 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
     // Extract first URL from possibly comma-separated FRONTEND_URL
     const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim();
 
-    // Create Paystack transaction with plan ID
+    // Create Paystack transaction with plan ID and amount
     const transaction = await createTransaction({
       email: user.email,
-      planId: planId,  // Use Paystack Plan ID instead of amount
+      amount: selectedPlan.amount,  // Amount in kobo (required by Paystack)
+      planId: selectedPlan.planId,  // Paystack Plan ID for subscription
       plan: plan,
       userId: req.user.id,
       callbackUrl: `${frontendUrl}/subscription/callback`,

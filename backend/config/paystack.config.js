@@ -86,13 +86,13 @@ const verifyWebhookSignature = (body, signature) => {
  */
 const createTransaction = async (params) => {
   try {
-    // If planId is provided, use Paystack subscription plan
     const data = {
       email: params.email,
-      plan: params.planId,  // Use Paystack Plan ID for subscriptions
+      amount: params.amount,    // Amount in kobo (required by Paystack)
+      plan: params.planId,      // Paystack Plan ID for subscriptions
       metadata: {
         userId: params.userId,
-        plan: params.plan,  // Our internal plan name (pro/premium)
+        plan: params.plan,      // Our internal plan name (pro/premium)
       },
       callback_url: params.callbackUrl,
     };
