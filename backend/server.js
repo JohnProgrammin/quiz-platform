@@ -51,7 +51,8 @@ const {
 // ENVIRONMENT VALIDATION
 // ============================================
 const requiredEnvVars = [
-  'DATABASE_URL',
+  'SUPABASE_URL',
+  'SUPABASE_SERVICE_ROLE_KEY',
   'JWT_SECRET',
   'GROQ_API_KEY',
   'PAYSTACK_SECRET_KEY',
