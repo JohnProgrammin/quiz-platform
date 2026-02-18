@@ -15,7 +15,7 @@ const path = require('path');
 // IMPORTS - Configuration
 // ============================================
 
-const { sql, testConnection: testDbConnection } = require('./config/database.serverless');
+const { supabase, testConnection: testDbConnection } = require('./config/database.serverless');
 const { pricingPlans } = require('./config/stripe.config');
 const cacheService = require('./services/cache.service');
 const storageService = require('./services/storage.service');
@@ -225,14 +225,26 @@ authRouter.post('/signup', authLimiter, async (req, res) => {
     const bcrypt = require('bcryptjs');
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user in database
-    const result = await sql`
-      INSERT INTO users (username, email, password_hash, full_name, subscription_tier)
-      VALUES (${username}, ${email}, ${hashedPassword}, ${fullName || username}, 'free')
-      RETURNING id, username, email, full_name, subscription_tier, created_at
-    `;
+    // Create user in database using Supabase
+    const { data, error } = await supabase
+      .from('users')
+      .insert([
+        {
+          username,
+          email,
+          password_hash: hashedPassword,
+          full_name: fullName || username,
+          subscription_tier: 'free',
+        }
+      ])
+      .select('id, username, email, full_name, subscription_tier, created_at')
+      .single();
 
-    const user = result[0];
+    if (error) {
+      throw error;
+    }
+
+    const user = data;
 
     // Initialize gamification for new user
     try {
@@ -264,7 +276,7 @@ authRouter.post('/signup', authLimiter, async (req, res) => {
     console.error('Signup error:', {
       message: error.message,
       code: error.code,
-      detail: error.detail,
+      details: error.details,
       stack: error.stack,
     });
 
@@ -296,17 +308,18 @@ authRouter.post('/login', authLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Username and password required' });
     }
 
-    // Get user from database
-    const result = await sql`
-      SELECT id, username, email, full_name, password_hash, subscription_tier
-      FROM users WHERE username = ${username} OR email = ${username}
-    `;
+    // Get user from database using Supabase
+    const { data, error } = await supabase
+      .from('users')
+      .select('id, username, email, full_name, password_hash, subscription_tier')
+      .or(`username.eq.${username},email.eq.${username}`)
+      .single();
 
-    if (result.length === 0) {
+    if (error || !data) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const user = result[0];
+    const user = data;
 
     // Verify password
     const bcrypt = require('bcryptjs');
@@ -317,7 +330,10 @@ authRouter.post('/login', authLimiter, async (req, res) => {
     }
 
     // Update last login
-    await sql`UPDATE users SET last_login_at = NOW() WHERE id = ${user.id}`;
+    await supabase
+      .from('users')
+      .update({ last_login_at: new Date() })
+      .eq('id', user.id);
 
     // Create JWT token
     const jwt = require('jsonwebtoken');
@@ -357,16 +373,18 @@ authRouter.post('/send-verification-email', authLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Email is required' });
     }
 
-    // Find user by email
-    const result = await sql`
-      SELECT id, email_verified FROM users WHERE email = ${email}
-    `;
+    // Find user by email using Supabase
+    const { data, error } = await supabase
+      .from('users')
+      .select('id, email_verified')
+      .eq('email', email)
+      .single();
 
-    if (result.length === 0) {
+    if (error || !data) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const user = result[0];
+    const user = data;
 
     if (user.email_verified) {
       return res.status(400).json({ error: 'Email already verified' });
@@ -418,24 +436,25 @@ authRouter.post('/verify-email', async (req, res) => {
       return res.status(401).json({ error: 'Invalid token type' });
     }
 
-    // Update user email verification status
-    const result = await sql`
-      UPDATE users SET email_verified = true
-      WHERE id = ${decoded.id}
-      RETURNING id, username, email, email_verified
-    `;
+    // Update user email verification status using Supabase
+    const { data, error } = await supabase
+      .from('users')
+      .update({ email_verified: true })
+      .eq('id', decoded.id)
+      .select('id, username, email, email_verified')
+      .single();
 
-    if (result.length === 0) {
+    if (error || !data) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     res.json({
       message: 'Email verified successfully',
       user: {
-        id: result[0].id,
-        username: result[0].username,
-        email: result[0].email,
-        emailVerified: result[0].email_verified
+        id: data.id,
+        username: data.username,
+        email: data.email,
+        emailVerified: data.email_verified
       }
     });
   } catch (error) {
@@ -456,25 +475,25 @@ app.use('/api/v1/auth', authRouter);
  */
 app.get('/api/v1/users/me', authenticateToken, async (req, res) => {
   try {
-    const user = await sql`
-      SELECT id, username, email, full_name, bio, subscription_tier,
-             monthly_quiz_count, monthly_quiz_reset_at, created_at
-      FROM users WHERE id = ${req.user.id}
-    `;
+    const { data, error } = await supabase
+      .from('users')
+      .select('id, username, email, full_name, bio, subscription_tier, monthly_quiz_count, monthly_quiz_reset_at, created_at')
+      .eq('id', req.user.id)
+      .single();
 
-    if (user.length === 0) {
+    if (error || !data) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     res.json({
-      id: user[0].id,
-      username: user[0].username,
-      email: user[0].email,
-      fullName: user[0].full_name,
-      bio: user[0].bio,
-      subscriptionTier: user[0].subscription_tier,
-      monthlyQuizCount: user[0].monthly_quiz_count,
-      createdAt: user[0].created_at,
+      id: data.id,
+      username: data.username,
+      email: data.email,
+      fullName: data.full_name,
+      bio: data.bio,
+      subscriptionTier: data.subscription_tier,
+      monthlyQuizCount: data.monthly_quiz_count,
+      createdAt: data.created_at,
     });
   } catch (error) {
     console.error('Get profile error:', error);
@@ -501,27 +520,26 @@ app.post('/api/v1/account/reset', authenticateToken, async (req, res) => {
     const userId = req.user.id;
 
     // Delete all notes
-    await sql`DELETE FROM notes WHERE user_id = ${userId}`;
+    await supabase.from('notes').delete().eq('user_id', userId);
 
     // Delete all quizzes
-    await sql`DELETE FROM quizzes WHERE user_id = ${userId}`;
+    await supabase.from('quizzes').delete().eq('user_id', userId);
 
     // Delete all quiz attempts
-    await sql`DELETE FROM quiz_attempts WHERE user_id = ${userId}`;
+    await supabase.from('quiz_attempts').delete().eq('user_id', userId);
 
     // Clear coupon usage (if table exists)
     try {
-      await sql`DELETE FROM user_coupon_usage WHERE user_id = ${userId}`;
+      await supabase.from('user_coupon_usage').delete().eq('user_id', userId);
     } catch (e) {
       // Table might not exist, ignore
     }
 
     // Reset to free tier
-    await sql`
-      UPDATE users
-      SET subscription_tier = 'free'
-      WHERE id = ${userId}
-    `;
+    await supabase
+      .from('users')
+      .update({ subscription_tier: 'free' })
+      .eq('id', userId);
 
     res.json({
       message: 'Account reset successfully. All notes, quizzes, and subscription data cleared.',
@@ -554,12 +572,18 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
       return res.status(400).json({ error: 'Valid plan required (pro or premium)' });
     }
 
-    // Get user
-    const user = await sql`SELECT email FROM users WHERE id = ${req.user.id}`;
+    // Get user using Supabase
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('email')
+      .eq('id', req.user.id)
+      .single();
 
-    if (!user[0]) {
+    if (userError || !userData) {
       return res.status(404).json({ error: 'User not found' });
     }
+
+    const user = userData;
 
     // Paystack Plan IDs (Nigeria NGN pricing)
     const paymentPlans = {
@@ -577,7 +601,7 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
 
     // Create Paystack transaction with plan ID
     const transaction = await createTransaction({
-      email: user[0].email,
+      email: user.email,
       planId: planId,  // Use Paystack Plan ID instead of amount
       plan: plan,
       userId: req.user.id,
@@ -615,18 +639,21 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
  */
 app.get('/api/v1/subscription/current', authenticateToken, async (req, res) => {
   try {
-    const subscription = await sql`
-      SELECT tier, status, current_period_end, cancel_at_period_end
-      FROM subscriptions WHERE user_id = ${req.user.id} ORDER BY created_at DESC LIMIT 1
-    `;
+    const { data, error } = await supabase
+      .from('subscriptions')
+      .select('tier, status, current_period_end, cancel_at_period_end')
+      .eq('user_id', req.user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
 
-    if (subscription.length === 0) {
+    if (error) {
       return res.json({ subscription: null, tier: 'free' });
     }
 
     res.json({
-      subscription: subscription[0],
-      tier: subscription[0].tier,
+      subscription: data,
+      tier: data.tier,
     });
   } catch (error) {
     console.error('Get subscription error:', error);
@@ -660,18 +687,20 @@ app.get('/api/v1/subscription/verify-payment', authenticateToken, async (req, re
 
     const paystackData = verification.data;
 
-    // Check if payment was already processed
-    const existing = await sql`
-      SELECT tier FROM subscriptions
-      WHERE user_id = ${req.user.id} AND paystack_reference = ${reference}
-      LIMIT 1
-    `;
+    // Check if payment was already processed using Supabase
+    const { data: existingData } = await supabase
+      .from('subscriptions')
+      .select('tier')
+      .eq('user_id', req.user.id)
+      .eq('paystack_reference', reference)
+      .limit(1)
+      .single();
 
-    if (existing.length > 0) {
+    if (existingData) {
       // Already processed
       return res.json({
         verified: true,
-        tier: existing[0].tier,
+        tier: existingData.tier,
         message: 'Subscription already active',
       });
     }
@@ -687,38 +716,45 @@ app.get('/api/v1/subscription/verify-payment', authenticateToken, async (req, re
     const periodEnd = new Date();
     periodEnd.setMonth(periodEnd.getMonth() + 1);
 
-    const subscription = await sql`
-      INSERT INTO subscriptions (
-        user_id, paystack_reference, tier, status,
-        current_period_start, current_period_end
-      ) VALUES (
-        ${req.user.id}, ${reference}, ${tier}, ${'active'},
-        NOW(), ${periodEnd.toISOString()}
-      )
-      RETURNING id
-    `;
+    const { data: subscriptionData } = await supabase
+      .from('subscriptions')
+      .insert([{
+        user_id: req.user.id,
+        paystack_reference: reference,
+        tier: tier,
+        status: 'active',
+        current_period_start: new Date(),
+        current_period_end: periodEnd,
+      }])
+      .select('id')
+      .single();
 
     // Update user tier
-    await sql`
-      UPDATE users
-      SET subscription_tier = ${tier}, subscription_status = 'active', updated_at = NOW()
-      WHERE id = ${req.user.id}
-    `;
+    await supabase
+      .from('users')
+      .update({
+        subscription_tier: tier,
+        subscription_status: 'active',
+        updated_at: new Date(),
+      })
+      .eq('id', req.user.id);
 
     // Log payment event
-    await sql`
-      INSERT INTO payment_events (
-        user_id, event_type, amount, currency, status, metadata
-      ) VALUES (
-        ${req.user.id}, 'charge.success', ${paystackData.amount / 100}, ${paystackData.currency}, 'succeeded',
-        ${JSON.stringify({ reference, plan })}
-      )
-    `;
+    await supabase
+      .from('payment_events')
+      .insert([{
+        user_id: req.user.id,
+        event_type: 'charge.success',
+        amount: paystackData.amount / 100,
+        currency: paystackData.currency,
+        status: 'succeeded',
+        metadata: JSON.stringify({ reference, plan }),
+      }]);
 
     res.json({
       verified: true,
       tier: tier,
-      subscriptionId: subscription[0].id,
+      subscriptionId: subscriptionData.id,
       message: `Successfully upgraded to ${tier} plan`,
     });
   } catch (error) {
@@ -736,23 +772,29 @@ app.patch('/api/v1/users/me', authenticateToken, async (req, res) => {
   try {
     const { fullName, bio } = req.body;
 
-    const result = await sql`
-      UPDATE users SET full_name = COALESCE(${fullName || null}, full_name), bio = COALESCE(${bio || null}, bio), updated_at = NOW()
-      WHERE id = ${req.user.id}
-      RETURNING id, username, email, full_name, bio, subscription_tier
-    `;
+    const updateData = {};
+    if (fullName !== undefined && fullName !== null) updateData.full_name = fullName;
+    if (bio !== undefined && bio !== null) updateData.bio = bio;
+    updateData.updated_at = new Date();
 
-    if (result.length === 0) {
+    const { data, error } = await supabase
+      .from('users')
+      .update(updateData)
+      .eq('id', req.user.id)
+      .select('id, username, email, full_name, bio, subscription_tier')
+      .single();
+
+    if (error || !data) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     res.json({
-      id: result[0].id,
-      username: result[0].username,
-      email: result[0].email,
-      fullName: result[0].full_name,
-      bio: result[0].bio,
-      subscriptionTier: result[0].subscription_tier,
+      id: data.id,
+      username: data.username,
+      email: data.email,
+      fullName: data.full_name,
+      bio: data.bio,
+      subscriptionTier: data.subscription_tier,
     });
   } catch (error) {
     console.error('Update profile error:', error);
@@ -767,33 +809,41 @@ app.patch('/api/v1/users/me', authenticateToken, async (req, res) => {
  */
 app.post('/api/v1/subscription/cancel', authenticateToken, async (req, res) => {
   try {
-    // Get user's subscription
-    const subResult = await sql`
-      SELECT id, current_period_end FROM subscriptions
-      WHERE user_id = ${req.user.id} AND status = ${'active'}
-      ORDER BY created_at DESC LIMIT 1
-    `;
+    // Get user's subscription using Supabase
+    const { data: subData, error: subError } = await supabase
+      .from('subscriptions')
+      .select('id, current_period_end')
+      .eq('user_id', req.user.id)
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
 
-    if (subResult.length === 0) {
+    if (subError || !subData) {
       return res.status(404).json({ error: 'No active subscription found' });
     }
 
-    const subscription = subResult[0];
+    const subscription = subData;
     const periodEnd = subscription.current_period_end;
 
     // Update database to mark subscription for cancellation
-    await sql`
-      UPDATE subscriptions
-      SET cancel_at_period_end = true, canceled_at = NOW(), updated_at = NOW()
-      WHERE id = ${subscription.id}
-    `;
+    await supabase
+      .from('subscriptions')
+      .update({
+        cancel_at_period_end: true,
+        canceled_at: new Date(),
+        updated_at: new Date(),
+      })
+      .eq('id', subscription.id);
 
     // Update user tier (will revert to free after period end)
-    await sql`
-      UPDATE users
-      SET subscription_status = 'pending_cancellation', updated_at = NOW()
-      WHERE id = ${req.user.id}
-    `;
+    await supabase
+      .from('users')
+      .update({
+        subscription_status: 'pending_cancellation',
+        updated_at: new Date(),
+      })
+      .eq('id', req.user.id);
 
     res.json({
       success: true,
@@ -813,31 +863,39 @@ app.post('/api/v1/subscription/cancel', authenticateToken, async (req, res) => {
  */
 app.post('/api/v1/subscription/resume', authenticateToken, async (req, res) => {
   try {
-    const subResult = await sql`
-      SELECT id FROM subscriptions
-      WHERE user_id = ${req.user.id} AND cancel_at_period_end = true
-      ORDER BY created_at DESC LIMIT 1
-    `;
+    const { data: subData, error: subError } = await supabase
+      .from('subscriptions')
+      .select('id')
+      .eq('user_id', req.user.id)
+      .eq('cancel_at_period_end', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
 
-    if (subResult.length === 0) {
+    if (subError || !subData) {
       return res.status(404).json({ error: 'No pending cancellation found' });
     }
 
-    const subscriptionId = subResult[0].id;
+    const subscriptionId = subData.id;
 
     // Update database to cancel the pending cancellation
-    await sql`
-      UPDATE subscriptions
-      SET cancel_at_period_end = false, canceled_at = NULL, updated_at = NOW()
-      WHERE id = ${subscriptionId}
-    `;
+    await supabase
+      .from('subscriptions')
+      .update({
+        cancel_at_period_end: false,
+        canceled_at: null,
+        updated_at: new Date(),
+      })
+      .eq('id', subscriptionId);
 
     // Update user status
-    await sql`
-      UPDATE users
-      SET subscription_status = 'active', updated_at = NOW()
-      WHERE id = ${req.user.id}
-    `;
+    await supabase
+      .from('users')
+      .update({
+        subscription_status: 'active',
+        updated_at: new Date(),
+      })
+      .eq('id', req.user.id);
 
     res.json({
       success: true,
@@ -856,17 +914,19 @@ app.post('/api/v1/subscription/resume', authenticateToken, async (req, res) => {
  */
 app.get('/api/v1/subscription/management', authenticateToken, async (req, res) => {
   try {
-    const subscription = await sql`
-      SELECT id, tier, status, current_period_start, current_period_end, cancel_at_period_end, paystack_reference
-      FROM subscriptions WHERE user_id = ${req.user.id}
-      ORDER BY created_at DESC LIMIT 1
-    `;
+    const { data, error } = await supabase
+      .from('subscriptions')
+      .select('id, tier, status, current_period_start, current_period_end, cancel_at_period_end, paystack_reference')
+      .eq('user_id', req.user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
 
-    if (subscription.length === 0) {
+    if (error || !data) {
       return res.json({ subscription: null, message: 'No active subscription' });
     }
 
-    const sub = subscription[0];
+    const sub = data;
 
     res.json({
       subscription: {
@@ -894,15 +954,18 @@ app.get('/api/v1/subscription/management', authenticateToken, async (req, res) =
  */
 app.get('/api/v1/subscription/history', authenticateToken, async (req, res) => {
   try {
-    const events = await sql`
-      SELECT id, event_type, amount, currency, status, created_at
-      FROM payment_events
-      WHERE user_id = ${req.user.id}
-      ORDER BY created_at DESC
-      LIMIT 20
-    `;
+    const { data, error } = await supabase
+      .from('payment_events')
+      .select('id, event_type, amount, currency, status, created_at')
+      .eq('user_id', req.user.id)
+      .order('created_at', { ascending: false })
+      .limit(20);
 
-    res.json({ history: events });
+    if (error) {
+      throw error;
+    }
+
+    res.json({ history: data || [] });
   } catch (error) {
     console.error('Billing history error:', error);
     res.status(500).json({ error: 'Failed to fetch billing history' });
@@ -966,12 +1029,15 @@ app.post('/api/v1/webhooks/paystack', express.raw({ type: 'application/json' }),
     const userId = charge.metadata.userId;
     const plan = charge.metadata.plan;
 
-    // Check for duplicate payments
-    const existing = await sql`
-      SELECT id FROM payment_events WHERE metadata = ${JSON.stringify({ reference })}
-    `;
+    // Check for duplicate payments using Supabase
+    const { data: existingData } = await supabase
+      .from('payment_events')
+      .select('id')
+      .ilike('metadata', `%${reference}%`)
+      .limit(1)
+      .single();
 
-    if (existing.length > 0) {
+    if (existingData) {
       console.log(`✅ Duplicate payment (already processed): ${reference}`);
       return res.json({ status: 'ok' });
     }
@@ -981,31 +1047,38 @@ app.post('/api/v1/webhooks/paystack', express.raw({ type: 'application/json' }),
     const periodEnd = new Date();
     periodEnd.setMonth(periodEnd.getMonth() + 1);
 
-    await sql`
-      INSERT INTO subscriptions (
-        user_id, paystack_reference, tier, status,
-        current_period_start, current_period_end
-      ) VALUES (
-        ${userId}, ${reference}, ${tier}, ${'active'},
-        NOW(), ${periodEnd.toISOString()}
-      )
-    `;
+    await supabase
+      .from('subscriptions')
+      .insert([{
+        user_id: userId,
+        paystack_reference: reference,
+        tier: tier,
+        status: 'active',
+        current_period_start: new Date(),
+        current_period_end: periodEnd,
+      }]);
 
     // Update user tier
-    await sql`
-      UPDATE users SET subscription_tier = ${tier}, subscription_status = 'active', updated_at = NOW()
-      WHERE id = ${userId}
-    `;
+    await supabase
+      .from('users')
+      .update({
+        subscription_tier: tier,
+        subscription_status: 'active',
+        updated_at: new Date(),
+      })
+      .eq('id', userId);
 
     // Log payment event
-    await sql`
-      INSERT INTO payment_events (
-        user_id, event_type, amount, currency, status, metadata
-      ) VALUES (
-        ${userId}, 'charge.success', ${charge.amount / 100}, ${charge.currency}, 'succeeded',
-        ${JSON.stringify({ reference, plan })}
-      )
-    `;
+    await supabase
+      .from('payment_events')
+      .insert([{
+        user_id: userId,
+        event_type: 'charge.success',
+        amount: charge.amount / 100,
+        currency: charge.currency,
+        status: 'succeeded',
+        metadata: JSON.stringify({ reference, plan }),
+      }]);
 
     console.log(`✅ Payment successful for user ${userId}, plan: ${plan}`);
     res.json({ status: 'ok' });
