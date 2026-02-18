@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const { sql } = require('../config/database.serverless');
+const { supabase } = require('../config/database.serverless');
 const aiService = require('../services/ai.service');
 const quizService = require('../services/quiz.service');
 const gamificationService = require('../services/gamification.service');
@@ -23,15 +23,17 @@ exports.generateQuiz = async (req, res) => {
     console.log('  ✓ NoteId validation passed');
 
     // Verify note belongs to user
-    const noteResult = await sql`
-      SELECT id, content FROM notes WHERE id = ${noteId} AND user_id = ${userId}
-    `;
+    const { data: note, error: noteError } = await supabase
+      .from('notes')
+      .select('id, content')
+      .eq('id', noteId)
+      .eq('user_id', userId)
+      .single();
 
-    if (noteResult.length === 0) {
+    if (noteError || !note) {
       return res.status(404).json({ error: 'Note not found' });
     }
 
-    const note = noteResult[0];
     const quizId = uuidv4();
 
     // Generate questions using AI
@@ -58,14 +60,22 @@ exports.generateQuiz = async (req, res) => {
     console.log(`✅ Generated ${questions.length} questions successfully`);
 
     // Save quiz to database
-    const quizResult = await sql`
-      INSERT INTO quizzes (id, user_id, note_id, title, questions, question_count, created_at)
-      VALUES (${quizId}, ${userId}, ${noteId}, ${'Quiz from ' + note.id}, ${JSON.stringify(questions)}, ${questions.length}, NOW())
-      RETURNING *
-    `;
+    const { data: quizData, error: quizError } = await supabase
+      .from('quizzes')
+      .insert([{
+        id: quizId,
+        user_id: userId,
+        note_id: noteId,
+        title: 'Quiz from ' + note.id,
+        questions: questions,
+        question_count: questions.length,
+        created_at: new Date(),
+      }])
+      .select('*')
+      .single();
 
-    if (!quizResult || quizResult.length === 0) {
-      console.error('❌ Quiz INSERT failed - no result returned');
+    if (quizError || !quizData) {
+      console.error('❌ Quiz INSERT failed:', quizError);
       return res.status(500).json({ error: 'Failed to save quiz to database' });
     }
 
@@ -95,14 +105,15 @@ exports.getQuizzes = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const result = await sql`
-      SELECT id, title, question_count, created_at
-      FROM quizzes
-      WHERE user_id = ${userId}
-      ORDER BY created_at DESC
-    `;
+    const { data, error } = await supabase
+      .from('quizzes')
+      .select('id, title, question_count, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
 
-    res.json({ data: result });
+    if (error) throw error;
+
+    res.json({ data: data || [] });
   } catch (error) {
     console.error('Get quizzes error:', error);
     res.status(500).json({ error: 'Failed to get quizzes' });
@@ -117,17 +128,17 @@ exports.getQuiz = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    const result = await sql`
-      SELECT id, title, questions, question_count, created_at
-      FROM quizzes
-      WHERE id = ${id} AND user_id = ${userId}
-    `;
+    const { data: quiz, error } = await supabase
+      .from('quizzes')
+      .select('id, title, questions, question_count, created_at')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .single();
 
-    if (result.length === 0) {
+    if (error || !quiz) {
       return res.status(404).json({ error: 'Quiz not found' });
     }
 
-    const quiz = result[0];
     // Handle both JSON string and already-parsed objects
     let questions = quiz.questions;
     if (typeof questions === 'string') {
@@ -171,16 +182,17 @@ exports.submitQuiz = async (req, res) => {
     }
 
     // Get quiz
-    const quizResult = await sql`
-      SELECT id, questions FROM quizzes
-      WHERE id = ${id} AND user_id = ${userId}
-    `;
+    const { data: quiz, error: quizError } = await supabase
+      .from('quizzes')
+      .select('id, questions')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .single();
 
-    if (quizResult.length === 0) {
+    if (quizError || !quiz) {
       return res.status(404).json({ error: 'Quiz not found' });
     }
 
-    const quiz = quizResult[0];
     let questions = quiz.questions;
     if (typeof questions === 'string') {
       questions = JSON.parse(questions);
@@ -200,14 +212,23 @@ exports.submitQuiz = async (req, res) => {
 
     // Save attempt to database
     try {
-      const attemptResult = await sql`
-        INSERT INTO quiz_attempts (id, quiz_id, user_id, answers, percentage, score, total_questions, completed_at)
-        VALUES (${attemptId}, ${id}, ${userId}, ${JSON.stringify(graded.gradedAnswers)}, ${percentage}, ${graded.correctCount}, ${questions.length}, NOW())
-        RETURNING id
-      `;
+      const { data: attemptData, error: attemptError } = await supabase
+        .from('quiz_attempts')
+        .insert([{
+          id: attemptId,
+          quiz_id: id,
+          user_id: userId,
+          answers: graded.gradedAnswers,
+          percentage: percentage,
+          score: graded.correctCount,
+          total_questions: questions.length,
+          completed_at: new Date(),
+        }])
+        .select('id')
+        .single();
 
-      if (!attemptResult || attemptResult.length === 0) {
-        console.error('❌ Quiz attempt INSERT failed - no result returned');
+      if (attemptError || !attemptData) {
+        console.error('❌ Quiz attempt INSERT failed:', attemptError);
         return res.status(500).json({ error: 'Failed to save quiz attempt - database error' });
       }
 
@@ -239,10 +260,11 @@ exports.submitQuiz = async (req, res) => {
         }
 
         // Check quiz completion count achievements
-        const userAttempts = await sql`
-          SELECT COUNT(*) as count FROM quiz_attempts WHERE user_id = ${userId}
-        `;
-        const attemptCount = userAttempts[0]?.count || 0;
+        const { count: attemptCount, error: countError } = await supabase
+          .from('quiz_attempts')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', userId);
+
         if (attemptCount === 10) {
           await gamificationService.checkAchievement(userId, 'quiz_10', { totalAttempts: 10 });
         } else if (attemptCount === 50) {
@@ -297,17 +319,17 @@ exports.getResults = async (req, res) => {
     const userTier = req.user?.subscription_tier || 'free';
 
     // Get attempt
-    const attemptResult = await sql`
-      SELECT id, quiz_id, answers, percentage, score
-      FROM quiz_attempts
-      WHERE id = ${attemptId} AND user_id = ${userId}
-    `;
+    const { data: attempt, error: attemptError } = await supabase
+      .from('quiz_attempts')
+      .select('id, quiz_id, answers, percentage, score')
+      .eq('id', attemptId)
+      .eq('user_id', userId)
+      .single();
 
-    if (attemptResult.length === 0) {
+    if (attemptError || !attempt) {
       return res.status(404).json({ error: 'Attempt not found' });
     }
 
-    const attempt = attemptResult[0];
     let gradedAnswers = attempt.answers;
     if (typeof gradedAnswers === 'string') {
       gradedAnswers = JSON.parse(gradedAnswers);
@@ -316,11 +338,17 @@ exports.getResults = async (req, res) => {
     }
 
     // Get quiz for AI feedback
-    const quizResult = await sql`
-      SELECT questions FROM quizzes WHERE id = ${id}
-    `;
+    const { data: quizData, error: quizError } = await supabase
+      .from('quizzes')
+      .select('questions')
+      .eq('id', id)
+      .single();
 
-    let questions = quizResult[0].questions;
+    if (quizError || !quizData) {
+      return res.status(404).json({ error: 'Quiz not found' });
+    }
+
+    let questions = quizData.questions;
     if (typeof questions === 'string') {
       questions = JSON.parse(questions);
     } else if (!Array.isArray(questions)) {
@@ -365,23 +393,17 @@ exports.getAttempts = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    const result = await sql`
-      SELECT
-        id,
-        quiz_id,
-        score,
-        total_questions,
-        percentage,
-        answers,
-        completed_at,
-        time_spent_seconds
-      FROM quiz_attempts
-      WHERE quiz_id = ${id} AND user_id = ${userId}
-      ORDER BY completed_at DESC
-    `;
+    const { data, error } = await supabase
+      .from('quiz_attempts')
+      .select('id, quiz_id, score, total_questions, percentage, answers, completed_at, time_spent_seconds')
+      .eq('quiz_id', id)
+      .eq('user_id', userId)
+      .order('completed_at', { ascending: false });
+
+    if (error) throw error;
 
     // Ensure consistent field naming for frontend
-    const normalizedResults = result.map(attempt => ({
+    const normalizedResults = (data || []).map(attempt => ({
       id: attempt.id,
       quiz_id: attempt.quiz_id,
       score: attempt.score,
@@ -407,16 +429,31 @@ exports.getHistory = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const result = await sql`
-      SELECT qa.id, q.title, qa.percentage, qa.score, qa.completed_at
-      FROM quiz_attempts qa
-      JOIN quizzes q ON qa.quiz_id = q.id
-      WHERE qa.user_id = ${userId}
-      ORDER BY qa.completed_at DESC
-      LIMIT 50
-    `;
+    const { data, error } = await supabase
+      .from('quiz_attempts')
+      .select(`
+        id,
+        percentage,
+        score,
+        completed_at,
+        quizzes (title)
+      `)
+      .eq('user_id', userId)
+      .order('completed_at', { ascending: false })
+      .limit(50);
 
-    res.json({ data: result });
+    if (error) throw error;
+
+    // Format response to match expected structure
+    const formatted = (data || []).map(attempt => ({
+      id: attempt.id,
+      title: attempt.quizzes?.title || 'Unknown Quiz',
+      percentage: attempt.percentage,
+      score: attempt.score,
+      completed_at: attempt.completed_at,
+    }));
+
+    res.json({ data: formatted });
   } catch (error) {
     console.error('Get history error:', error);
     res.status(500).json({ error: 'Failed to get history' });
