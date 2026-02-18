@@ -1,0 +1,15 @@
+ENVIRONMENT VARIABLES CHECKLIST
+
+FRONTEND (.env):
+# Frontend Environment Configuration
+# For local development, use localhost:3001
+# For production, set to your backend URL
+VITE_API_URL=http://localhost:3001/api
+VITE_PAYSTACK_PUBLIC_KEY=pk_test_6d3d4ea0dae07ad7d08a4bee7e4d512e1cb34416
+
+# ============================================
+# Supabase Configuration (NEW - Phase 1 Migration)
+# ============================================
+VITE_SUPABASE_URL=https://oxbjguswfijanmzxbrd.supabase.co
+VITE_SUPABASE_ANON_KEY=sb_publishable_jJ6v29Kz-fvGTcBfc234TQ_KNAEKVoy
+

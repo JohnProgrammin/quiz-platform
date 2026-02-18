@@ -5,11 +5,11 @@
  */
 
 const TIMEOUT_CONFIG = {
-  // Stripe operations
-  STRIPE_CHECKOUT_SESSION: 30000, // 30 seconds to create checkout
-  STRIPE_RETRIEVE_SESSION: 15000, // 15 seconds to retrieve session
-  STRIPE_WEBHOOK_PROCESS: 20000, // 20 seconds to process webhook
-  STRIPE_CUSTOMER_LOOKUP: 10000, // 10 seconds to lookup customer
+  // Payment provider operations (Paystack)
+  CHECKOUT_SESSION: 30000, // 30 seconds to create checkout
+  RETRIEVE_SESSION: 15000, // 15 seconds to retrieve session
+  WEBHOOK_PROCESS: 20000, // 20 seconds to process webhook
+  CUSTOMER_LOOKUP: 10000, // 10 seconds to lookup customer
 
   // Payment verification
   PAYMENT_VERIFICATION: 45000, // 45 seconds for full verification

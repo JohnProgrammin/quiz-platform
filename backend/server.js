@@ -100,7 +100,16 @@ app.use(cors({
 }));
 
 // Parsing & Validation
-app.use(express.json({ limit: '10mb' }));
+// Preserve raw body for webhook signature verification
+app.use(express.json({
+  limit: '10mb',
+  verify: (req, res, buf) => {
+    // Store raw body for webhook signature verification
+    if (req.originalUrl && req.originalUrl.includes('/webhooks/')) {
+      req.rawBody = buf.toString('utf8');
+    }
+  },
+}));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(validateJson);
 app.use(sanitizeInput);
@@ -599,13 +608,16 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
     // Import Paystack config
     const { createTransaction } = require('./config/paystack.config');
 
+    // Extract first URL from possibly comma-separated FRONTEND_URL
+    const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim();
+
     // Create Paystack transaction with plan ID
     const transaction = await createTransaction({
       email: user.email,
       planId: planId,  // Use Paystack Plan ID instead of amount
       plan: plan,
       userId: req.user.id,
-      callbackUrl: `${process.env.FRONTEND_URL}/subscription/callback`,
+      callbackUrl: `${frontendUrl}/subscription/callback`,
     });
 
     // Handle both possible response structures
@@ -690,17 +702,17 @@ app.get('/api/v1/subscription/verify-payment', authenticateToken, async (req, re
     // Check if payment was already processed using Supabase
     const { data: existingData } = await supabase
       .from('subscriptions')
-      .select('tier')
-      .eq('user_id', req.user.id)
+      .select('id, tier')
       .eq('paystack_reference', reference)
       .limit(1)
       .single();
 
     if (existingData) {
-      // Already processed
+      // Already processed (by webhook or prior verify call)
       return res.json({
         verified: true,
         tier: existingData.tier,
+        subscriptionId: existingData.id,
         message: 'Subscription already active',
       });
     }
@@ -711,21 +723,21 @@ app.get('/api/v1/subscription/verify-payment', authenticateToken, async (req, re
       return res.status(400).json({ error: 'Invalid plan in payment data' });
     }
 
-    // Create subscription
+    // Create subscription (upsert to prevent duplicates from webhook race condition)
     const tier = plan === 'pro' ? 'pro' : 'premium';
     const periodEnd = new Date();
     periodEnd.setMonth(periodEnd.getMonth() + 1);
 
     const { data: subscriptionData } = await supabase
       .from('subscriptions')
-      .insert([{
+      .upsert([{
         user_id: req.user.id,
         paystack_reference: reference,
         tier: tier,
         status: 'active',
         current_period_start: new Date(),
         current_period_end: periodEnd,
-      }])
+      }], { onConflict: 'paystack_reference', ignoreDuplicates: false })
       .select('id')
       .single();
 
@@ -739,13 +751,14 @@ app.get('/api/v1/subscription/verify-payment', authenticateToken, async (req, re
       })
       .eq('id', req.user.id);
 
-    // Log payment event
+    // Log payment event (store raw amount in kobo/cents for frontend formatting)
     await supabase
       .from('payment_events')
       .insert([{
         user_id: req.user.id,
+        paystack_reference: reference,
         event_type: 'charge.success',
-        amount: paystackData.amount / 100,
+        amount: paystackData.amount,  // Raw kobo/cents from Paystack
         currency: paystackData.currency,
         status: 'succeeded',
         metadata: JSON.stringify({ reference, plan }),
@@ -996,8 +1009,9 @@ app.use('/api/v1/gamification', gamificationRoutes);
  * Paystack Webhook Handler
  * POST /api/v1/webhooks/paystack
  * Handles payment.success events
+ * Note: req.rawBody is set by the JSON parser verify callback above
  */
-app.post('/api/v1/webhooks/paystack', express.raw({ type: 'application/json' }), async (req, res) => {
+app.post('/api/v1/webhooks/paystack', async (req, res) => {
   try {
     const signature = req.headers['x-paystack-signature'];
 
@@ -1009,13 +1023,19 @@ app.post('/api/v1/webhooks/paystack', express.raw({ type: 'application/json' }),
 
     const { verifyWebhookSignature } = require('./config/paystack.config');
 
+    // Use rawBody (preserved by express.json verify callback) for HMAC verification
+    const rawBody = req.rawBody;
+    if (!rawBody) {
+      console.error('🔴 SECURITY: No raw body available for webhook signature verification');
+      return res.status(400).json({ error: 'Unable to verify signature' });
+    }
+
     // Verify webhook signature - will throw error if invalid
     let event;
     try {
-      event = verifyWebhookSignature(req.body, signature);
+      event = verifyWebhookSignature(rawBody, signature);
     } catch (signatureError) {
       console.error('🔴 SECURITY: Invalid Paystack webhook signature:', signatureError.message);
-      // Return 401 for invalid signature but log it - this is a security issue
       return res.status(401).json({ error: 'Invalid signature' });
     }
 
@@ -1026,14 +1046,19 @@ app.post('/api/v1/webhooks/paystack', express.raw({ type: 'application/json' }),
 
     const charge = event.data;
     const reference = charge.reference;
-    const userId = charge.metadata.userId;
-    const plan = charge.metadata.plan;
+    const userId = charge.metadata?.userId;
+    const plan = charge.metadata?.plan;
 
-    // Check for duplicate payments using Supabase
+    if (!userId || !plan) {
+      console.error('🔴 Webhook missing metadata:', { reference, userId, plan });
+      return res.status(400).json({ error: 'Missing payment metadata' });
+    }
+
+    // Check for duplicate payments by paystack_reference
     const { data: existingData } = await supabase
       .from('payment_events')
       .select('id')
-      .ilike('metadata', `%${reference}%`)
+      .eq('paystack_reference', reference)
       .limit(1)
       .single();
 
@@ -1042,21 +1067,21 @@ app.post('/api/v1/webhooks/paystack', express.raw({ type: 'application/json' }),
       return res.json({ status: 'ok' });
     }
 
-    // Update user subscription
+    // Upsert subscription (prevents duplicates if verify-payment already created it)
     const tier = plan === 'pro' ? 'pro' : 'premium';
     const periodEnd = new Date();
     periodEnd.setMonth(periodEnd.getMonth() + 1);
 
     await supabase
       .from('subscriptions')
-      .insert([{
+      .upsert([{
         user_id: userId,
         paystack_reference: reference,
         tier: tier,
         status: 'active',
         current_period_start: new Date(),
         current_period_end: periodEnd,
-      }]);
+      }], { onConflict: 'paystack_reference', ignoreDuplicates: true });
 
     // Update user tier
     await supabase
@@ -1068,13 +1093,14 @@ app.post('/api/v1/webhooks/paystack', express.raw({ type: 'application/json' }),
       })
       .eq('id', userId);
 
-    // Log payment event
+    // Log payment event (store raw amount in kobo/cents)
     await supabase
       .from('payment_events')
       .insert([{
         user_id: userId,
+        paystack_reference: reference,
         event_type: 'charge.success',
-        amount: charge.amount / 100,
+        amount: charge.amount,  // Raw kobo/cents from Paystack
         currency: charge.currency,
         status: 'succeeded',
         metadata: JSON.stringify({ reference, plan }),

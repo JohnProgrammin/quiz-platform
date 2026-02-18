@@ -21,7 +21,7 @@ const helmetConfig = helmet.contentSecurityPolicy({
     defaultSrc: ["'self'"],
     styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     scriptSrc: ["'self'"],
-    connectSrc: ["'self'", 'https://api.stripe.com', 'https://*.groq.com'],
+    connectSrc: ["'self'", 'https://api.paystack.co', 'https://*.groq.com'],
     imgSrc: ["'self'", 'data:', 'https:'],
   },
 });

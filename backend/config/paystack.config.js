@@ -59,19 +59,26 @@ const makePaystackRequest = (method, endpoint, data) => {
 
 /**
  * Verify Paystack webhook signature
+ * @param {string|Buffer} body - Raw request body
+ * @param {string} signature - x-paystack-signature header
+ * @returns {object} Parsed event body
  */
 const verifyWebhookSignature = (body, signature) => {
   const crypto = require('crypto');
+
+  // Ensure body is a string for HMAC computation
+  const bodyString = typeof body === 'string' ? body : body.toString('utf8');
+
   const hash = crypto
     .createHmac('sha512', PAYSTACK_SECRET_KEY)
-    .update(body)
+    .update(bodyString)
     .digest('hex');
 
   if (hash !== signature) {
     throw new Error('Invalid webhook signature');
   }
 
-  return JSON.parse(body);
+  return JSON.parse(bodyString);
 };
 
 /**

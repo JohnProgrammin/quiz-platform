@@ -56,43 +56,53 @@ function BillingHistory() {
       </div>
 
       <div className="divide-y-2 divide-border">
-        {history.map((event, idx) => (
-          <div key={event.id || idx} className="px-6 py-4 flex items-center justify-between">
-            <div>
-              <p className="font-bold text-ink">
-                {event.event_type
-                  .replace('invoice.payment_', '')
-                  .replace(/invoice\./g, '')
-                  .replace('customer.subscription.', '')
-                  .replace(/_/g, ' ')
-                  .charAt(0)
-                  .toUpperCase() + event.event_type
-                    .replace('invoice.payment_', '')
-                    .replace(/invoice\./g, '')
-                    .replace('customer.subscription.', '')
-                    .replace(/_/g, ' ')
-                    .slice(1)
-                }
-              </p>
-              <p className="text-sm font-semibold text-slate">
-                {new Date(event.created_at).toLocaleDateString()}
-              </p>
-            </div>
+        {history.map((event, idx) => {
+          // Format Paystack event types for display
+          const formatEventType = (type) => {
+            const labels = {
+              'charge.success': 'Payment Successful',
+              'charge.failed': 'Payment Failed',
+              'subscription.create': 'Subscription Created',
+              'subscription.disable': 'Subscription Cancelled',
+              'subscription.enable': 'Subscription Resumed',
+              'transfer.success': 'Refund Processed',
+              'transfer.failed': 'Refund Failed',
+            };
+            return labels[type] || type.replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          };
 
-            <div className="text-right">
-              {event.amount && (
+          // Format currency with symbol
+          const formatAmount = (amount, currency) => {
+            const symbols = { NGN: '₦', USD: '$', GBP: '£', EUR: '€', KES: 'KES ', GHS: 'GH₵' };
+            const symbol = symbols[currency?.toUpperCase()] || currency || '$';
+            return `${symbol}${(amount / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          };
+
+          return (
+            <div key={event.id || idx} className="px-6 py-4 flex items-center justify-between">
+              <div>
                 <p className="font-bold text-ink">
-                  ${(event.amount / 100).toFixed(2)} {event.currency?.toUpperCase() || 'USD'}
+                  {formatEventType(event.event_type)}
                 </p>
-              )}
-              <p className={`text-sm font-semibold ${
-                event.status === 'succeeded' ? 'text-success' : event.status === 'failed' ? 'text-danger' : 'text-slate'
-              }`}>
-                {event.status?.charAt(0).toUpperCase() + event.status?.slice(1)}
-              </p>
+                <p className="text-sm font-semibold text-slate">
+                  {new Date(event.created_at).toLocaleDateString()}
+                </p>
+              </div>
+
+              <div className="text-right">
+                {event.amount && (
+                  <p className="font-bold text-ink">
+                    {formatAmount(event.amount, event.currency)}
+                  </p>
+                )}
+                <p className={`text-sm font-semibold ${event.status === 'succeeded' ? 'text-success' : event.status === 'failed' ? 'text-danger' : 'text-slate'
+                  }`}>
+                  {event.status?.charAt(0).toUpperCase() + event.status?.slice(1)}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
