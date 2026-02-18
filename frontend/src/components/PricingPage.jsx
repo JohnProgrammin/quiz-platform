@@ -6,7 +6,7 @@ import { ArrowLeft, Check } from 'lucide-react';
 
 function PricingPage({ user, onLogout }) {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState(null); // tracks which plan tier is loading
   const [error, setError] = useState('');
 
   // Nigeria-only pricing in NGN
@@ -48,7 +48,7 @@ function PricingPage({ user, onLogout }) {
   ];
 
   const handleSelectPlan = async (plan) => {
-    setLoading(true);
+    setLoadingPlan(plan.tier);
     setError('');
     try {
       const response = await createCheckoutSession({
@@ -60,12 +60,12 @@ function PricingPage({ user, onLogout }) {
         window.location.href = response.data.authorizationUrl;
       } else {
         setError('Failed to create payment session');
-        setLoading(false);
+        setLoadingPlan(null);
       }
     } catch (err) {
       console.error('Error creating payment session:', err);
       setError('Failed to start checkout. Please try again.');
-      setLoading(false);
+      setLoadingPlan(null);
     }
   };
 
@@ -105,11 +105,10 @@ function PricingPage({ user, onLogout }) {
           {plans.map((plan) => (
             <div
               key={plan.tier}
-              className={`relative rounded-2xl ${
-                plan.isPopular
-                  ? 'ring-2 ring-brand-500'
-                  : 'border-2 border-border'
-              } bg-white overflow-hidden`}
+              className={`relative rounded-2xl ${plan.isPopular
+                ? 'ring-2 ring-brand-500'
+                : 'border-2 border-border'
+                } bg-white overflow-hidden`}
             >
               {/* Popular Badge */}
               {plan.isPopular && (
@@ -144,14 +143,13 @@ function PricingPage({ user, onLogout }) {
                 {/* CTA Button */}
                 <button
                   onClick={() => handleSelectPlan(plan)}
-                  disabled={loading}
-                  className={`w-full py-3 rounded-xl font-bold text-lg transition-all mb-8 ${
-                    plan.isPopular
-                      ? 'bg-brand-500 text-white hover:bg-brand-600 disabled:bg-gray-400'
-                      : 'border-2 border-ink text-ink hover:bg-ink hover:text-white disabled:border-gray-400 disabled:text-gray-400'
-                  }`}
+                  disabled={loadingPlan !== null}
+                  className={`w-full py-3 rounded-xl font-bold text-lg transition-all mb-8 ${plan.isPopular
+                    ? 'bg-brand-500 text-white hover:bg-brand-600 disabled:bg-gray-400'
+                    : 'border-2 border-ink text-ink hover:bg-ink hover:text-white disabled:border-gray-400 disabled:text-gray-400'
+                    }`}
                 >
-                  {loading ? 'Processing...' : 'Get Started'}
+                  {loadingPlan === plan.tier ? 'Processing...' : 'Get Started'}
                 </button>
 
                 {/* Features List */}
