@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Navbar from './Navbar';
+
 import { SkeletonAnalytics } from './Skeleton';
 import { getQuizHistory, getQuizzes, getProfile } from '../api';
 import { BarChart3, TrendingUp, Target, Zap, Calendar, Award, Clock } from 'lucide-react';
@@ -122,8 +122,8 @@ function Analytics({ user, onLogout }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface">
-        <Navbar user={user} onLogout={onLogout} />
+      <div>
+        
         <div className="max-w-6xl mx-auto px-4 py-8">
           <SkeletonAnalytics />
         </div>
@@ -134,8 +134,8 @@ function Analytics({ user, onLogout }) {
   const perfLevel = getPerformanceLevel(stats.averageScore);
 
   return (
-    <div className="min-h-screen bg-surface">
-      <Navbar user={user} onLogout={onLogout} />
+    <div>
+      
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}

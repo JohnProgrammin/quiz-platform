@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Navbar from './Navbar';
 import UpgradePrompt from './UpgradePrompt';
 import UpgradeQuotaModal from './UpgradeQuotaModal';
 import { uploadNote, getNotes, deleteNote, generateQuiz } from '../api';
@@ -138,10 +137,8 @@ function Notes({ user, onLogout }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar user={user} onLogout={onLogout} />
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         {/* Header Section */}
         <div className="mb-12 flex items-end justify-between">
           <div>
@@ -187,11 +184,10 @@ function Notes({ user, onLogout }) {
         <div className="bg-white border border-gray-300 rounded-lg p-8 mb-10 shadow-sm">
           {uploadMessage && (
             <div
-              className={`mb-6 p-4 rounded-xl font-bold text-sm text-center border-2 ${
-                uploadMessage.includes('success')
-                  ? 'bg-green-50 text-brand-600 border-brand-300'
-                  : 'bg-red-50 text-danger border-red-300'
-              }`}
+              className={`mb-6 p-4 rounded-xl font-bold text-sm text-center border-2 ${uploadMessage.includes('success')
+                ? 'bg-green-50 text-brand-600 border-brand-300'
+                : 'bg-red-50 text-danger border-red-300'
+                }`}
             >
               {uploadMessage}
             </div>
@@ -309,15 +305,17 @@ function Notes({ user, onLogout }) {
       </div>
 
       {/* Quota Limit Modal */}
-      {showQuotaModal && quotaError && (
-        <UpgradeQuotaModal
-          type={quotaError.type}
-          limit={quotaError.limit}
-          used={quotaError.used}
-          onClose={() => setShowQuotaModal(false)}
-        />
-      )}
-    </div>
+      {
+        showQuotaModal && quotaError && (
+          <UpgradeQuotaModal
+            type={quotaError.type}
+            limit={quotaError.limit}
+            used={quotaError.used}
+            onClose={() => setShowQuotaModal(false)}
+          />
+        )
+      }
+    </>
   );
 }
 

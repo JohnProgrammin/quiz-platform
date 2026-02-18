@@ -7,40 +7,42 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Duolingo-inspired bright green palette
+        // Duolingo-inspired palette
         brand: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
+          50: '#eafbe4',
+          100: '#d4f7c9',
+          200: '#a8ef93',
+          300: '#7de65d',
+          400: '#58CC02', // Duolingo green
+          500: '#58CC02',
+          600: '#4CAD00',
+          700: '#3d8a00',
+          800: '#2e6800',
         },
-        accent: {
-          50: '#fef3c7',
-          100: '#fde68a',
-          200: '#fcd34d',
-          300: '#fbbf24',
-          400: '#f59e0b',
-          500: '#d97706',
+        owl: {
+          dark: '#131F24',   // Sidebar dark
+          mid: '#1a2c33',
+          light: '#233a42',
         },
-        success: '#22c55e',
-        'success-dark': '#16a34a',
-        warning: '#f59e0b',
-        danger: '#ef4444',
-        ink: '#1f2937',
-        slate: '#64748b',
-        muted: '#94a3b8',
-        border: '#e5e7eb',
-        surface: '#f9fafb',
-        cloud: '#ffffff',
+        gold: '#FFC800',     // XP/Streak gold
+        flame: '#FF9600',    // Streak fire
+        heart: '#FF4B4B',    // Hearts/Errors
+        ice: '#1CB0F6',      // Streak freeze / info
+        purple: '#CE82FF',   // Premium
+        success: '#58CC02',
+        'success-dark': '#4CAD00',
+        warning: '#FFC800',
+        danger: '#FF4B4B',
+        ink: '#3C3C3C',
+        slate: '#777777',
+        muted: '#AFAFAF',
+        border: '#E5E5E5',
+        surface: '#F7F7F7',
+        cloud: '#FFFFFF',
       },
       fontFamily: {
-        sans: ['DM Sans', 'Plus Jakarta Sans', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Poppins', 'Plus Jakarta Sans', 'sans-serif'],
+        sans: ['Nunito', 'DM Sans', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Nunito', 'Poppins', 'sans-serif'],
       },
       borderRadius: {
         'xl': '16px',
@@ -49,17 +51,23 @@ export default {
       },
       boxShadow: {
         'soft': '0 2px 8px rgba(0,0,0,0.04)',
-        'card': '0 4px 12px rgba(0,0,0,0.05)',
-        'card-hover': '0 8px 24px rgba(0,0,0,0.08)',
-        'btn': '0 2px 8px rgba(34, 197, 94, 0.3)',
-        'btn-hover': '0 6px 20px rgba(34, 197, 94, 0.4)',
-        'glow': '0 0 20px rgba(34, 197, 94, 0.3)',
+        'card': '0 2px 10px rgba(0,0,0,0.06)',
+        'card-hover': '0 8px 24px rgba(0,0,0,0.1)',
+        'btn': '0 4px 0 #4CAD00',
+        'btn-hover': '0 2px 0 #4CAD00',
+        'btn-secondary': '0 4px 0 #E5E5E5',
+        'btn-secondary-hover': '0 2px 0 #E5E5E5',
+        'glow-green': '0 0 24px rgba(88, 204, 2, 0.3)',
+        'glow-gold': '0 0 24px rgba(255, 200, 0, 0.3)',
+        'sidebar': '4px 0 24px rgba(0,0,0,0.15)',
       },
       animation: {
         'bounce-slow': 'bounce 2s infinite',
         'wiggle': 'wiggle 0.5s ease-in-out',
         'scale-in': 'scaleIn 0.3s ease-out',
         'confetti': 'confetti 0.8s ease-out',
+        'flame-flicker': 'flameFlicker 1.5s ease-in-out infinite',
+        'xp-pulse': 'xpPulse 0.6s ease-out',
       },
       keyframes: {
         wiggle: {
@@ -73,6 +81,17 @@ export default {
         confetti: {
           '0%': { transform: 'translateY(-100px) rotate(0deg)', opacity: '1' },
           '100%': { transform: 'translateY(100vh) rotate(720deg)', opacity: '0' },
+        },
+        flameFlicker: {
+          '0%, 100%': { transform: 'scaleY(1) rotate(0deg)' },
+          '25%': { transform: 'scaleY(1.15) rotate(2deg)' },
+          '50%': { transform: 'scaleY(0.9) rotate(-2deg)' },
+          '75%': { transform: 'scaleY(1.1) rotate(1deg)' },
+        },
+        xpPulse: {
+          '0%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.05)' },
+          '100%': { transform: 'scale(1)' },
         },
       },
     },

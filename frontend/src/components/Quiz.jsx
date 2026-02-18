@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from './Navbar';
+
 import { getQuiz, submitQuiz, getPreQuizSummary } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { Loader, X, BookOpen } from 'lucide-react';
@@ -103,8 +103,8 @@ function Quiz({ user, onLogout }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar user={user} onLogout={onLogout} />
+      <div>
+        
         <div className="flex flex-col items-center justify-center h-96">
           <Loader className="w-10 h-10 text-brand-500 animate-spin" />
           <p className="text-slate font-bold mt-4">Loading quiz...</p>
@@ -115,8 +115,8 @@ function Quiz({ user, onLogout }) {
 
   if (!quiz || !quiz.questions || quiz.questions.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar user={user} onLogout={onLogout} />
+      <div>
+        
         <div className="flex flex-col items-center justify-center h-96">
           <X className="w-16 h-16 text-danger mb-4" />
           <p className="text-ink font-black text-2xl">Quiz not found or has no questions</p>
@@ -128,8 +128,8 @@ function Quiz({ user, onLogout }) {
   // Show teaching modal for Pro+ users
   if (showTeaching && teaching && tier !== 'free') {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar user={user} onLogout={onLogout} />
+      <div>
+        
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full p-10 max-h-[80vh] overflow-y-auto border border-gray-300 shadow-sm">
             <div className="flex items-center gap-3 mb-8">
@@ -175,8 +175,8 @@ function Quiz({ user, onLogout }) {
   const optionLabels = ['A', 'B', 'C', 'D'];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar user={user} onLogout={onLogout} />
+    <div>
+      
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Section */}

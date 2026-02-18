@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import confetti from 'canvas-confetti';
-import Navbar from './Navbar';
+
 import UpgradePrompt from './UpgradePrompt';
 import GamificationDisplay from './GamificationDisplay';
 import { getQuiz, getQuizAttempts, getQuizResults, generateWeaknessQuiz } from '../api';
@@ -103,8 +103,8 @@ function QuizResults({ user, onLogout }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface">
-        <Navbar user={user} onLogout={onLogout} />
+      <div>
+        
         <div className="flex flex-col items-center justify-center h-96">
           <Loader className="w-8 h-8 text-brand-500 animate-spin" />
           <p className="text-slate font-bold mt-4">Loading results...</p>
@@ -115,8 +115,8 @@ function QuizResults({ user, onLogout }) {
 
   if (!quiz || attempts.length === 0) {
     return (
-      <div className="min-h-screen bg-surface">
-        <Navbar user={user} onLogout={onLogout} />
+      <div>
+        
         <div className="flex flex-col items-center justify-center h-96">
           <p className="text-ink font-bold text-lg mb-4">No results found</p>
           <button onClick={() => navigate('/dashboard')} className="btn-primary">
@@ -142,8 +142,8 @@ function QuizResults({ user, onLogout }) {
     : 0;
 
   return (
-    <div className="min-h-screen bg-surface">
-      <Navbar user={user} onLogout={onLogout} />
+    <div>
+      
 
       {gamification && (
         <GamificationDisplay

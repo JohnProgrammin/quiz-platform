@@ -1,9 +1,11 @@
-// Cache bust: 2026-02-13-force-rebuild-v2
+// Cache bust: 2026-02-18-duolingo-redesign
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import Landing from './components/Landing';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import DashboardLayout from './components/DashboardLayout';
 import Dashboard from './components/Dashboard';
 import Profile from './components/Profile';
 import Notes from './components/Notes';
@@ -52,57 +54,80 @@ function App() {
     return <Loading />;
   }
 
+  // Wrapper component that provides the sidebar layout
+  const WithLayout = ({ children }) => (
+    <DashboardLayout user={user} onLogout={handleLogout}>
+      {children}
+    </DashboardLayout>
+  );
+
   return (
     <ErrorBoundary>
       <Router>
         <SubscriptionProvider user={user}>
+          {/* Sonner toast provider */}
+          <Toaster
+            position="top-center"
+            richColors
+            toastOptions={{
+              style: {
+                fontFamily: 'Nunito, sans-serif',
+                fontWeight: 700,
+                borderRadius: '16px',
+              },
+            }}
+          />
+
           <Routes>
-          <Route
-            path="/login"
-            element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/dashboard" />}
-          />
-          <Route
-            path="/signup"
-            element={!user ? <Signup onLogin={handleLogin} /> : <Navigate to="/dashboard" />}
-          />
-          <Route
-            path="/pricing"
-            element={user ? <PricingPage user={user} onLogout={handleLogout} /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/subscription/callback"
-            element={user ? <PaymentCallback /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/dashboard"
-            element={user ? <Dashboard user={user} onLogout={handleLogout} /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/profile"
-            element={user ? <Profile user={user} setUser={setUser} onLogout={handleLogout} /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/notes"
-            element={user ? <Notes user={user} onLogout={handleLogout} /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/teaching"
-            element={user ? <AITeaching user={user} onLogout={handleLogout} /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/analytics"
-            element={user ? <Analytics user={user} onLogout={handleLogout} /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/quiz/:id"
-            element={user ? <Quiz user={user} onLogout={handleLogout} /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/quiz/:id/results"
-            element={user ? <QuizResults user={user} onLogout={handleLogout} /> : <Navigate to="/login" />}
-          />
-          <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
-        </Routes>
+            {/* Public routes — no sidebar */}
+            <Route
+              path="/login"
+              element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/dashboard" />}
+            />
+            <Route
+              path="/signup"
+              element={!user ? <Signup onLogin={handleLogin} /> : <Navigate to="/dashboard" />}
+            />
+            <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
+
+            {/* Authenticated routes — with sidebar */}
+            <Route
+              path="/dashboard"
+              element={user ? <WithLayout><Dashboard user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/pricing"
+              element={user ? <WithLayout><PricingPage user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/subscription/callback"
+              element={user ? <PaymentCallback /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/profile"
+              element={user ? <WithLayout><Profile user={user} setUser={setUser} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/notes"
+              element={user ? <WithLayout><Notes user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/teaching"
+              element={user ? <WithLayout><AITeaching user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/analytics"
+              element={user ? <WithLayout><Analytics user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/quiz/:id"
+              element={user ? <WithLayout><Quiz user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/quiz/:id/results"
+              element={user ? <WithLayout><QuizResults user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
+            />
+          </Routes>
         </SubscriptionProvider>
       </Router>
     </ErrorBoundary>

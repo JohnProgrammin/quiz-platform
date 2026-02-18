@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from './Navbar';
+
 import { createCheckoutSession } from '../api';
 import { ArrowLeft, Check } from 'lucide-react';
 
@@ -71,7 +71,7 @@ function PricingPage({ user, onLogout }) {
 
   return (
     <div className="min-h-screen bg-surface">
-      <Navbar user={user} onLogout={onLogout} />
+      
 
       <div className="max-w-7xl mx-auto px-4 py-16">
         {/* Back Button */}

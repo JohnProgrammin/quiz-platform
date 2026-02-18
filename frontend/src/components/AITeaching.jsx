@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Navbar from './Navbar';
+
 import FeatureGate from './FeatureGate';
 import UpgradePrompt from './UpgradePrompt';
 import { useSubscription } from '../contexts/SubscriptionContext';
@@ -221,8 +221,8 @@ function AITeaching({ user, onLogout }) {
   // Not Premium - show upgrade prompt
   if (!isPremium) {
     return (
-      <div className="min-h-screen bg-surface">
-        <Navbar user={user} onLogout={onLogout} />
+      <div>
+        
         <div className="max-w-5xl mx-auto px-4 py-12">
           <UpgradePrompt feature="ai_teaching" />
         </div>
@@ -233,8 +233,8 @@ function AITeaching({ user, onLogout }) {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface">
-        <Navbar user={user} onLogout={onLogout} />
+      <div>
+        
         <div className="flex flex-col items-center justify-center h-96">
           <Loader className="w-8 h-8 text-brand-500 animate-spin" />
           <p className="text-slate font-bold mt-4">Loading your teaching sessions...</p>
@@ -244,8 +244,8 @@ function AITeaching({ user, onLogout }) {
   }
 
   return (
-    <div className="min-h-screen bg-surface">
-      <Navbar user={user} onLogout={onLogout} />
+    <div>
+      
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex gap-6 h-[calc(100vh-8rem)]">
