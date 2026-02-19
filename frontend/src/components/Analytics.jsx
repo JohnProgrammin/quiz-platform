@@ -113,11 +113,11 @@ function Analytics({ user, onLogout }) {
   };
 
   const getPerformanceLevel = (score) => {
-    if (score >= 90) return { label: t('analytics.performance.excellent'), color: 'text-green-500', bg: 'bg-green-50', border: 'border-green-500' };
-    if (score >= 80) return { label: t('analytics.performance.great'), color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-500' };
-    if (score >= 70) return { label: t('analytics.performance.good'), color: 'text-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-500' };
-    if (score >= 60) return { label: t('analytics.performance.fair'), color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-500' };
-    return { label: t('analytics.performance.needsWork'), color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-500' };
+    if (score >= 90) return { label: t('analytics.performanceRatings.excellent'), color: 'text-green-500', bg: 'bg-green-50', border: 'border-green-500' };
+    if (score >= 80) return { label: t('analytics.performanceRatings.great'), color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-500' };
+    if (score >= 70) return { label: t('analytics.performanceRatings.good'), color: 'text-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-500' };
+    if (score >= 60) return { label: t('analytics.performanceRatings.fair'), color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-500' };
+    return { label: t('analytics.performanceRatings.needsWork'), color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-500' };
   };
 
   if (loading) {

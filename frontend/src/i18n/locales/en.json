@@ -33,16 +33,17 @@
     "usernameOrEmail": "Username or email",
     "createProfile": "Create your profile",
     "startLearningSmarter": "Start learning smarter with AI quizzes",
-    "loggingIn": "LOGGING IN...",
-    "signingUp": "SIGNING UP...",
+    "loggingIn": "LOGGING IN",
+    "signingUp": "SIGNING UP",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "fullName": "Full Name",
     "fullNameOptional": "Full name (optional)",
     "username": "Username",
     "startLearning": "Start learning smarter with AI quizzes",
-    "creatingAccount": "CREATING ACCOUNT...",
-    "createAccount": "Create Account"
+    "creatingAccount": "CREATING ACCOUNT",
+    "createAccount": "Create Account",
+    "signout": "Sign Out"
   },
   "dashboard": {
     "welcome": "Hey, {{name}}!",
@@ -207,7 +208,7 @@
     "average": "Average",
     "total": "Total",
     "noQuizAttemptsYet": "No quiz attempts yet. Start by taking a quiz!",
-    "performance": {
+    "performanceRatings": {
       "excellent": "Excellent",
       "great": "Great",
       "good": "Good",

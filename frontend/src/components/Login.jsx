@@ -117,13 +117,19 @@ function Login({ onLogin }) {
             <motion.button
               type="submit"
               disabled={loading}
-              animate={isFormFilled && !loading ? { scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: 1.5 } } : {}}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full px-6 py-3 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-lg"
+              className="w-full px-6 py-3 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-lg flex items-center justify-center gap-1"
               aria-busy={loading}
             >
-              {loading ? t('auth.loggingIn') : t('auth.login').toUpperCase()}
+              {loading ? (
+                <>
+                  {t('auth.loggingIn')}
+                  <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, times: [0, 0.5, 1] }}>.</motion.span>
+                  <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.2, times: [0, 0.5, 1] }}>.</motion.span>
+                  <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.4, times: [0, 0.5, 1] }}>.</motion.span>
+                </>
+              ) : t('auth.login').toUpperCase()}
             </motion.button>
           </form>
 

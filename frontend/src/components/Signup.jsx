@@ -142,13 +142,19 @@ function Signup({ onLogin }) {
             <motion.button
               type="submit"
               disabled={loading}
-              animate={isFormFilled && !loading ? { scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: 1.5 } } : {}}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="btn-primary w-full text-base disabled:opacity-60 disabled:cursor-not-allowed"
+              className="btn-primary w-full text-base disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1"
               aria-busy={loading}
             >
-              {loading ? t('auth.creatingAccount') : t('auth.createAccount').toUpperCase()}
+              {loading ? (
+                <>
+                  {t('auth.creatingAccount')}
+                  <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, times: [0, 0.5, 1] }}>.</motion.span>
+                  <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.2, times: [0, 0.5, 1] }}>.</motion.span>
+                  <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.4, times: [0, 0.5, 1] }}>.</motion.span>
+                </>
+              ) : t('auth.createAccount').toUpperCase()}
             </motion.button>
           </form>
 

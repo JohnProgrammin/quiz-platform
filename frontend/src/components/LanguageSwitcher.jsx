@@ -45,7 +45,7 @@ function LanguageSwitcher({ inSidebar = false }) {
       </button>
 
       {isOpen && (
-        <div className={`absolute z-[200] bg-white border-2 border-border rounded-2xl p-1.5 min-w-[170px] shadow-xl ${inSidebar ? 'left-full ml-2 bottom-0' : 'bottom-full mb-2 right-0'
+        <div className={`absolute z-[200] bg-white border-2 border-border rounded-2xl p-1.5 min-w-[170px] shadow-xl ${inSidebar ? 'left-full ml-2 bottom-0' : 'top-full mt-2 right-0'
           }`}>
           {languages.map((lang) => (
             <button
