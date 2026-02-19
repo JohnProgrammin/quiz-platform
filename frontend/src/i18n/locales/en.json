@@ -55,7 +55,9 @@
     "stats": {
       "notes": "Notes",
       "quizzes": "Quizzes",
-      "averageScore": "Average Score",
+      "attempts": "Attempts",
+      "averageScore": "Avg. Score",
+      "completionRate": "Completion Rate",
       "completedToday": "Completed Today"
     },
     "haveCoupon": "Have a Coupon Code?",

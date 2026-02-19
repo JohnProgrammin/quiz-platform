@@ -207,7 +207,22 @@ function Dashboard({ user, onLogout }) {
                 </span>
               </div>
               <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-                Welcome back, {user.fullName?.split(' ')[0] || user.username}! 👑
+                Welcome back, {user.fullName?.split(' ')[0] || user.username}!
+                <motion.span
+                  className="inline-block ml-3"
+                  animate={{
+                    rotate: [0, 10, -10, 0],
+                    y: [0, -5, 0]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    ease: "easeInOut"
+                  }}
+                >
+                  🦉
+                </motion.span>
               </h1>
               <p className="text-white/80 font-bold mt-1">Full platform access — AI Teaching, custom quizzes, and more.</p>
             </div>
