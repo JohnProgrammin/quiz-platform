@@ -180,25 +180,6 @@ function Quiz({ user, onLogout }) {
 
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress Section */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-sm font-black text-brand-600">Question {currentQuestion + 1} of {quiz.questions.length}</p>
-              <p className="text-sm font-semibold text-slate">{answeredCount} answered</p>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-black text-ink">{Math.round(progress)}%</p>
-              <p className="text-xs font-semibold text-slate">Complete</p>
-            </div>
-          </div>
-          <div className="w-full bg-gray-300 rounded-full h-3 overflow-hidden">
-            <div
-              className="h-full bg-brand-500 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
 
         {/* Error Message */}
         {error && (
@@ -217,21 +198,21 @@ function Quiz({ user, onLogout }) {
 
         {/* Options - MCQ */}
         {question.type === 'mcq' && (
-          <div className="space-y-4 mb-10">
+          <div className="space-y-4 mb-8">
             {question.options.map((option, index) => {
               const isSelected = answers[currentQuestion] === index;
               return (
                 <button
                   key={index}
                   onClick={() => handleSelectAnswer(currentQuestion, index)}
-                  className={`w-full text-left p-6 rounded-lg border transition-all font-semibold flex items-start gap-4 ${isSelected
-                      ? 'border-brand-500 bg-brand-50 text-brand-600 shadow-md'
-                      : 'border-gray-300 bg-white text-ink hover:border-brand-400 hover:shadow-md'
+                  className={`w-full text-left p-6 rounded-2xl border-2 transition-all font-semibold flex items-start gap-4 active:scale-[0.99] ${isSelected
+                    ? 'border-violet-500 bg-violet-50 text-violet-700 shadow-md ring-2 ring-violet-200'
+                    : 'border-border bg-white text-ink hover:border-violet-300 hover:shadow-sm'
                     }`}
                 >
-                  <span className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-black flex-shrink-0 mt-0.5 ${isSelected
-                      ? 'bg-brand-500 text-white'
-                      : 'bg-gray-200 text-slate border border-gray-400'
+                  <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black flex-shrink-0 mt-0.5 transition-colors ${isSelected
+                    ? 'bg-violet-600 text-white'
+                    : 'bg-gray-100 text-slate border border-gray-200 group-hover:bg-violet-100'
                     }`}>
                     {optionLabels[index]}
                   </span>
@@ -244,16 +225,32 @@ function Quiz({ user, onLogout }) {
 
         {/* Free-Text Answer */}
         {question.type === 'text' && (
-          <div className="mb-10">
+          <div className="mb-8">
             <textarea
               value={answers[currentQuestion] || ''}
               onChange={(e) => handleSelectAnswer(currentQuestion, e.target.value)}
               placeholder="Type your answer here..."
-              className="w-full h-40 p-6 border border-gray-300 rounded-lg resize-none focus:border-brand-500 focus:outline-none transition-colors font-semibold"
+              className="w-full h-40 p-6 border-2 border-border rounded-2xl resize-none focus:border-violet-500 focus:outline-none transition-colors font-semibold text-lg"
             />
-            <p className="text-sm font-semibold text-slate mt-3">{(answers[currentQuestion]?.length || 0).toLocaleString()} characters</p>
+            <p className="text-sm font-semibold text-slate mt-3 text-right">{(answers[currentQuestion]?.length || 0).toLocaleString()} characters</p>
           </div>
         )}
+
+        {/* Progress Section (Moved to Bottom) */}
+        <div className="mb-8">
+          <div className="flex items-end justify-between mb-2">
+            <span className="text-xs font-black text-slate uppercase tracking-wider">Question Progress</span>
+            <span className="text-sm font-black text-violet-600">{Math.round(progress)}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
+            <div
+              className="h-full bg-violet-600 rounded-full transition-all duration-1000 ease-out relative overflow-hidden"
+              style={{ width: `${progress}%` }}
+            >
+              <div className="absolute inset-0 bg-white/20 w-full animate-shimmer" style={{ backgroundSize: '50px 50px', backgroundImage: 'linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent)', backgroundSize: '1rem 1rem' }} />
+            </div>
+          </div>
+        </div>
 
         {/* Navigation Buttons */}
         <div className="flex gap-4 mb-10">
@@ -292,10 +289,10 @@ function Quiz({ user, onLogout }) {
                 key={index}
                 onClick={() => setCurrentQuestion(index)}
                 className={`w-11 h-11 rounded-lg text-sm font-black transition-all ${currentQuestion === index
-                    ? 'bg-brand-500 text-white shadow-md'
-                    : answers[index] !== undefined
-                      ? 'bg-brand-100 text-brand-700 border border-brand-300'
-                      : 'bg-gray-200 text-slate border border-gray-400 hover:border-brand-400 hover:bg-gray-300'
+                  ? 'bg-brand-500 text-white shadow-md'
+                  : answers[index] !== undefined
+                    ? 'bg-brand-100 text-brand-700 border border-brand-300'
+                    : 'bg-gray-200 text-slate border border-gray-400 hover:border-brand-400 hover:bg-gray-300'
                   }`}
               >
                 {index + 1}
