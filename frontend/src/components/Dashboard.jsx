@@ -10,7 +10,7 @@ import { getQuizHistory, getQuizzes, getNotes, getUserStats } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import {
   FileText, BookOpen, Target, Trophy, ArrowRight,
-  Flame, Zap, Sparkles, Plus
+  Flame, Zap, Sparkles, Plus, Crown
 } from 'lucide-react';
 
 function Dashboard({ user, onLogout }) {
