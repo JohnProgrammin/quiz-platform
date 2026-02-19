@@ -7,7 +7,7 @@ import GamificationDisplay from './GamificationDisplay';
 import { getQuiz, getQuizAttempts, getQuizResults, generateWeaknessQuiz } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useTranslation } from 'react-i18next';
-import { RotateCcw, Home, CheckCircle, XCircle, Loader, Trophy, Target, TrendingUp, Lock, Sparkles } from 'lucide-react';
+import { RotateCcw, Home, CheckCircle, XCircle, Loader2, Trophy, Target, TrendingUp, Lock, Sparkles } from 'lucide-react';
 
 function QuizResults({ user, onLogout }) {
   const { t } = useTranslation();
@@ -57,7 +57,7 @@ function QuizResults({ user, onLogout }) {
       ]);
 
       setQuiz(quizRes.data);
-      const attemptsData = attemptsRes.data || [];
+      const attemptsData = (attemptsRes.data || []).filter(a => a && typeof a === 'object');
       setAttempts(attemptsData);
       if (attemptsData.length > 0) {
         setSelectedAttempt(attemptsData[0]);
@@ -109,7 +109,7 @@ function QuizResults({ user, onLogout }) {
       <div>
 
         <div className="flex flex-col items-center justify-center h-96">
-          <Loader className="w-8 h-8 text-brand-500 animate-spin" />
+          <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
           <p className="text-slate font-bold mt-4">{t('results.loadingResults')}</p>
         </div>
       </div>
@@ -168,7 +168,7 @@ function QuizResults({ user, onLogout }) {
             {getScoreMessage(percentage)}
           </h1>
           <p className="text-slate font-bold">
-            {latestAttempt.score} out of {latestAttempt.totalQuestions} correct
+            {latestAttempt?.score} out of {latestAttempt?.totalQuestions} correct
           </p>
 
           {/* Stats row */}
@@ -332,8 +332,8 @@ function QuizResults({ user, onLogout }) {
                     key={attempt.id}
                     onClick={() => setSelectedAttempt(attempt)}
                     className={`w-full text-left p-4 rounded-xl border-2 transition-all ${selectedAttempt?.id === attempt.id
-                        ? 'border-brand-400 bg-brand-50'
-                        : 'border-border hover:border-muted hover:bg-surface'
+                      ? 'border-brand-400 bg-brand-50'
+                      : 'border-border hover:border-muted hover:bg-surface'
                       }`}
                   >
                     <div className="flex items-center justify-between mb-1">
