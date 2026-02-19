@@ -281,9 +281,22 @@ function QuizResults({ user, onLogout }) {
           <div className="lg:col-span-2 space-y-4">
             <h2 className="text-lg font-extrabold text-ink">{t('results.questionReview')}</h2>
             {quiz?.questions?.map((question, index) => {
-              const answers = latestAttempt.answers || [];
-              const userAnswer = Array.isArray(answers) ? answers[index] : null;
-              const isCorrect = userAnswer === question.correctAnswer;
+              const answers = selectedAttempt?.answers || [];
+              const answerEntry = Array.isArray(answers) ? answers[index] : null;
+
+              let userValue, isCorrect, feedback, score;
+
+              // Handle both new (object) and legacy (value) answer formats
+              if (typeof answerEntry === 'object' && answerEntry !== null && answerEntry.userAnswer !== undefined) {
+                userValue = answerEntry.userAnswer;
+                isCorrect = answerEntry.isCorrect;
+                feedback = answerEntry.feedback;
+                score = answerEntry.score;
+              } else {
+                userValue = answerEntry;
+                isCorrect = userValue === question.correctAnswer;
+              }
+
               const optionLabels = ['A', 'B', 'C', 'D'];
 
               return (
@@ -298,51 +311,86 @@ function QuizResults({ user, onLogout }) {
                         <XCircle className="w-5 h-5 text-danger" />
                       </div>
                     )}
-                    <h3 className="font-bold text-ink leading-relaxed">
-                      {index + 1}. {question.question}
-                    </h3>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-ink leading-relaxed">
+                        {index + 1}. {question.question}
+                      </h3>
+                      {/* Show score if available (mostly for partially correct text answers) */}
+                      {score !== undefined && score !== null && score !== 0 && score !== 100 && (
+                        <span className="inline-block mt-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">
+                          Partial Credit: {score}%
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="space-y-2 ml-11">
-                    {question.options.map((option, optIndex) => {
-                      const isUserAnswer = userAnswer === optIndex;
-                      const isCorrectAnswer = question.correctAnswer === optIndex;
+                  {/* Render based on question type */}
+                  {question.type === 'text' || question.type === 'free_text' ? (
+                    <div className="ml-11 space-y-4">
+                      <div className={`p-4 rounded-xl border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                        <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">Your Answer</p>
+                        <p className="font-semibold text-ink">{userValue || '(No answer provided)'}</p>
+                      </div>
 
-                      let classes = 'p-4 rounded-xl border-2 flex items-center gap-3 text-sm font-bold transition-all ';
-                      if (isCorrectAnswer) {
-                        classes += 'bg-green-50 border-green-500 text-green-700 shadow-sm';
-                      } else if (isUserAnswer && !isCorrect) {
-                        classes += 'bg-red-50 border-red-500 text-red-700 shadow-sm';
-                      } else {
-                        classes += 'bg-white border-gray-200 text-slate opacity-60';
-                      }
-
-                      return (
-                        <div key={optIndex} className={classes}>
-                          <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0 ${isCorrectAnswer ? 'bg-brand-500 text-white' : isUserAnswer && !isCorrect ? 'bg-danger text-white' : 'bg-slate-200 text-slate'
-                            }`}>
-                            {optionLabels[optIndex]}
-                          </span>
-                          <span className="flex-1">{option}</span>
-
-                          {/* Labels for clarity */}
-                          {isCorrectAnswer && (
-                            <div className="flex items-center gap-1 text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
-                              <CheckCircle className="w-3.5 h-3.5" />
-                              <span className="hidden sm:inline">Correct Answer</span>
-                            </div>
-                          )}
-
-                          {isUserAnswer && !isCorrect && (
-                            <div className="flex items-center gap-1 text-xs font-bold text-red-700 bg-red-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
-                              <XCircle className="w-3.5 h-3.5" />
-                              <span className="hidden sm:inline">Your Answer</span>
-                            </div>
-                          )}
+                      {!isCorrect && (
+                        <div className="p-4 rounded-xl border-2 bg-slate-50 border-slate-200">
+                          <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">Model Answer</p>
+                          <p className="font-semibold text-slate">{question.sampleAnswer || question.correctAnswer || 'No model answer available'}</p>
                         </div>
-                      );
-                    })}
-                  </div>
+                      )}
+
+                      {feedback && (
+                        <div className="p-4 rounded-xl border-2 bg-blue-50 border-blue-200 flex gap-3">
+                          <Sparkles className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">AI Feedback</p>
+                            <p className="text-blue-900 font-medium">{feedback}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* MCQ Rendering */
+                    <div className="space-y-2 ml-11">
+                      {question.options.map((option, optIndex) => {
+                        const isUserAnswer = userValue === optIndex;
+                        const isCorrectAnswer = question.correctAnswer === optIndex;
+
+                        let classes = 'p-4 rounded-xl border-2 flex items-center gap-3 text-sm font-bold transition-all ';
+                        if (isCorrectAnswer) {
+                          classes += 'bg-green-50 border-green-500 text-green-700 shadow-sm';
+                        } else if (isUserAnswer && !isCorrect) {
+                          classes += 'bg-red-50 border-red-500 text-red-700 shadow-sm';
+                        } else {
+                          classes += 'bg-white border-gray-200 text-slate opacity-60';
+                        }
+
+                        return (
+                          <div key={optIndex} className={classes}>
+                            <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0 ${isCorrectAnswer ? 'bg-brand-500 text-white' : isUserAnswer && !isCorrect ? 'bg-danger text-white' : 'bg-slate-200 text-slate'
+                              }`}>
+                              {optionLabels[optIndex]}
+                            </span>
+                            <span className="flex-1">{option}</span>
+
+                            {isCorrectAnswer && (
+                              <div className="flex items-center gap-1 text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
+                                <CheckCircle className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">Correct Answer</span>
+                              </div>
+                            )}
+
+                            {isUserAnswer && !isCorrect && (
+                              <div className="flex items-center gap-1 text-xs font-bold text-red-700 bg-red-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
+                                <XCircle className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">Your Answer</span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
