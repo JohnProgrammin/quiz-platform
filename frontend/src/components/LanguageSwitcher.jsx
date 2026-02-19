@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'en', name: 'English', flag: 'EN' },
   { code: 'yo', name: 'Pidgin', flag: '🇳🇬' },
   { code: 'ko', name: '한국어', flag: '🇰🇷' },
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
@@ -46,7 +46,7 @@ function LanguageSwitcher({ inSidebar = false }) {
       >
         <Globe className="w-4 h-4 flex-shrink-0" />
         {inSidebar && <span className="truncate">{current.flag} {current.name}</span>}
-        {!inSidebar && <span>{current.flag}</span>}
+        {!inSidebar && <span className={`font-black text-xs ${current.flag === 'EN' ? 'text-slate' : ''}`}>{current.flag}</span>}
       </button>
 
       {isOpen && (
@@ -57,8 +57,8 @@ function LanguageSwitcher({ inSidebar = false }) {
               key={lang.code}
               onClick={() => changeLanguage(lang.code)}
               className={`flex items-center gap-2.5 px-3 py-2 w-full text-left text-sm rounded-xl font-bold transition-all ${i18n.language === lang.code
-                  ? 'bg-brand-50 text-brand-600 border border-brand-200'
-                  : 'text-ink hover:bg-surface'
+                ? 'bg-brand-50 text-brand-600 border border-brand-200'
+                : 'text-ink hover:bg-surface'
                 }`}
             >
               <span className="text-base">{lang.flag}</span>

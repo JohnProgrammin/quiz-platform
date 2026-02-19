@@ -175,6 +175,11 @@ function DashboardLayout({ user, onLogout, children }) {
                     <User className="w-6 h-6" />
                     <span>{t('navbar.profile')}</span>
                 </Link>
+                {/* Language toggle in mobile bar */}
+                <div className="mobile-tab-item relative">
+                    <LanguageSwitcher inSidebar={false} />
+                    <span className="text-[10px] font-black mt-0.5 opacity-70">{t('navbar.language')}</span>
+                </div>
             </div>
         </div>
     );

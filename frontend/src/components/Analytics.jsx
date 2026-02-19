@@ -113,17 +113,17 @@ function Analytics({ user, onLogout }) {
   };
 
   const getPerformanceLevel = (score) => {
-    if (score >= 90) return { label: 'Excellent', color: 'text-green-500', bg: 'bg-green-50', border: 'border-green-500' };
-    if (score >= 80) return { label: 'Great', color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-500' };
-    if (score >= 70) return { label: 'Good', color: 'text-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-500' };
-    if (score >= 60) return { label: 'Fair', color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-500' };
-    return { label: 'Needs Work', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-500' };
+    if (score >= 90) return { label: t('analytics.performance.excellent'), color: 'text-green-500', bg: 'bg-green-50', border: 'border-green-500' };
+    if (score >= 80) return { label: t('analytics.performance.great'), color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-500' };
+    if (score >= 70) return { label: t('analytics.performance.good'), color: 'text-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-500' };
+    if (score >= 60) return { label: t('analytics.performance.fair'), color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-500' };
+    return { label: t('analytics.performance.needsWork'), color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-500' };
   };
 
   if (loading) {
     return (
       <div>
-        
+
         <div className="max-w-6xl mx-auto px-4 py-8">
           <SkeletonAnalytics />
         </div>
@@ -135,7 +135,7 @@ function Analytics({ user, onLogout }) {
 
   return (
     <div>
-      
+
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
@@ -178,62 +178,62 @@ function Analytics({ user, onLogout }) {
           <div className="card p-6 border-2 border-orange-500 bg-orange-50/30">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-sm font-semibold text-slate mb-1">Current Streak</p>
+                <p className="text-sm font-semibold text-slate mb-1">{t('analytics.currentStreak')}</p>
                 <p className="text-4xl font-black text-orange-500">{stats.streakDays}</p>
               </div>
               <div className="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center">
                 <Zap className="w-6 h-6 text-orange-500" />
               </div>
             </div>
-            <p className="text-xs font-semibold text-orange-600">{stats.streakDays === 1 ? 'Day' : 'Days'} in a row</p>
+            <p className="text-xs font-semibold text-orange-600">{stats.streakDays === 1 ? t('analytics.day') : t('analytics.days')} in a row</p>
           </div>
 
           {/* Total Attempts */}
           <div className="card p-6 border-2 border-brand-500">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-sm font-semibold text-slate mb-1">Quizzes Taken</p>
+                <p className="text-sm font-semibold text-slate mb-1">{t('analytics.quizzesTaken')}</p>
                 <p className="text-4xl font-black text-brand-500">{stats.totalAttempts}</p>
               </div>
               <div className="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center">
                 <BarChart3 className="w-6 h-6 text-brand-500" />
               </div>
             </div>
-            <p className="text-xs font-semibold text-brand-600">Quiz Attempts</p>
+            <p className="text-xs font-semibold text-brand-600">{t('analytics.quizAttempts')}</p>
           </div>
 
           {/* Total Quizzes */}
           <div className="card p-6 border-2 border-brand-500">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-sm font-semibold text-slate mb-1">Quizzes Created</p>
+                <p className="text-sm font-semibold text-slate mb-1">{t('analytics.quizzesCreated')}</p>
                 <p className="text-4xl font-black text-brand-500">{stats.totalQuizzes}</p>
               </div>
               <div className="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-brand-500" />
               </div>
             </div>
-            <p className="text-xs font-semibold text-brand-600">From Notes</p>
+            <p className="text-xs font-semibold text-brand-600">{t('analytics.fromNotes')}</p>
           </div>
 
           {/* Study Time */}
           <div className="card p-6 border-2 border-purple-500">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-sm font-semibold text-slate mb-1">Study Time</p>
+                <p className="text-sm font-semibold text-slate mb-1">{t('analytics.studyTime')}</p>
                 <p className="text-4xl font-black text-purple-500">{Math.round(stats.totalTime / 60)}</p>
               </div>
               <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center">
                 <Clock className="w-6 h-6 text-purple-500" />
               </div>
             </div>
-            <p className="text-xs font-semibold text-purple-600">Hours</p>
+            <p className="text-xs font-semibold text-purple-600">{t('analytics.hours')}</p>
           </div>
         </div>
 
         {/* Performance Trend */}
         <div className="card p-8 mb-8">
-          <h2 className="text-2xl font-extrabold text-ink mb-6">Last 7 Days Trend</h2>
+          <h2 className="text-2xl font-extrabold text-ink mb-6">{t('analytics.last7DaysTrend')}</h2>
           <div className="flex items-end justify-between h-64 gap-2 mb-4">
             {trendData.map((day, i) => (
               <div key={i} className="flex-1 flex flex-col items-center">
@@ -256,23 +256,23 @@ function Analytics({ user, onLogout }) {
             ))}
           </div>
           <div className="flex justify-between items-center pt-4 border-t border-border">
-            <p className="text-sm font-semibold text-slate">Average: {Math.round(trendData.reduce((sum, d) => sum + d.score, 0) / trendData.length)}%</p>
-            <p className="text-sm font-semibold text-slate">Total this week: {trendData.reduce((sum, d) => sum + d.attempts, 0)} quizzes</p>
+            <p className="text-sm font-semibold text-slate">{t('analytics.average')}: {Math.round(trendData.reduce((sum, d) => sum + d.score, 0) / trendData.length)}%</p>
+            <p className="text-sm font-semibold text-slate">{t('analytics.total')} this week: {trendData.reduce((sum, d) => sum + d.attempts, 0)} quizzes</p>
           </div>
         </div>
 
         {/* Recent Attempts */}
         <div className="card p-8">
-          <h2 className="text-2xl font-extrabold text-ink mb-6">Recent Quiz Attempts</h2>
+          <h2 className="text-2xl font-extrabold text-ink mb-6">{t('analytics.recentQuizAttempts')}</h2>
           {attempts.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b-2 border-border">
-                    <th className="text-left py-3 px-4 font-bold text-slate text-sm">Quiz</th>
-                    <th className="text-center py-3 px-4 font-bold text-slate text-sm">Score</th>
-                    <th className="text-center py-3 px-4 font-bold text-slate text-sm">Time</th>
-                    <th className="text-left py-3 px-4 font-bold text-slate text-sm">Date</th>
+                    <th className="text-left py-3 px-4 font-bold text-slate text-sm">{t('quiz.quiz')}</th>
+                    <th className="text-center py-3 px-4 font-bold text-slate text-sm">{t('results.yourScore')}</th>
+                    <th className="text-center py-3 px-4 font-bold text-slate text-sm">{t('quiz.timeLimit', { time: '' }).replace('Time: ', '')}</th>
+                    <th className="text-left py-3 px-4 font-bold text-slate text-sm">{t('analytics.day')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -298,7 +298,7 @@ function Analytics({ user, onLogout }) {
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-slate font-semibold">No quiz attempts yet. Start by taking a quiz!</p>
+              <p className="text-slate font-semibold">{t('analytics.noQuizAttemptsYet')}</p>
             </div>
           )}
         </div>
