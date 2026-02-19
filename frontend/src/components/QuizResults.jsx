@@ -58,14 +58,6 @@ function QuizResults({ user, onLogout }) {
 
   // ... further down
 
-  let classes = 'p-4 rounded-xl border-2 flex items-center gap-3 text-sm font-bold transition-all ';
-  if (isCorrectAnswer) {
-    classes += 'bg-green-50 border-green-500 text-green-700 shadow-sm';
-  } else if (isUserAnswer && !isCorrect) {
-    classes += 'bg-red-50 border-red-500 text-red-700 shadow-sm';
-  } else {
-    classes += 'bg-white border-gray-200 text-slate opacity-60';
-  }
 
   const loadResults = async () => {
     try {
@@ -315,13 +307,13 @@ function QuizResults({ user, onLogout }) {
                       const isUserAnswer = userAnswer === optIndex;
                       const isCorrectAnswer = question.correctAnswer === optIndex;
 
-                      let classes = 'p-3 rounded-xl border-2 flex items-center gap-3 text-sm font-bold ';
+                      let classes = 'p-4 rounded-xl border-2 flex items-center gap-3 text-sm font-bold transition-all ';
                       if (isCorrectAnswer) {
-                        classes += 'bg-green-50 border-brand-500 text-brand-500';
+                        classes += 'bg-green-50 border-green-500 text-green-700 shadow-sm';
                       } else if (isUserAnswer && !isCorrect) {
-                        classes += 'bg-red-50 border-danger text-danger';
+                        classes += 'bg-red-50 border-red-500 text-red-700 shadow-sm';
                       } else {
-                        classes += 'bg-surface border-border text-slate';
+                        classes += 'bg-white border-gray-200 text-slate opacity-60';
                       }
 
                       return (
