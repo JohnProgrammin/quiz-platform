@@ -39,8 +39,8 @@ function LanguageSwitcher({ inSidebar = false }) {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center gap-1.5 transition-all rounded-xl font-bold text-sm ${inSidebar
-            ? 'text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 w-full'
-            : 'text-slate hover:text-ink hover:bg-surface border border-border px-3 py-2'
+          ? 'text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 w-full'
+          : 'text-slate hover:text-ink hover:bg-surface border border-border px-3 py-2'
           }`}
         title="Change language"
       >
@@ -50,7 +50,7 @@ function LanguageSwitcher({ inSidebar = false }) {
       </button>
 
       {isOpen && (
-        <div className={`absolute z-[200] bg-white border-2 border-border rounded-2xl p-1.5 min-w-[170px] shadow-xl ${inSidebar ? 'left-full ml-2 bottom-0' : 'top-full mt-2 right-0'
+        <div className={`absolute z-[200] bg-white border-2 border-border rounded-2xl p-1.5 min-w-[170px] shadow-xl ${inSidebar ? 'left-full ml-2 bottom-0' : 'bottom-full mb-2 right-0'
           }`}>
           {languages.map((lang) => (
             <button

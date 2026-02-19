@@ -6,9 +6,11 @@ import UpgradePrompt from './UpgradePrompt';
 import GamificationDisplay from './GamificationDisplay';
 import { getQuiz, getQuizAttempts, getQuizResults, generateWeaknessQuiz } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
+import { useTranslation } from 'react-i18next';
 import { RotateCcw, Home, CheckCircle, XCircle, Loader, Trophy, Target, TrendingUp, Lock, Sparkles } from 'lucide-react';
 
 function QuizResults({ user, onLogout }) {
+  const { t } = useTranslation();
   const { id } = useParams();
   const { attemptId } = useParams();
   const navigate = useNavigate();
@@ -55,9 +57,10 @@ function QuizResults({ user, onLogout }) {
       ]);
 
       setQuiz(quizRes.data);
-      setAttempts(attemptsRes.data);
-      if (attemptsRes.data.length > 0) {
-        setSelectedAttempt(attemptsRes.data[0]);
+      const attemptsData = attemptsRes.data || [];
+      setAttempts(attemptsData);
+      if (attemptsData.length > 0) {
+        setSelectedAttempt(attemptsData[0]);
       }
     } catch (error) {
       console.error('Error loading results:', error);
@@ -79,11 +82,11 @@ function QuizResults({ user, onLogout }) {
   };
 
   const getScoreMessage = (percentage) => {
-    if (percentage === 100) return 'Perfect score!';
-    if (percentage >= 80) return 'Great job!';
-    if (percentage >= 60) return 'Good effort!';
-    if (percentage >= 40) return 'Keep practicing!';
-    return 'Try again!';
+    if (percentage === 100) return t('results.perfectScore');
+    if (percentage >= 80) return t('results.great');
+    if (percentage >= 60) return t('results.good');
+    if (percentage >= 40) return t('results.keepPracticing');
+    return t('results.tryAgain');
   };
 
   const handleMasterWeakTopic = async (weakTopic) => {
@@ -104,10 +107,10 @@ function QuizResults({ user, onLogout }) {
   if (loading) {
     return (
       <div>
-        
+
         <div className="flex flex-col items-center justify-center h-96">
           <Loader className="w-8 h-8 text-brand-500 animate-spin" />
-          <p className="text-slate font-bold mt-4">Loading results...</p>
+          <p className="text-slate font-bold mt-4">{t('results.loadingResults')}</p>
         </div>
       </div>
     );
@@ -116,11 +119,11 @@ function QuizResults({ user, onLogout }) {
   if (!quiz || attempts.length === 0) {
     return (
       <div>
-        
+
         <div className="flex flex-col items-center justify-center h-96">
-          <p className="text-ink font-bold text-lg mb-4">No results found</p>
+          <p className="text-ink font-bold text-lg mb-4">{t('results.noResults')}</p>
           <button onClick={() => navigate('/dashboard')} className="btn-primary">
-            GO TO DASHBOARD
+            {t('results.backToDashboard')}
           </button>
         </div>
       </div>
@@ -135,7 +138,8 @@ function QuizResults({ user, onLogout }) {
     : 0);
 
   // Filter out attempts without valid percentages
-  const validAttempts = attempts.filter(a => a.percentage !== undefined && a.percentage !== null);
+  const safeAttempts = Array.isArray(attempts) ? attempts : [];
+  const validAttempts = safeAttempts.filter(a => a.percentage !== undefined && a.percentage !== null);
   const bestScore = validAttempts.length > 0 ? Math.max(...validAttempts.map(a => a.percentage)) : 0;
   const avgScore = validAttempts.length > 0
     ? Math.round(validAttempts.reduce((sum, a) => sum + a.percentage, 0) / validAttempts.length)
@@ -143,7 +147,7 @@ function QuizResults({ user, onLogout }) {
 
   return (
     <div>
-      
+
 
       {gamification && (
         <GamificationDisplay
@@ -172,23 +176,23 @@ function QuizResults({ user, onLogout }) {
             <div>
               <div className="flex items-center justify-center gap-1 mb-1">
                 <Target className="w-4 h-4 text-amber-500" />
-                <span className="text-xl font-extrabold text-ink">{attempts.length}</span>
+                <span className="text-xl font-extrabold text-ink">{safeAttempts.length}</span>
               </div>
-              <span className="text-xs font-bold text-slate uppercase">Attempts</span>
+              <span className="text-xs font-bold text-slate uppercase">{t('results.attempts')}</span>
             </div>
             <div>
               <div className="flex items-center justify-center gap-1 mb-1">
                 <Trophy className="w-4 h-4 text-warning" />
                 <span className="text-xl font-extrabold text-ink">{bestScore}%</span>
               </div>
-              <span className="text-xs font-bold text-slate uppercase">Best</span>
+              <span className="text-xs font-bold text-slate uppercase">{t('results.best')}</span>
             </div>
             <div>
               <div className="flex items-center justify-center gap-1 mb-1">
                 <TrendingUp className="w-4 h-4 text-brand-500" />
                 <span className="text-xl font-extrabold text-ink">{avgScore}%</span>
               </div>
-              <span className="text-xs font-bold text-slate uppercase">Average</span>
+              <span className="text-xs font-bold text-slate uppercase">{t('results.average')}</span>
             </div>
           </div>
 
@@ -197,13 +201,13 @@ function QuizResults({ user, onLogout }) {
             <button onClick={() => navigate(`/quiz/${id}`)} className="btn-primary">
               <span className="flex items-center gap-2">
                 <RotateCcw className="w-4 h-4" />
-                RETAKE QUIZ
+                {t('results.retakeQuiz')}
               </span>
             </button>
             <button onClick={() => navigate('/dashboard')} className="btn-secondary">
               <span className="flex items-center gap-2">
                 <Home className="w-4 h-4" />
-                DASHBOARD
+                {t('results.backToDashboard')}
               </span>
             </button>
           </div>
@@ -216,16 +220,16 @@ function QuizResults({ user, onLogout }) {
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-4">
                 <Lock className="w-5 h-5 text-amber-600" />
-                <h2 className="text-lg font-extrabold text-amber-900">AI Feedback (Upgrade to Pro)</h2>
+                <h2 className="text-lg font-extrabold text-amber-900">{t('results.aiFeatureUpgrade')}</h2>
               </div>
               <p className="text-amber-800 font-semibold mb-4">
-                Get personalized AI feedback, identify weak topics, and generate focused mastery quizzes.
+                {t('results.aiFeatureDescription')}
               </p>
               <button
                 onClick={() => navigate('/pricing')}
                 className="btn-primary"
               >
-                Upgrade to Pro
+                {t('results.upgradeToProBtn')}
               </button>
             </div>
           </div>
@@ -234,13 +238,13 @@ function QuizResults({ user, onLogout }) {
             <div className="card p-8 mb-8 bg-blue-50 border-2 border-blue-500">
               <div className="flex items-center gap-3 mb-4">
                 <Sparkles className="w-5 h-5 text-blue-500" />
-                <h2 className="text-lg font-extrabold text-ink">AI Feedback</h2>
+                <h2 className="text-lg font-extrabold text-ink">{t('results.feedback')}</h2>
               </div>
               <p className="text-slate font-semibold mb-6">{aiFeedback.feedback}</p>
 
               {aiFeedback.weakTopics && aiFeedback.weakTopics.length > 0 && (
                 <div>
-                  <h3 className="font-bold text-ink mb-3">Areas to Master:</h3>
+                  <h3 className="font-bold text-ink mb-3">{t('results.areasToMaster')}:</h3>
                   <div className="flex flex-wrap gap-3">
                     {aiFeedback.weakTopics.map((topic, idx) => (
                       <button
@@ -249,7 +253,7 @@ function QuizResults({ user, onLogout }) {
                         disabled={generatingWeakness}
                         className="px-4 py-2 rounded-xl bg-blue-100 text-blue-600 font-bold hover:bg-blue-200 transition-all disabled:opacity-50"
                       >
-                        Master {topic}
+                        {t('results.masterWeakness', { topic })}
                       </button>
                     ))}
                   </div>
@@ -262,8 +266,8 @@ function QuizResults({ user, onLogout }) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Question Review */}
           <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-lg font-extrabold text-ink">Question Review</h2>
-            {quiz.questions.map((question, index) => {
+            <h2 className="text-lg font-extrabold text-ink">{t('results.questionReview')}</h2>
+            {quiz?.questions?.map((question, index) => {
               const answers = latestAttempt.answers || [];
               const userAnswer = Array.isArray(answers) ? answers[index] : null;
               const isCorrect = userAnswer === question.correctAnswer;
@@ -302,9 +306,8 @@ function QuizResults({ user, onLogout }) {
 
                       return (
                         <div key={optIndex} className={classes}>
-                          <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0 ${
-                            isCorrectAnswer ? 'bg-brand-500 text-white' : isUserAnswer && !isCorrect ? 'bg-danger text-white' : 'bg-slate-200 text-slate'
-                          }`}>
+                          <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0 ${isCorrectAnswer ? 'bg-brand-500 text-white' : isUserAnswer && !isCorrect ? 'bg-danger text-white' : 'bg-slate-200 text-slate'
+                            }`}>
                             {optionLabels[optIndex]}
                           </span>
                           <span>{option}</span>
@@ -321,22 +324,21 @@ function QuizResults({ user, onLogout }) {
 
           {/* Attempt History */}
           <div className="lg:col-span-1">
-            <h2 className="text-lg font-extrabold text-ink mb-4">Attempt History</h2>
+            <h2 className="text-lg font-extrabold text-ink mb-4">{t('results.attemptHistory')}</h2>
             <div className="card">
               <div className="p-4 space-y-2">
                 {attempts.map((attempt, index) => (
                   <button
                     key={attempt.id}
                     onClick={() => setSelectedAttempt(attempt)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
-                      selectedAttempt?.id === attempt.id
+                    className={`w-full text-left p-4 rounded-xl border-2 transition-all ${selectedAttempt?.id === attempt.id
                         ? 'border-brand-400 bg-brand-50'
                         : 'border-border hover:border-muted hover:bg-surface'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-bold text-slate">
-                        Attempt #{attempts.length - index}
+                        {t('results.attemptNumber', { number: safeAttempts.length - index })}
                       </span>
                       <span className={`text-lg font-extrabold ${getScoreColor(attempt.percentage || 0)}`}>
                         {attempt.percentage || (attempt.score && attempt.total_questions ? Math.round((attempt.score / attempt.total_questions) * 100) : 0)}%
