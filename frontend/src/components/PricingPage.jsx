@@ -24,7 +24,7 @@ function PricingPage({ user, onLogout }) {
         'Unlimited quizzes',
         'Unlimited notes & uploads',
         'Upload PPTX & PDF files',
-        'AI feedback & teaching',
+        'AI Quiz Summary & Feedback',
         'Weakness mastery',
         'Enhanced analytics',
       ],
@@ -41,7 +41,7 @@ function PricingPage({ user, onLogout }) {
       badge: 'Best Value',
       features: [
         'Everything in Pro',
-        '1-on-1 AI Tutoring',
+        'Unlimited AI Tutoring Chat',
         'Priority Support',
         'Custom Quiz Settings',
         'Advanced Analytics',
