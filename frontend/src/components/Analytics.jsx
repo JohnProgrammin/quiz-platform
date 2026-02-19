@@ -99,13 +99,13 @@ function Analytics({ user, onLogout }) {
 
   const calculateStreak = (attempts) => {
     if (attempts.length === 0) return 0;
-    const sortedByDate = attempts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const sortedByDate = attempts.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
     let streak = 0;
     let currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
     for (const attempt of sortedByDate) {
-      const attemptDate = new Date(attempt.createdAt);
+      const attemptDate = new Date(attempt.completedAt);
       attemptDate.setHours(0, 0, 0, 0);
       const daysDiff = Math.floor((currentDate - attemptDate) / (1000 * 60 * 60 * 24));
 
@@ -127,7 +127,7 @@ function Analytics({ user, onLogout }) {
       date.setDate(date.getDate() - i);
       date.setHours(0, 0, 0, 0);
       const dayAttempts = attempts.filter((a) => {
-        const aDate = new Date(a.createdAt);
+        const aDate = new Date(a.completedAt);
         aDate.setHours(0, 0, 0, 0);
         return aDate.getTime() === date.getTime();
       });
