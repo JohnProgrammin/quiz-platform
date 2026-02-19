@@ -56,9 +56,10 @@ function QuizResults({ user, onLogout }) {
         getQuizAttempts(id),
       ]);
 
-      setQuiz(quizRes.data);
+      setQuiz(quizRes.data?.data || quizRes.data);
       const rawData = attemptsRes.data;
-      const attemptsData = (Array.isArray(rawData) ? rawData : []).filter(a => a && typeof a === 'object');
+      const attemptsList = Array.isArray(rawData) ? rawData : (Array.isArray(rawData?.data) ? rawData.data : []);
+      const attemptsData = attemptsList.filter(a => a && typeof a === 'object');
       setAttempts(attemptsData);
       if (attemptsData.length > 0) {
         setSelectedAttempt(attemptsData[0]);
