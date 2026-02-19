@@ -419,7 +419,7 @@ function Landing() {
                   </div>
                   <div className="progress-bar overflow-hidden h-2 bg-slate-200/50 rounded-full border border-border/30">
                     <div
-                      className={`progress-fill h-full transition-all ${demoPhase >= 4 ? 'demo-progress' : ''}`}
+                      className={`progress-bar-fill h-full transition-all ${demoPhase >= 4 ? 'demo-progress' : ''}`}
                       style={{
                         width: `${progressWidth}%`,
                       }}

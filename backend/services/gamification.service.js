@@ -51,21 +51,45 @@ const getProgressToNextLevel = (totalXP, currentLevel) => {
  */
 exports.awardXP = async (userId, amount, reason, metadata = {}) => {
   try {
-    // Award XP - use UPSERT to create record if doesn't exist
-    const { error: upsertError } = await supabase
+    // 1. Get current stats first to increment correctly
+    const { data: currentStats } = await supabase
       .from('user_gamification')
-      .upsert([{
-        user_id: userId,
-        total_xp: amount,
-        level: 1
-      }], { onConflict: 'user_id' });
+      .select('total_xp, level')
+      .eq('user_id', userId)
+      .single();
 
-    if (upsertError) {
-      throw new Error(upsertError.message);
+    let newTotalXP = amount;
+    let oldLevel = 1;
+
+    if (currentStats) {
+      newTotalXP = (currentStats.total_xp || 0) + amount;
+      oldLevel = currentStats.level;
+
+      // Update existing
+      const { error: updateError } = await supabase
+        .from('user_gamification')
+        .update({
+          total_xp: newTotalXP,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', userId);
+
+      if (updateError) throw new Error(updateError.message);
+    } else {
+      // Insert new
+      const { error: insertError } = await supabase
+        .from('user_gamification')
+        .insert({
+          user_id: userId,
+          total_xp: amount,
+          level: 1
+        });
+
+      if (insertError) throw new Error(insertError.message);
     }
 
     // Log transaction
-    const { error: insertError } = await supabase
+    await supabase
       .from('xp_transactions')
       .insert([{
         user_id: userId,
@@ -74,47 +98,18 @@ exports.awardXP = async (userId, amount, reason, metadata = {}) => {
         metadata: JSON.stringify(metadata)
       }]);
 
-    if (insertError) {
-      throw new Error(insertError.message);
-    }
-
-    // Get updated stats
-    const { data: result, error: selectError } = await supabase
-      .from('user_gamification')
-      .select('total_xp, level')
-      .eq('user_id', userId)
-      .single();
-
-    if (selectError || !result) {
-      // Fallback: should never happen with UPSERT, but just in case
-      return {
-        xpAwarded: amount,
-        leveledUp: false,
-        newLevel: 1,
-        totalXP: amount,
-      };
-    }
-
-    const { total_xp: newTotalXP } = result;
+    // Recalculate level
     const newLevel = calculateLevelFromXP(newTotalXP);
-    const oldLevel = result.level;
     const leveledUp = newLevel > oldLevel;
 
     // Update level if leveled up
     if (leveledUp) {
-      const { error: updateError } = await supabase
+      await supabase
         .from('user_gamification')
-        .update({
-          level: newLevel,
-          updated_at: new Date().toISOString()
-        })
+        .update({ level: newLevel })
         .eq('user_id', userId);
 
-      if (updateError) {
-        throw new Error(updateError.message);
-      }
-
-      // Unlock "level_X" achievements
+      // Check achievements
       await checkAchievements(userId, [
         { key: 'level_5', condition: newLevel >= 5 },
         { key: 'level_10', condition: newLevel >= 10 },
@@ -132,7 +127,16 @@ exports.awardXP = async (userId, amount, reason, metadata = {}) => {
     };
   } catch (error) {
     console.error('Error awarding XP:', error);
-    throw error;
+    // Don't throw, just return partial info so quiz doesn't fail
+    return {
+      xpAwarded: amount,
+      leveledUp: false,
+      newLevel: 1,
+      totalXP: amount,
+      nextLevelXP: 0,
+      currentProgress: 0,
+      error: error.message
+    };
   }
 };
 
@@ -183,7 +187,9 @@ exports.updateStreak = async (userId) => {
       .single();
 
     if (selectError || !result) {
-      throw new Error('User gamification record not found');
+      // If user has no record, create one with streak 1
+      await exports.awardXP(userId, 0, 'Streak Initialization');
+      return 1;
     }
 
     const { current_streak: oldStreak, longest_streak: longestStreak, last_activity_date: lastDate } = result;
