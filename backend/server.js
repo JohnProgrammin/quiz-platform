@@ -678,7 +678,17 @@ app.get('/api/v1/subscription/current', authenticateToken, async (req, res) => {
       .limit(1)
       .single();
 
-    if (error) {
+    if (error || !data) {
+      // Fallback to user profile if no subscription record found
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('subscription_tier')
+        .eq('id', req.user.id)
+        .single();
+
+      if (!userError && userData) {
+        return res.json({ subscription: null, tier: userData.subscription_tier || 'free' });
+      }
       return res.json({ subscription: null, tier: 'free' });
     }
 
