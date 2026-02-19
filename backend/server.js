@@ -325,7 +325,7 @@ authRouter.post('/login', authLimiter, async (req, res) => {
       .single();
 
     if (error || !data) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(404).json({ error: 'Account does not exist' });
     }
 
     const user = data;

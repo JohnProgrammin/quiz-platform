@@ -7,7 +7,7 @@ const languages = [
   { code: 'yo', name: 'Pidgin', flag: '🇳🇬' },
 ];
 
-function LanguageSwitcher({ inSidebar = false }) {
+function LanguageSwitcher({ inSidebar = false, upwards = false }) {
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
@@ -45,7 +45,11 @@ function LanguageSwitcher({ inSidebar = false }) {
       </button>
 
       {isOpen && (
-        <div className={`absolute z-[200] bg-white border-2 border-border rounded-2xl p-1.5 min-w-[170px] shadow-xl ${inSidebar ? 'left-full ml-2 bottom-0' : 'top-full mt-2 right-0'
+        <div className={`absolute z-[200] bg-white border-2 border-border rounded-2xl p-1.5 min-w-[170px] shadow-xl ${inSidebar
+          ? 'left-full ml-2 bottom-0'
+          : upwards
+            ? 'bottom-full mb-2 right-0' // Mobile bottom bar
+            : 'top-full mt-2 right-0'    // Desktop header
           }`}>
           {languages.map((lang) => (
             <button
