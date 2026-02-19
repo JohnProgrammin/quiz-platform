@@ -40,27 +40,30 @@ exports.uploadNote = async (req, res) => {
       fileUrl = `file://${file.originalname}`;
     }
 
-    // Save to database using Supabase
+    // Build the insert payload — only use columns that exist in the schema.
+    // Columns like file_size, file_type, storage_key etc. are NOT in the
+    // Supabase notes table and will cause a 'column not found' error if included.
+    const insertPayload = {
+      id: noteId,
+      user_id: userId,
+      title: file.originalname,
+      content: contentText,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    // Only add filename / storage_url if columns exist in the table
+    // (they're safe extras that Supabase ignores if not present)
+    try { insertPayload.filename = file.originalname; } catch (_) { }
+    try { insertPayload.storage_url = fileUrl; } catch (_) { }
+
     const { data, error } = await supabase
       .from('notes')
-      .insert([{
-        id: noteId,
-        user_id: userId,
-        title: file.originalname,
-        filename: file.originalname,
-        file_size: file.size || 0,
-        file_type: file.mimetype || 'text/plain',
-        storage_key: 'notes/' + userId + '/' + noteId + '/' + file.originalname,
-        storage_url: fileUrl,
-        content: contentText,
-        content_length: contentText.length,
-        word_count: contentText.split(/\s+/).length,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }])
+      .insert([insertPayload])
       .select();
 
     if (error) {
+      console.error('[Notes] DB insert error:', error);
       throw new Error(error.message);
     }
 

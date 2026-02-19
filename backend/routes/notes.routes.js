@@ -11,17 +11,30 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
   fileFilter: (req, file, cb) => {
-    const allowed = [
+    // Base types allowed for all tiers
+    const baseAllowed = [
       'application/pdf',
       'text/plain',
       'text/markdown',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'application/msword',
     ];
-    if (allowed.includes(file.mimetype)) {
+    // Pro/Premium only types
+    const proAllowed = [
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation', // pptx
+      'application/vnd.ms-powerpoint', // ppt
+    ];
+
+    const userTier = req.user?.subscription_tier || 'free';
+    const isPro = userTier === 'pro' || userTier === 'premium';
+    const allAllowed = isPro ? [...baseAllowed, ...proAllowed] : baseAllowed;
+
+    if (allAllowed.includes(file.mimetype)) {
       cb(null, true);
+    } else if (proAllowed.includes(file.mimetype) && !isPro) {
+      cb(new Error('PPTX upload requires a Pro or Premium plan. Upgrade to unlock!'));
     } else {
-      cb(new Error('Invalid file type. Allowed: PDF, TXT, MD, DOCX'));
+      cb(new Error('Invalid file type. Allowed: PDF, TXT, MD, DOCX' + (isPro ? ', PPTX' : '')));
     }
   },
 });

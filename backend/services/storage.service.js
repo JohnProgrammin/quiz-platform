@@ -202,13 +202,15 @@ class StorageService {
       md: 'text/markdown',
       doc: 'application/msword',
       docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      ppt: 'application/vnd.ms-powerpoint',
     };
     return types[ext] || 'application/octet-stream';
   }
 
   /**
    * Extract text from uploaded file
-   * Supports: PDF, DOCX, TXT, MD
+   * Supports: PDF, DOCX, TXT, MD, PPTX (Pro/Premium)
    */
   async extractTextFromFile(file) {
     try {
@@ -239,6 +241,7 @@ class StorageService {
           }
 
         case 'docx':
+        case 'doc':
           try {
             const mammoth = require('mammoth');
             const result = await mammoth.extractRawText({ buffer });
@@ -246,6 +249,23 @@ class StorageService {
           } catch (error) {
             console.warn('DOCX parsing failed:', error);
             return `[Document: ${file.originalname}]`;
+          }
+
+        case 'pptx':
+        case 'ppt':
+          try {
+            const officeParser = require('officeparser');
+            // officeParser.parseOfficeAsync accepts a buffer and returns text
+            const text = await new Promise((resolve, reject) => {
+              officeParser.parseOffice(buffer, (data, err) => {
+                if (err) return reject(err);
+                resolve(data);
+              }, { outputErrorToConsole: false });
+            });
+            return text || `[Presentation: ${file.originalname}]`;
+          } catch (error) {
+            console.warn('PPTX parsing failed:', error);
+            return `[Presentation: ${file.originalname}]`;
           }
 
         default:
@@ -256,6 +276,7 @@ class StorageService {
       throw error;
     }
   }
+
 
   /**
    * Upload file directly (alternative to presigned URLs)
