@@ -46,21 +46,26 @@ export const SubscriptionProvider = ({ children, user }) => {
   };
 
   const hasFeature = (feature) => {
+    // Features per tier — higher tiers inherit ALL lower tier features
     const features = {
       free: ['basic_quiz', 'limited_notes'],
-      pro: ['unlimited_quizzes', 'unlimited_notes', 'ai_feedback', 'weakness_mastery', 'pre_teach', 'free_text_questions'],
-      premium: ['ai_teaching', 'custom_quiz', 'api_access', 'priority_support']
+      pro: [
+        'unlimited_quizzes', 'unlimited_notes', 'ai_feedback',
+        'weakness_mastery', 'pre_teach', 'free_text_questions',
+        'pptx_upload', 'variable_questions', 'mixed_questions',
+      ],
+      premium: [
+        'ai_teaching', 'custom_quiz', 'api_access', 'priority_support',
+      ],
     };
 
     const tierHierarchy = { free: 0, pro: 1, premium: 2 };
     const userTierValue = tierHierarchy[tier] || 0;
 
-    // Check all tiers up to current tier
+    // Accumulate features from all tiers up to and including the user's tier
     for (let i = 0; i <= userTierValue; i++) {
       const tierName = Object.keys(tierHierarchy).find(key => tierHierarchy[key] === i);
-      if (features[tierName]?.includes(feature)) {
-        return true;
-      }
+      if (features[tierName]?.includes(feature)) return true;
     }
 
     return false;

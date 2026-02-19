@@ -25,7 +25,7 @@ function Dashboard({ user, onLogout }) {
   const [loading, setLoading] = useState(true);
   const [gamificationStats, setGamificationStats] = useState(null);
   const navigate = useNavigate();
-  const { isFree } = useSubscription();
+  const { isFree, isPro, isPremium, tier } = useSubscription();
 
   useEffect(() => {
     loadDashboardData();
@@ -134,36 +134,101 @@ function Dashboard({ user, onLogout }) {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <div className="bg-white rounded-3xl border-2 border-border p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-black text-ink leading-tight">
-              {t('dashboard.welcome', { name: user.fullName || user.username })} 👋
-            </h1>
-            <p className="text-lg text-slate font-bold mt-1">{t('dashboard.statistics')}</p>
+        {/* FREE tier: plain white card */}
+        {isFree && (
+          <div className="bg-white rounded-3xl border-2 border-border p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-black text-ink leading-tight">
+                {t('dashboard.welcome', { name: user.fullName || user.username })} 👋
+              </h1>
+              <p className="text-lg text-slate font-bold mt-1">{t('dashboard.statistics')}</p>
+            </div>
+            <button onClick={() => navigate('/notes')} className="btn-primary flex items-center gap-2 whitespace-nowrap">
+              <Plus className="w-5 h-5" /> Upload Note
+            </button>
           </div>
+        )}
 
-          {/* Quick Action */}
-          <button
-            onClick={() => navigate('/notes')}
-            className="btn-primary flex items-center gap-2 whitespace-nowrap"
+        {/* PRO tier: violet gradient hero */}
+        {isPro && !isPremium && (
+          <div
+            className="rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, #6d28d9 0%, #7c5bfc 50%, #818cf8 100%)' }}
           >
-            <Plus className="w-5 h-5" />
-            {t('common.submit').toUpperCase()}
-          </button>
-        </div>
+            {/* decorative blob */}
+            <div className="absolute -top-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-2xl" />
+            <div className="absolute -bottom-8 left-20 w-32 h-32 bg-white/10 rounded-full blur-xl" />
+
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-xs font-black px-3 py-1.5 rounded-full border border-white/30">
+                  <Crown className="w-3.5 h-3.5" /> PRO MEMBER
+                </span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight">
+                Welcome back, {user.fullName?.split(' ')[0] || user.username}! ✨
+              </h1>
+              <p className="text-white/80 font-bold mt-1">Enjoy unlimited quizzes, notes, and AI feedback.</p>
+            </div>
+            <div className="relative z-10 flex flex-col sm:flex-row gap-3">
+              <button onClick={() => navigate('/notes')} className="inline-flex items-center gap-2 bg-white text-violet-700 font-black px-5 py-3 rounded-2xl hover:bg-violet-50 transition-all" style={{ boxShadow: '0 4px 0 #4c1d95' }}>
+                <Plus className="w-5 h-5" /> Upload Note
+              </button>
+              <button onClick={() => navigate('/ai-teaching')} className="inline-flex items-center gap-2 bg-white/20 text-white font-black px-5 py-3 rounded-2xl border border-white/30 hover:bg-white/30 transition-all">
+                <Sparkles className="w-5 h-5" /> AI Tutor
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* PREMIUM tier: gold/amber gradient hero */}
+        {isPremium && (
+          <div
+            className="rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, #92400e 0%, #d97706 50%, #fbbf24 100%)' }}
+          >
+            <div className="absolute -top-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-2xl" />
+            <div className="absolute -bottom-8 left-20 w-32 h-32 bg-white/10 rounded-full blur-xl" />
+
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1.5 bg-white/25 text-white text-xs font-black px-3 py-1.5 rounded-full border border-white/40">
+                  <Crown className="w-3.5 h-3.5" /> PREMIUM MEMBER
+                </span>
+                <span className="inline-flex items-center gap-1 bg-white/15 text-white text-xs font-black px-2.5 py-1.5 rounded-full border border-white/30">
+                  ⚡ Priority Support
+                </span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight">
+                Welcome back, {user.fullName?.split(' ')[0] || user.username}! 👑
+              </h1>
+              <p className="text-white/80 font-bold mt-1">Full platform access — AI Teaching, custom quizzes, and more.</p>
+            </div>
+            <div className="relative z-10 flex flex-col sm:flex-row gap-3">
+              <button onClick={() => navigate('/ai-teaching')} className="inline-flex items-center gap-2 bg-white text-amber-700 font-black px-5 py-3 rounded-2xl hover:bg-amber-50 transition-all" style={{ boxShadow: '0 4px 0 #78350f' }}>
+                <Sparkles className="w-5 h-5" /> AI Tutor
+              </button>
+              <button onClick={() => navigate('/notes')} className="inline-flex items-center gap-2 bg-white/20 text-white font-black px-5 py-3 rounded-2xl border border-white/30 hover:bg-white/30 transition-all">
+                <Plus className="w-5 h-5" /> Upload Note
+              </button>
+            </div>
+          </div>
+        )}
       </motion.div>
 
-      {/* Upgrade Prompt */}
-      {isFree && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-8"
-        >
-          <UpgradePrompt feature="unlimited_quizzes" />
-        </motion.div>
-      )}
+      {/* Upgrade Prompt for free users */}
+      {
+        isFree && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8"
+          >
+            <UpgradePrompt feature="unlimited_quizzes" />
+          </motion.div>
+        )
+      }
 
       {/* ── Stats Grid ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -185,25 +250,27 @@ function Dashboard({ user, onLogout }) {
       </div>
 
       {/* ── Gamification Row ── */}
-      {gamificationStats && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"
-        >
-          <XPBar
-            level={gamificationStats.level}
-            totalXP={gamificationStats.totalXP}
-            nextLevelXP={gamificationStats.nextLevelXP}
-            progressToNextLevel={gamificationStats.progressToNextLevel}
-          />
-          <StreakIndicator
-            currentStreak={gamificationStats.currentStreak}
-            longestStreak={gamificationStats.longestStreak}
-          />
-        </motion.div>
-      )}
+      {
+        gamificationStats && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"
+          >
+            <XPBar
+              level={gamificationStats.level}
+              totalXP={gamificationStats.totalXP}
+              nextLevelXP={gamificationStats.nextLevelXP}
+              progressToNextLevel={gamificationStats.progressToNextLevel}
+            />
+            <StreakIndicator
+              currentStreak={gamificationStats.currentStreak}
+              longestStreak={gamificationStats.longestStreak}
+            />
+          </motion.div>
+        )
+      }
 
       {/* ── Recent Activity ── */}
       <motion.div
@@ -267,7 +334,7 @@ function Dashboard({ user, onLogout }) {
           </div>
         )}
       </motion.div>
-    </div>
+    </div >
   );
 }
 

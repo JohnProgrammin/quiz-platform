@@ -203,6 +203,7 @@ function Landing() {
     {
       name: t('landing.pricing.pro'),
       price: '$9.99',
+      nairaPrice: '₦15,000',
       period: t('landing.pricing.perMonth'),
       description: t('landing.pricing.proDesc'),
       icon: <Sparkles className="w-7 h-7" />,
@@ -224,6 +225,7 @@ function Landing() {
     {
       name: t('landing.pricing.premium'),
       price: '$19.99',
+      nairaPrice: '₦30,000',
       period: t('landing.pricing.perMonth'),
       description: t('landing.pricing.premiumDesc'),
       icon: <Crown className="w-7 h-7" />,
@@ -270,9 +272,8 @@ function Landing() {
   return (
     <div className="min-h-screen bg-white overflow-hidden">
       {/* ── Navbar (Duolingo-style responsive) ── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white/95 backdrop-blur-md border-b-2 border-border shadow-sm' : 'bg-transparent'
-      }`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md border-b-2 border-border shadow-sm' : 'bg-transparent'
+        }`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
@@ -379,25 +380,22 @@ function Landing() {
                   ].map((opt, i) => (
                     <div
                       key={i}
-                      className={`demo-option p-4 rounded-2xl border-2 flex items-center gap-4 font-bold text-sm cursor-pointer transition-all ${
-                        visibleOptions.has(i)
+                      className={`demo-option p-4 rounded-2xl border-2 flex items-center gap-4 font-bold text-sm cursor-pointer transition-all ${visibleOptions.has(i)
                           ? 'opacity-100'
                           : 'opacity-0 pointer-events-none'
-                      } ${
-                        demoPhase === 3 && i === 1
+                        } ${demoPhase === 3 && i === 1
                           ? 'border-brand-500 bg-blue-50 text-brand-600 demo-correct shadow-sm'
                           : 'border-border/60 bg-white hover:bg-surface text-slate'
-                      }`}
+                        }`}
                       style={{
                         '--delay': `${i * 0.25}s`,
                       }}
                     >
                       <span
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs transition-all flex-shrink-0 ${
-                          demoPhase === 3 && i === 1
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs transition-all flex-shrink-0 ${demoPhase === 3 && i === 1
                             ? 'bg-brand-500 text-white shadow-sm'
                             : 'bg-slate-100 text-slate-600'
-                        }`}
+                          }`}
                       >
                         {['A', 'B', 'C', 'D'][i]}
                       </span>
@@ -530,9 +528,8 @@ function Landing() {
               <div
                 key={i}
                 ref={setPricingRef(i)}
-                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} card p-8 transition-all hover:shadow-sm ${
-                  tier.highlighted ? 'md:scale-105 md:ring-2 md:ring-brand-500 shadow-sm' : ''
-                }`}
+                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} card p-8 transition-all hover:shadow-sm ${tier.highlighted ? 'md:scale-105 md:ring-2 md:ring-brand-500 shadow-sm' : ''
+                  }`}
               >
                 {/* Badge */}
                 {tier.badge && (
@@ -558,6 +555,16 @@ function Landing() {
                     {tier.price}
                     {tier.period && <span className="text-lg text-slate">{tier.period}</span>}
                   </div>
+                  {tier.nairaPrice && (
+                    <div className="mt-1.5">
+                      <span className="inline-flex items-center gap-1 bg-green-50 border border-green-200 text-green-700 text-sm font-black px-3 py-1 rounded-full">
+                        🇳🇬 {tier.nairaPrice}/mo
+                      </span>
+                    </div>
+                  )}
+                  {tier.nairaPrice && (
+                    <p className="text-[11px] text-muted mt-1.5 font-semibold">Pay in Naira · Billed monthly</p>
+                  )}
                 </div>
 
                 {/* Features */}
@@ -573,11 +580,7 @@ function Landing() {
                 {/* CTA Button */}
                 <Link
                   to={tier.href}
-                  className={`block text-center font-bold py-3 px-6 rounded-xl transition-all ${
-                    tier.highlighted
-                      ? 'bg-brand-500 text-white hover:shadow-sm'
-                      : 'bg-surface border-2 border-border text-ink hover:bg-slate hover:text-white'
-                  }`}
+                  className={tier.highlighted ? 'btn-primary w-full justify-center' : 'btn-secondary w-full justify-center'}
                 >
                   {tier.cta}
                 </Link>
