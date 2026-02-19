@@ -575,7 +575,7 @@ app.post('/api/v1/account/reset', authenticateToken, async (req, res) => {
  */
 app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) => {
   try {
-    const { plan } = req.body;
+    const { plan, interval = 'monthly' } = req.body;
 
     if (!plan || !['pro', 'premium'].includes(plan)) {
       return res.status(400).json({ error: 'Valid plan required (pro or premium)' });
@@ -596,13 +596,31 @@ app.post('/api/v1/subscription/checkout', authenticateToken, async (req, res) =>
 
     // Paystack Plan IDs and amounts in kobo (Nigeria NGN pricing)
     const paymentPlans = {
-      pro: { planId: 'PLN_pv67fcbied84ynz', amount: 500000 },       // ₦5,000/month = 500,000 kobo
-      premium: { planId: 'PLN_pp48a20xxtez4ot', amount: 1000000 },  // ₦10,000/month = 1,000,000 kobo
+      monthly: {
+        pro: { planId: 'PLN_pv67fcbied84ynz', amount: 500000 },       // ₦5,000/month
+        premium: { planId: 'PLN_pp48a20xxtez4ot', amount: 1000000 },  // ₦10,000/month
+      },
+      yearly: {
+        pro: {
+          planId: process.env.PAYSTACK_PLAN_PRO_YEARLY || 'PLN_YEARLY_PRO_PLACEHOLDER',
+          amount: 5000000
+        }, // ₦50,000/year (2 months free)
+        premium: {
+          planId: process.env.PAYSTACK_PLAN_PREMIUM_YEARLY || 'PLN_YEARLY_PREMIUM_PLACEHOLDER',
+          amount: 10000000
+        }, // ₦100,000/year
+      }
     };
 
-    const selectedPlan = paymentPlans[plan];
+    const selectedPlan = paymentPlans[interval]?.[plan];
+
     if (!selectedPlan) {
-      return res.status(400).json({ error: 'Invalid plan' });
+      return res.status(400).json({ error: `Invalid plan or interval: ${plan} (${interval})` });
+    }
+
+    if (interval === 'yearly' && selectedPlan.planId.includes('PLACEHOLDER')) {
+      console.warn('⚠️  Annual plan requested but no Plan ID configured in env vars.');
+      return res.status(503).json({ error: 'Annual billing not yet configured. Please contact support.' });
     }
 
     // Import Paystack config

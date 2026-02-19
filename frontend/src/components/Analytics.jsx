@@ -5,12 +5,43 @@ import { useTranslation } from 'react-i18next';
 import { SkeletonAnalytics } from './Skeleton';
 import { getQuizHistory, getQuizzes, getProfile } from '../api';
 import { BarChart3, TrendingUp, Target, Zap, Calendar, Award, Clock } from 'lucide-react';
+import { useSubscription } from '../contexts/SubscriptionContext';
+import UpgradeQuotaModal from './UpgradeQuotaModal'; // Fixed import
 
 function Analytics({ user, onLogout }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { tier } = useSubscription(); // Get user tier
   const [attempts, setAttempts] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
+
+  if (tier === 'free') {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-black text-ink mb-2">{t('analytics.title')}</h1>
+          <p className="text-slate font-semibold">Track your learning progress and insights</p>
+        </div>
+
+        <div className="flex flex-col items-center justify-center p-12 bg-surface rounded-2xl border-2 border-border text-center">
+          <div className="w-20 h-20 bg-brand-100 rounded-full flex items-center justify-center mb-6">
+            <BarChart3 className="w-10 h-10 text-brand-500" />
+          </div>
+          <h2 className="text-2xl font-black text-ink mb-3">Unlock Advanced Analytics</h2>
+          <p className="text-slate font-semibold mb-8 max-w-md">
+            Get detailed insights into your learning patterns, identifying weak spots, and tracking your improvement over time with Pro.
+          </p>
+          <button
+            onClick={() => navigate('/pricing')}
+            className="btn-primary px-8 py-3 text-lg"
+          >
+            Upgrade to Pro
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalQuizzes: 0,
@@ -23,8 +54,10 @@ function Analytics({ user, onLogout }) {
   const [trendData, setTrendData] = useState([]);
 
   useEffect(() => {
-    loadAnalytics();
-  }, []);
+    if (tier !== 'free') {
+      loadAnalytics();
+    }
+  }, [tier]);
 
   const loadAnalytics = async () => {
     try {

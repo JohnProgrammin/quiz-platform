@@ -104,7 +104,7 @@ function Quiz({ user, onLogout }) {
   if (loading) {
     return (
       <div>
-        
+
         <div className="flex flex-col items-center justify-center h-96">
           <Loader className="w-10 h-10 text-brand-500 animate-spin" />
           <p className="text-slate font-bold mt-4">Loading quiz...</p>
@@ -116,7 +116,7 @@ function Quiz({ user, onLogout }) {
   if (!quiz || !quiz.questions || quiz.questions.length === 0) {
     return (
       <div>
-        
+
         <div className="flex flex-col items-center justify-center h-96">
           <X className="w-16 h-16 text-danger mb-4" />
           <p className="text-ink font-black text-2xl">Quiz not found or has no questions</p>
@@ -129,7 +129,7 @@ function Quiz({ user, onLogout }) {
   if (showTeaching && teaching && tier !== 'free') {
     return (
       <div>
-        
+
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full p-10 max-h-[80vh] overflow-y-auto border border-gray-300 shadow-sm">
             <div className="flex items-center gap-3 mb-8">
@@ -170,13 +170,14 @@ function Quiz({ user, onLogout }) {
   }
 
   const question = quiz.questions[currentQuestion];
-  const progress = ((Object.keys(answers).length) / quiz.questions.length) * 100;
+  // Show progress based on current position rather than just answered count so bar is always visible
+  const progress = ((currentQuestion + 1) / quiz.questions.length) * 100;
   const answeredCount = Object.keys(answers).length;
   const optionLabels = ['A', 'B', 'C', 'D'];
 
   return (
     <div>
-      
+
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Section */}
@@ -223,17 +224,15 @@ function Quiz({ user, onLogout }) {
                 <button
                   key={index}
                   onClick={() => handleSelectAnswer(currentQuestion, index)}
-                  className={`w-full text-left p-6 rounded-lg border transition-all font-semibold flex items-start gap-4 ${
-                    isSelected
+                  className={`w-full text-left p-6 rounded-lg border transition-all font-semibold flex items-start gap-4 ${isSelected
                       ? 'border-brand-500 bg-brand-50 text-brand-600 shadow-md'
                       : 'border-gray-300 bg-white text-ink hover:border-brand-400 hover:shadow-md'
-                  }`}
+                    }`}
                 >
-                  <span className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-black flex-shrink-0 mt-0.5 ${
-                    isSelected
+                  <span className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-black flex-shrink-0 mt-0.5 ${isSelected
                       ? 'bg-brand-500 text-white'
                       : 'bg-gray-200 text-slate border border-gray-400'
-                  }`}>
+                    }`}>
                     {optionLabels[index]}
                   </span>
                   <span className="text-lg leading-relaxed">{option}</span>
@@ -292,13 +291,12 @@ function Quiz({ user, onLogout }) {
               <button
                 key={index}
                 onClick={() => setCurrentQuestion(index)}
-                className={`w-11 h-11 rounded-lg text-sm font-black transition-all ${
-                  currentQuestion === index
+                className={`w-11 h-11 rounded-lg text-sm font-black transition-all ${currentQuestion === index
                     ? 'bg-brand-500 text-white shadow-md'
                     : answers[index] !== undefined
-                    ? 'bg-brand-100 text-brand-700 border border-brand-300'
-                    : 'bg-gray-200 text-slate border border-gray-400 hover:border-brand-400 hover:bg-gray-300'
-                }`}
+                      ? 'bg-brand-100 text-brand-700 border border-brand-300'
+                      : 'bg-gray-200 text-slate border border-gray-400 hover:border-brand-400 hover:bg-gray-300'
+                  }`}
               >
                 {index + 1}
               </button>
