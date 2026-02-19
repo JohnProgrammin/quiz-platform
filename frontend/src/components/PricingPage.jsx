@@ -1,10 +1,14 @@
+```javascript
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { createCheckoutSession } from '../api';
 import { ArrowLeft, Check } from 'lucide-react';
 
-function PricingPage({ user, onLogout }) {
+import { useSubscription } from '../contexts/SubscriptionContext';
+
+function PricingPage() {
+  const { tier: currentPlanTier } = useSubscription();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [error, setError] = useState('');
@@ -93,15 +97,17 @@ function PricingPage({ user, onLogout }) {
           <div className="bg-gray-100 p-1 rounded-xl inline-flex items-center relative">
             <button
               onClick={() => setBillingCycle('monthly')}
-              className={`px-6 py-2 rounded-lg text-sm font-black transition-all ${billingCycle === 'monthly' ? 'bg-white shadow-sm text-ink' : 'text-slate hover:text-ink'
-                }`}
+              className={`px - 6 py - 2 rounded - lg text - sm font - black transition - all ${
+  billingCycle === 'monthly' ? 'bg-white shadow-sm text-ink' : 'text-slate hover:text-ink'
+} `}
             >
               Pay monthly
             </button>
             <button
               onClick={() => setBillingCycle('yearly')}
-              className={`px-6 py-2 rounded-lg text-sm font-black transition-all ${billingCycle === 'yearly' ? 'bg-white shadow-sm text-ink' : 'text-slate hover:text-ink'
-                }`}
+              className={`px - 6 py - 2 rounded - lg text - sm font - black transition - all ${
+  billingCycle === 'yearly' ? 'bg-white shadow-sm text-ink' : 'text-slate hover:text-ink'
+} `}
             >
               Pay annually
             </button>
@@ -123,16 +129,18 @@ function PricingPage({ user, onLogout }) {
           {plans.map((plan) => (
             <div
               key={plan.tier}
-              className={`relative rounded-3xl p-8 transition-all duration-300 ${plan.isPopular
-                ? 'bg-white border-2 border-brand-500 shadow-xl shadow-brand-500/10'
-                : 'bg-white border-2 border-border hover:border-brand-300 hover:shadow-lg'
-                }`}
+              className={`relative rounded - 3xl p - 8 transition - all duration - 300 ${
+  plan.isPopular
+    ? 'bg-white border-2 border-brand-500 shadow-xl shadow-brand-500/10'
+    : 'bg-white border-2 border-border hover:border-brand-300 hover:shadow-lg'
+} `}
             >
               {/* Badge */}
               {plan.badge && (
-                <div className={`absolute top-0 right-0 transform translate-x-2 -translate-y-1/2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wide
-                  ${plan.isPopular ? 'bg-brand-500 text-white' : 'bg-ink text-white'
-                  }`}>
+                <div className={`absolute top - 0 right - 0 transform translate - x - 2 - translate - y - 1 / 2 px - 4 py - 1.5 rounded - full text - xs font - black uppercase tracking - wide
+                  ${
+  plan.isPopular ? 'bg-brand-500 text-white' : 'bg-ink text-white'
+} `}>
                   {plan.badge}
                 </div>
               )}
@@ -164,13 +172,20 @@ function PricingPage({ user, onLogout }) {
               {/* CTA Button */}
               <button
                 onClick={() => handleSelectPlan(plan)}
-                disabled={loadingPlan !== null}
-                className={`w-full py-4 rounded-2xl font-black text-lg transition-all mb-10 shadow-lg active:scale-95 ${plan.buttonVariant === 'primary' // Pro
-                  ? 'bg-brand-500 text-white hover:bg-brand-600 shadow-brand-500/25'
-                  : 'bg-ink text-white hover:bg-slate-800 shadow-slate-900/25' // Premium
-                  }`}
+                disabled={loadingPlan !== null || plan.tier === currentPlanTier}
+                className={`w - full py - 4 rounded - 2xl font - black text - lg transition - all mb - 10 shadow - lg active: scale - 95 ${
+  plan.tier === currentPlanTier
+    ? 'bg-slate-200 text-slate-500 cursor-not-allowed shadow-none'
+    : plan.buttonVariant === 'primary' // Pro
+      ? 'bg-brand-500 text-white hover:bg-brand-600 shadow-brand-500/25'
+      : 'bg-ink text-white hover:bg-slate-800 shadow-slate-900/25' // Premium
+} `}
               >
-                {loadingPlan === plan.tier ? 'Processing...' : plan.buttonText}
+                {loadingPlan === plan.tier
+                  ? 'Processing...'
+                  : plan.tier === currentPlanTier
+                    ? 'Current Plan'
+                    : plan.buttonText}
               </button>
 
               {/* Features List */}
