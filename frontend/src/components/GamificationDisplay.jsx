@@ -17,8 +17,8 @@ function GamificationDisplay({ xpAwarded, leveledUp, newLevel, currentStreak }) 
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 max-w-xs">
-      <div className="space-y-3">
+    <div className="fixed bottom-24 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 sm:max-w-xs mx-auto sm:mx-0 pointer-events-none">
+      <div className="space-y-3 pointer-events-auto">
         {/* XP Earned */}
         {xpAwarded > 0 && (
           <div className="animate-slide-up bg-gradient-to-r from-amber-400 to-orange-400 rounded-2xl p-4 text-white shadow-xl transform hover:scale-105 transition-transform">
