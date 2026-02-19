@@ -23,6 +23,7 @@ function PricingPage({ user, onLogout }) {
       features: [
         'Unlimited quizzes',
         'Unlimited notes & uploads',
+        'Upload PPTX & PDF files',
         'AI feedback & teaching',
         'Weakness mastery',
         'Enhanced analytics',
@@ -123,8 +124,8 @@ function PricingPage({ user, onLogout }) {
             <div
               key={plan.tier}
               className={`relative rounded-3xl p-8 transition-all duration-300 ${plan.isPopular
-                  ? 'bg-white border-2 border-brand-500 shadow-xl shadow-brand-500/10'
-                  : 'bg-white border-2 border-border hover:border-brand-300 hover:shadow-lg'
+                ? 'bg-white border-2 border-brand-500 shadow-xl shadow-brand-500/10'
+                : 'bg-white border-2 border-border hover:border-brand-300 hover:shadow-lg'
                 }`}
             >
               {/* Badge */}
@@ -165,8 +166,8 @@ function PricingPage({ user, onLogout }) {
                 onClick={() => handleSelectPlan(plan)}
                 disabled={loadingPlan !== null}
                 className={`w-full py-4 rounded-2xl font-black text-lg transition-all mb-10 shadow-lg active:scale-95 ${plan.buttonVariant === 'primary' // Pro
-                    ? 'bg-brand-500 text-white hover:bg-brand-600 shadow-brand-500/25'
-                    : 'bg-ink text-white hover:bg-slate-800 shadow-slate-900/25' // Premium
+                  ? 'bg-brand-500 text-white hover:bg-brand-600 shadow-brand-500/25'
+                  : 'bg-ink text-white hover:bg-slate-800 shadow-slate-900/25' // Premium
                   }`}
               >
                 {loadingPlan === plan.tier ? 'Processing...' : plan.buttonText}

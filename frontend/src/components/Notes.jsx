@@ -43,10 +43,8 @@ function Notes({ user }) {
   const [uploadStage, setUploadStage] = useState('idle'); // idle | uploading | success
   const [uploadedFileName, setUploadedFileName] = useState('');
 
-  // Accepted file types (PPTX only for pro+)
-  const acceptAttr = isPro
-    ? '.pdf,.txt,.md,.docx,.doc,.pptx,.ppt'
-    : '.pdf,.txt,.md,.docx,.doc';
+  // Accepted file types (Show PPTX to all so free users get the upgrade prompt)
+  const acceptAttr = '.pdf,.txt,.md,.docx,.doc,.pptx,.ppt';
 
   useEffect(() => { loadNotes(); }, []);
 
@@ -357,13 +355,13 @@ function Notes({ user }) {
                 <motion.div
                   key={note.id}
                   variants={itemVariants}
-                  className="px-6 py-5 hover:bg-violet-50/40 transition-all duration-200 flex items-center justify-between gap-4 group"
+                  className="p-4 sm:px-6 sm:py-5 hover:bg-violet-50/40 transition-all duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group"
                 >
-                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <div className="flex items-center gap-4 flex-1 min-w-0 w-full sm:w-auto">
                     <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform">
                       {getFileIcon(note.filename || note.title)}
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <h3 className="font-black text-ink truncate group-hover:text-violet-600 transition-colors">
                         {note.title}
                       </h3>
@@ -373,7 +371,7 @@ function Notes({ user }) {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="flex items-center gap-3 flex-shrink-0 w-full sm:w-auto justify-end">
                     {/* Question count slider (Pro only) */}
                     {isPro && (
                       <div className="hidden md:flex items-center gap-2 bg-surface px-3 py-2 rounded-xl border border-border">

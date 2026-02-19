@@ -213,6 +213,7 @@ function Landing() {
       features: [
         'Unlimited quizzes',
         'Unlimited notes & uploads',
+        'Upload PPTX files',
         'AI-powered feedback on answers',
         'Identify weak topics automatically',
         'Focused mastery quizzes',
