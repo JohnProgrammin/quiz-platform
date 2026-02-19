@@ -50,20 +50,6 @@ function Quiz({ user, onLogout }) {
 
   const handleSelectAnswer = (questionIndex, optionIndex) => {
     setAnswers({ ...answers, [questionIndex]: optionIndex });
-
-    // Play sound effect
-    const question = quiz.questions[questionIndex];
-    if (question.type === 'mcq') {
-      if (question.correctAnswer === optionIndex) {
-        soundService.playSuccess();
-      } else {
-        soundService.playError();
-      }
-    } else {
-      // Text input typing sound (debounced or just on focus?)
-      // For now, let's play a soft click on text input
-      soundService.playClick();
-    }
   };
 
   const handleNext = () => {

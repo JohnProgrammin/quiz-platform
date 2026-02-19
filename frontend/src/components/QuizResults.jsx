@@ -51,7 +51,8 @@ function QuizResults({ user, onLogout }) {
           });
         }, 500);
       } else {
-        // Maybe a gentle sound for completion?
+        // Encouraging but lower key sound for lower scores
+        soundService.playError();
       }
     }
   }, [loading, selectedAttempt]);
