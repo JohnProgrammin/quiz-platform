@@ -64,8 +64,15 @@ function Dashboard({ user, onLogout }) {
 
       setRecentAttempts(attempts.slice(0, 5));
 
+      console.log('Gamification Response:', gamificationRes);
       if (gamificationRes?.data?.data) {
         setGamificationStats(gamificationRes.data.data);
+      } else if (gamificationRes?.data) {
+        // Fallback or double check
+        console.log('Gamification Response Data:', gamificationRes.data);
+        if (gamificationRes.data.totalXP !== undefined) {
+          setGamificationStats(gamificationRes.data);
+        }
       }
     } catch (error) {
       console.error('Error loading dashboard:', error);
