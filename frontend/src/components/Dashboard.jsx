@@ -238,13 +238,13 @@ function Dashboard({ user, onLogout }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 * i }}
-            className="bg-white rounded-2xl border-2 border-border p-5 hover:border-brand-400 transition-all duration-200 group cursor-default"
+            className="bg-white rounded-2xl border-2 border-border p-5 hover:border-brand-400 transition-all duration-200 group cursor-default shadow-sm hover:shadow-md hover:-translate-y-1"
           >
-            <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-3 text-white group-hover:scale-110 transition-transform`}>
-              {stat.icon}
+            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-3 text-white group-hover:scale-110 transition-transform shadow-inner`}>
+              {React.cloneElement(stat.icon, { className: "w-6 h-6 stroke-[3]" })}
             </div>
-            <div className="text-3xl font-black text-ink">{stat.value}</div>
-            <div className="text-sm font-bold text-slate mt-0.5">{stat.label}</div>
+            <div className="text-3xl font-black text-ink tracking-tight">{stat.value}</div>
+            <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">{stat.label}</div>
           </motion.div>
         ))}
       </div>

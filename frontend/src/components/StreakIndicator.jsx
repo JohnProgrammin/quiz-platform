@@ -12,23 +12,26 @@ function StreakIndicator({ currentStreak = 0, longestStreak = 0 }) {
       <div className="flex items-center justify-between mb-4">
 
         {/* Flame + streak count */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <motion.div
             animate={currentStreak > 0 ? { scale: [1, 1.15, 1], rotate: [0, 3, -3, 0] } : {}}
-            transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-            className={`w-14 h-14 rounded-full flex items-center justify-center ${currentStreak > 0
-                ? 'bg-gradient-to-br from-flame to-heart'
-                : 'bg-gray-100'
+            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+            className={`w-16 h-16 rounded-2xl flex items-center justify-center relative ${currentStreak > 0
+              ? 'bg-gradient-to-br from-orange-400 to-red-500 shadow-lg shadow-orange-500/30'
+              : 'bg-gray-100 border-2 border-border'
               }`}
             style={currentStreak > 0 ? {
-              boxShadow: '0 4px 0 #b91c1c, 0 0 20px rgba(255,122,26,0.3)',
+              boxShadow: '0 4px 0 #b91c1c, 0 8px 20px rgba(255, 122, 26, 0.4)',
             } : {}}
           >
-            <Flame className={`w-7 h-7 ${currentStreak > 0 ? 'text-white animate-flame' : 'text-muted'}`} />
+            {currentStreak > 0 && (
+              <div className="absolute inset-0 bg-white/20 rounded-2xl animate-pulse" />
+            )}
+            <Flame className={`w-8 h-8 ${currentStreak > 0 ? 'text-white fill-white drop-shadow-md' : 'text-gray-300'}`} />
           </motion.div>
 
           <div>
-            <p className="text-xs font-black text-muted uppercase tracking-widest">
+            <p className="text-xs font-black text-muted uppercase tracking-widest mb-0.5">
               {currentStreak > 0 ? 'Streak' : 'No streak'}
             </p>
             {currentStreak > 0
@@ -63,10 +66,10 @@ function StreakIndicator({ currentStreak = 0, longestStreak = 0 }) {
                 animate={{ scale: 1 }}
                 transition={{ delay: i * 0.04, type: 'spring', stiffness: 400, damping: 20 }}
                 className={`w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-black transition-all ${isCompleted
-                    ? 'text-white'
-                    : isToday
-                      ? 'border-2 border-violet-400 text-violet-500'
-                      : 'bg-gray-100 text-muted'
+                  ? 'text-white'
+                  : isToday
+                    ? 'border-2 border-violet-400 text-violet-500'
+                    : 'bg-gray-100 text-muted'
                   }`}
                 style={isCompleted ? {
                   background: 'linear-gradient(135deg, #ff7a1a, #ff4b6a)',

@@ -54,13 +54,19 @@ function XPBar({ level = 1, totalXP = 0, nextLevelXP = 100, progressToNextLevel 
       </div>
 
       {/* Thick Duolingo-style progress bar */}
-      <div className="progress-bar">
+      <div className="progress-bar h-5 bg-gray-200/80 rounded-full overflow-hidden shadow-inner border border-black/5 relative">
         <motion.div
-          className="progress-bar-fill animate-xp-pulse"
+          className="progress-bar-fill h-full relative"
+          style={{
+            background: 'linear-gradient(180deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%)', // Violet gradient
+            boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.3)'
+          }}
           initial={{ width: 0 }}
           animate={{ width: `${progressToNextLevel}%` }}
           transition={{ duration: 1.2, ease: [0.34, 1.56, 0.64, 1] }}
-        />
+        >
+          <div className="absolute top-0 right-0 bottom-0 left-0 bg-white/10 w-full animate-shimmer" style={{ backgroundSize: '50px 50px', backgroundImage: 'linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent)', backgroundSize: '1rem 1rem' }} />
+        </motion.div>
       </div>
 
       <p className="text-xs font-bold text-muted mt-2 text-center">

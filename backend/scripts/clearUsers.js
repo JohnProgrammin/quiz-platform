@@ -52,7 +52,18 @@ async function clearUsers() {
 
             if (users.length < 50) hasMore = false;
         }
-        console.log(`Cleanup complete. Deleted ${deletedCount} users.`);
+
+        // Also delete from public.users (Custom Auth)
+        console.log('Clearing public.users table...');
+        const { error: publicError } = await supabase.from('users').delete().neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+
+        if (publicError) {
+            console.error('Error clearing public.users:', publicError);
+        } else {
+            console.log('Successfully cleared public.users.');
+        }
+
+        console.log(`Cleanup complete. Deleted ${deletedCount} auth users.`);
     } catch (err) {
         console.error('Unexpected error:', err);
     }
