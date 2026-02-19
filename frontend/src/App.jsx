@@ -1,4 +1,4 @@
-// Cache bust: 2026-02-18-duolingo-redesign
+// Cache bust: 2026-02-19-forced-redeploy
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
