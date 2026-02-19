@@ -4,11 +4,6 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import en from './locales/en.json';
 import pidgin from './locales/pidgin.json';
-import ko from './locales/ko.json';
-import fr from './locales/fr.json';
-import hi from './locales/hi.json';
-import ar from './locales/ar.json';
-import es from './locales/es.json';
 
 i18n
   .use(LanguageDetector)
@@ -17,11 +12,6 @@ i18n
     resources: {
       en: { translation: en },
       yo: { translation: pidgin },
-      ko: { translation: ko },
-      fr: { translation: fr },
-      hi: { translation: hi },
-      ar: { translation: ar },
-      es: { translation: es },
     },
     fallbackLng: 'en',
     lng: localStorage.getItem('language') || 'en',

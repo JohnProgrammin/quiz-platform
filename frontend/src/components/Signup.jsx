@@ -4,6 +4,8 @@ import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { signup } from '../api';
 
+import { motion } from 'framer-motion';
+
 function Signup({ onLogin }) {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
@@ -12,6 +14,9 @@ function Signup({ onLogin }) {
     password: '',
     fullName: '',
   });
+
+  const isFormFilled = formData.username && formData.email && formData.password;
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -134,14 +139,17 @@ function Signup({ onLogin }) {
               </div>
             </div>
 
-            <button
+            <motion.button
               type="submit"
               disabled={loading}
+              animate={isFormFilled && !loading ? { scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: 1.5 } } : {}}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="btn-primary w-full text-base disabled:opacity-60 disabled:cursor-not-allowed"
               aria-busy={loading}
             >
               {loading ? t('auth.creatingAccount') : t('auth.createAccount').toUpperCase()}
-            </button>
+            </motion.button>
           </form>
 
           <div className="mt-8 pt-6 border-t-2 border-border text-center">

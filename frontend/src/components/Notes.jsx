@@ -202,7 +202,7 @@ function Notes({ user }) {
             <h1 className="text-4xl font-black text-ink">{t('notes.myNotes')}</h1>
             <p className="text-slate font-bold mt-1">Upload a file → generate a quiz instantly</p>
           </div>
-          <div className="hidden sm:flex items-center gap-2 bg-white border-2 border-border rounded-2xl px-5 py-3">
+          <div className="flex items-center gap-2 bg-white border-2 border-border rounded-2xl px-3 sm:px-5 py-2 sm:py-3 scale-90 sm:scale-100 origin-right">
             {isFree ? (
               <>
                 <span className="text-2xl font-black text-ink">{notes.length}<span className="text-muted">/3</span></span>
@@ -229,7 +229,7 @@ function Notes({ user }) {
           onDrop={handleDrop}
         >
           {/* === Animated Upload Zone === */}
-          <label htmlFor="file-upload" className={`block p-8 sm:p-10 text-center select-none ${uploadStage === 'uploading' ? 'pointer-events-none' : 'cursor-pointer'}`}>
+          <label htmlFor="file-upload" className={`block p-4 sm:p-10 text-center select-none ${uploadStage === 'uploading' ? 'pointer-events-none' : 'cursor-pointer'}`}>
             <input ref={fileInputRef} type="file" accept={acceptAttr} onChange={handleFileInput} disabled={uploading} className="hidden" id="file-upload" />
 
             <AnimatePresence mode="wait">

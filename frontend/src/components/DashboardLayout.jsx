@@ -180,6 +180,15 @@ function DashboardLayout({ user, onLogout, children }) {
                     <LanguageSwitcher inSidebar={false} />
                     <span className="text-[10px] font-black mt-0.5 opacity-70">{t('navbar.language')}</span>
                 </div>
+
+                {/* Mobile Sign Out */}
+                <button
+                    onClick={onLogout}
+                    className="mobile-tab-item text-danger/70 hover:text-danger active:text-danger"
+                >
+                    <LogOut className="w-6 h-6" />
+                    <span>{t('auth.signout')}</span>
+                </button>
             </div>
         </div>
     );

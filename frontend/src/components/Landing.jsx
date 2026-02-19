@@ -184,11 +184,12 @@ function Landing() {
   const pricingTiers = [
     {
       name: t('landing.pricing.free'),
-      price: t('landing.pricing.freePrice'),
+      price: 'Free',
       description: t('landing.pricing.freeDesc'),
       icon: <Gift className="w-7 h-7" />,
       color: 'text-success',
-      bg: 'bg-green-50',
+      bg: 'bg-white',
+      border: 'border-2 border-border',
       features: [
         t('landing.pricing.freeFeature1'),
         t('landing.pricing.freeFeature2'),
@@ -202,20 +203,21 @@ function Landing() {
     },
     {
       name: t('landing.pricing.pro'),
-      price: '$9.99',
-      nairaPrice: '₦15,000',
-      period: t('landing.pricing.perMonth'),
-      description: t('landing.pricing.proDesc'),
+      price: '₦5,000',
+      period: '/month',
+      description: 'Perfect for serious learners wanting to master any topic',
       icon: <Sparkles className="w-7 h-7" />,
       color: 'text-brand-500',
-      bg: 'bg-blue-50',
-      solidBg: 'bg-brand-500',
+      bg: 'bg-white',
+      border: 'border-2 border-brand-500 ring-4 ring-brand-500/10',
       features: [
-        t('landing.pricing.proFeature1'),
-        t('landing.pricing.proFeature2'),
-        t('landing.pricing.proFeature3'),
-        t('landing.pricing.proFeature4'),
-        t('landing.pricing.proFeature5'),
+        'Unlimited quizzes',
+        'Unlimited notes & uploads',
+        'AI-powered feedback on answers',
+        'Identify weak topics automatically',
+        'Focused mastery quizzes',
+        'Pre-quiz AI teaching summaries',
+        'Enhanced analytics & insights',
       ],
       cta: t('landing.pricing.upgradePro'),
       href: '/signup',
@@ -224,20 +226,21 @@ function Landing() {
     },
     {
       name: t('landing.pricing.premium'),
-      price: '$19.99',
-      nairaPrice: '₦30,000',
-      period: t('landing.pricing.perMonth'),
-      description: t('landing.pricing.premiumDesc'),
+      price: '₦10,000',
+      period: '/month',
+      description: 'Everything in Pro, plus 1-on-1 AI tutoring',
       icon: <Crown className="w-7 h-7" />,
       color: 'text-amber-500',
-      bg: 'bg-amber-50',
-      solidBg: 'bg-amber-400',
+      bg: 'bg-white',
+      border: 'border-2 border-border',
       features: [
-        t('landing.pricing.premiumFeature1'),
-        t('landing.pricing.premiumFeature2'),
-        t('landing.pricing.premiumFeature3'),
-        t('landing.pricing.premiumFeature4'),
-        t('landing.pricing.premiumFeature5'),
+        'Everything in Pro',
+        'Unlimited AI Teaching sessions',
+        '1-on-1 conversational tutoring',
+        'Ask AI any question you want',
+        'Custom quiz settings',
+        'Advanced analytics',
+        'Priority support',
       ],
       cta: t('landing.pricing.goPremium'),
       href: '/signup',
@@ -381,8 +384,8 @@ function Landing() {
                     <div
                       key={i}
                       className={`demo-option p-4 rounded-2xl border-2 flex items-center gap-4 font-bold text-sm cursor-pointer transition-all ${visibleOptions.has(i)
-                          ? 'opacity-100'
-                          : 'opacity-0 pointer-events-none'
+                        ? 'opacity-100'
+                        : 'opacity-0 pointer-events-none'
                         } ${demoPhase === 3 && i === 1
                           ? 'border-brand-500 bg-blue-50 text-brand-600 demo-correct shadow-sm'
                           : 'border-border/60 bg-white hover:bg-surface text-slate'
@@ -393,8 +396,8 @@ function Landing() {
                     >
                       <span
                         className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs transition-all flex-shrink-0 ${demoPhase === 3 && i === 1
-                            ? 'bg-brand-500 text-white shadow-sm'
-                            : 'bg-slate-100 text-slate-600'
+                          ? 'bg-brand-500 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-600'
                           }`}
                       >
                         {['A', 'B', 'C', 'D'][i]}
@@ -528,7 +531,7 @@ function Landing() {
               <div
                 key={i}
                 ref={setPricingRef(i)}
-                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} card p-8 transition-all hover:shadow-sm ${tier.highlighted ? 'md:scale-105 md:ring-2 md:ring-brand-500 shadow-sm' : ''
+                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} rounded-2xl p-8 transition-all hover:shadow-sm ${tier.bg} ${tier.border} ${tier.highlighted ? 'md:scale-105 shadow-xl' : ''
                   }`}
               >
                 {/* Badge */}

@@ -5,11 +5,6 @@ import { Globe } from 'lucide-react';
 const languages = [
   { code: 'en', name: 'English', flag: 'EN' },
   { code: 'yo', name: 'Pidgin', flag: '🇳🇬' },
-  { code: 'ko', name: '한국어', flag: '🇰🇷' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
 ];
 
 function LanguageSwitcher({ inSidebar = false }) {
