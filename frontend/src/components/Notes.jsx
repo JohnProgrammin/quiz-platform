@@ -335,7 +335,7 @@ function Notes({ user }) {
 
           {loading ? (
             <div className="p-16 text-center">
-              <Loader className="w-10 h-10 text-violet-400 animate-spin mx-auto" />
+              <Loader2 className="w-10 h-10 text-violet-400 animate-spin mx-auto" />
               <p className="text-slate font-bold mt-4">{t('common.loading')}</p>
             </div>
           ) : notes.length === 0 ? (
@@ -393,7 +393,7 @@ function Notes({ user }) {
                       className="btn-primary flex items-center gap-2 text-sm py-2 px-4 whitespace-nowrap"
                     >
                       {generatingQuiz === note.id
-                        ? <><Loader className="w-4 h-4 animate-spin" /> Generating…</>
+                        ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating…</>
                         : <><Sparkles className="w-4 h-4" /> Quiz it</>
                       }
                     </button>
