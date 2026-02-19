@@ -323,9 +323,22 @@ function QuizResults({ user, onLogout }) {
                             }`}>
                             {optionLabels[optIndex]}
                           </span>
-                          <span>{option}</span>
-                          {isCorrectAnswer && <CheckCircle className="w-4 h-4 ml-auto flex-shrink-0" />}
-                          {isUserAnswer && !isCorrect && <XCircle className="w-4 h-4 ml-auto flex-shrink-0" />}
+                          <span className="flex-1">{option}</span>
+
+                          {/* Labels for clarity */}
+                          {isCorrectAnswer && (
+                            <div className="flex items-center gap-1 text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
+                              <CheckCircle className="w-3.5 h-3.5" />
+                              <span className="hidden sm:inline">Correct Answer</span>
+                            </div>
+                          )}
+
+                          {isUserAnswer && !isCorrect && (
+                            <div className="flex items-center gap-1 text-xs font-bold text-red-700 bg-red-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
+                              <XCircle className="w-3.5 h-3.5" />
+                              <span className="hidden sm:inline">Your Answer</span>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
