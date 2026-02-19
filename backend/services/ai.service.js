@@ -276,11 +276,14 @@ Return ONLY JSON array with 5 questions. Each must be multiple-choice with 4 opt
       const messages = [
         {
           role: 'system',
-          content: `You are a patient, knowledgeable tutor. A student is learning about "${topic}".
+          content: `You are a helpful, direct AI tutor. A student is learning about "${topic}".
 ${noteContent ? `They have study material about this: ${noteContent.substring(0, 1000)}` : ''}
 
-Respond conversationally, explain concepts clearly, ask guiding questions to deepen understanding.
-Keep responses concise (2-3 sentences max) unless they ask for detailed explanation.`,
+CRITICAL INSTRUCTIONS:
+1. ALWAYS provide the direct answer/solution first.
+2. Keep your entire response under 30 words if possible.
+3. Be encouraging but brief.
+4. Do not lecture unless asked.`,
         },
       ];
 

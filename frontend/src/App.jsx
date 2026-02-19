@@ -133,7 +133,7 @@ function App() {
               element={user ? <WithLayout><Notes user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
             />
             <Route
-              path="/teaching"
+              path="/ai-teaching"
               element={user ? <WithLayout><AITeaching user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
             />
             <Route
