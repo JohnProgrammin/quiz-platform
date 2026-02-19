@@ -9,6 +9,8 @@ import { useSubscription } from '../contexts/SubscriptionContext';
 import { useTranslation } from 'react-i18next';
 import { RotateCcw, Home, CheckCircle, XCircle, Loader2, Trophy, Target, TrendingUp, Lock, Sparkles } from 'lucide-react';
 
+import { soundService } from '../services/sound.service';
+
 function QuizResults({ user, onLogout }) {
   const { t } = useTranslation();
   const { id } = useParams();
@@ -37,17 +39,33 @@ function QuizResults({ user, onLogout }) {
 
   // Trigger celebration animation for good scores
   useEffect(() => {
-    if (!loading && selectedAttempt && selectedAttempt.percentage >= 70) {
-      // Confetti animation for good score
-      setTimeout(() => {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      }, 500);
+    if (!loading && selectedAttempt) {
+      if (selectedAttempt.percentage >= 70) {
+        soundService.playComplete();
+        // Confetti animation for good score
+        setTimeout(() => {
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }, 500);
+      } else {
+        // Maybe a gentle sound for completion?
+      }
     }
   }, [loading, selectedAttempt]);
+
+  // ... further down
+
+  let classes = 'p-4 rounded-xl border-2 flex items-center gap-3 text-sm font-bold transition-all ';
+  if (isCorrectAnswer) {
+    classes += 'bg-green-50 border-green-500 text-green-700 shadow-sm';
+  } else if (isUserAnswer && !isCorrect) {
+    classes += 'bg-red-50 border-red-500 text-red-700 shadow-sm';
+  } else {
+    classes += 'bg-white border-gray-200 text-slate opacity-60';
+  }
 
   const loadResults = async () => {
     try {

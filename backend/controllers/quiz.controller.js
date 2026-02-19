@@ -471,8 +471,10 @@ exports.getHistory = async (req, res) => {
       .from('quiz_attempts')
       .select(`
         id,
+        quiz_id,
         percentage,
         score,
+        total_questions,
         completed_at,
         quizzes (title)
       `)
@@ -485,9 +487,12 @@ exports.getHistory = async (req, res) => {
     // Format response to match expected structure
     const formatted = (data || []).map(attempt => ({
       id: attempt.id,
-      title: attempt.quizzes?.title || 'Unknown Quiz',
+      quizId: attempt.quiz_id,
+      quizTitle: attempt.quizzes?.title || 'Unknown Quiz',
       percentage: attempt.percentage,
       score: attempt.score,
+      totalQuestions: attempt.total_questions,
+      completedAt: attempt.completed_at,
       completed_at: attempt.completed_at,
     }));
 
