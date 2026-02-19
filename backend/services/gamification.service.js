@@ -137,6 +137,35 @@ exports.awardXP = async (userId, amount, reason, metadata = {}) => {
 };
 
 /**
+ * Get user gamification stats
+ */
+exports.getUserStats = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from('user_gamification')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+
+    return {
+      totalXP: data.total_xp,
+      level: data.level,
+      currentStreak: data.current_streak,
+      longestStreak: data.longest_streak,
+      nextLevelXP: calculateXpForLevel(data.level + 1),
+      progressToNextLevel: getProgressToNextLevel(data.total_xp, data.level)
+    };
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    return null;
+  }
+};
+
+/**
  * Update user's daily streak
  * Increments streak if they completed a quiz today
  * Resets if last activity was >1 day ago
