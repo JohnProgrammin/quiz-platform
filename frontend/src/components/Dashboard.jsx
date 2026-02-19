@@ -64,8 +64,8 @@ function Dashboard({ user, onLogout }) {
 
       setRecentAttempts(attempts.slice(0, 5));
 
-      if (gamificationRes?.data) {
-        setGamificationStats(gamificationRes.data);
+      if (gamificationRes?.data?.data) {
+        setGamificationStats(gamificationRes.data.data);
       }
     } catch (error) {
       console.error('Error loading dashboard:', error);
