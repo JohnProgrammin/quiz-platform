@@ -117,7 +117,7 @@ function Dashboard({ user, onLogout }) {
       bg: 'bg-brand-50'
     },
     {
-      label: t('quiz.quiz'),
+      label: t('dashboard.stats.attempts') || 'ATTEMPTS',
       value: stats.totalAttempts,
       icon: <Target className="w-6 h-6" />,
       gradient: 'from-purple to-purple/70',
