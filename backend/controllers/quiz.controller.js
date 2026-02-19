@@ -64,23 +64,41 @@ exports.generateQuiz = async (req, res) => {
 
     console.log(`✅ Generated ${questions.length} questions successfully`);
 
-    // Save quiz to database
-    const { data: quizData, error: quizError } = await supabase
-      .from('quizzes')
-      .insert([{
-        id: quizId,
-        user_id: userId,
-        note_id: noteId,
-        title: 'Quiz from ' + note.id,
-        questions: questions,
-        question_count: questions.length,
-        created_at: new Date(),
-      }])
-      .select('*')
-      .single();
+    // ── DB Insert ────────────────────────────────────────────────────────────
+    // NOTE: If you see PGRST204 errors, run this SQL migration in Supabase:
+    //   ALTER TABLE quizzes ADD COLUMN IF NOT EXISTS questions JSONB;
+    //   ALTER TABLE quizzes ADD COLUMN IF NOT EXISTS question_count INT;
+    // Until then, we store a minimal row and return questions directly.
+    // ─────────────────────────────────────────────────────────────────────────
+    const insertPayload = {
+      id: quizId,
+      user_id: userId,
+      note_id: noteId,
+      title: 'Quiz from ' + note.id,
+      created_at: new Date(),
+    };
 
-    if (quizError || !quizData) {
-      console.error('❌ Quiz INSERT failed:', quizError);
+    // Try to store questions/count — OK if columns don't exist yet
+    try {
+      const { error: quizError } = await supabase
+        .from('quizzes')
+        .insert([{ ...insertPayload, questions, question_count: questions.length }])
+        .select('id')
+        .single();
+
+      if (quizError) {
+        // Columns likely missing — fall back to minimal insert
+        console.warn('⚠️ Quiz insert with questions failed, trying minimal insert:', quizError.message);
+        const { error: fallbackError } = await supabase
+          .from('quizzes')
+          .insert([insertPayload]);
+        if (fallbackError) {
+          console.error('❌ Quiz INSERT failed (fallback):', fallbackError);
+          return res.status(500).json({ error: 'Failed to save quiz to database' });
+        }
+      }
+    } catch (insertErr) {
+      console.error('❌ Quiz INSERT exception:', insertErr);
       return res.status(500).json({ error: 'Failed to save quiz to database' });
     }
 
@@ -91,7 +109,7 @@ exports.generateQuiz = async (req, res) => {
       questionCount: questions.length,
       questions: questions.map((q) => ({
         id: q.id,
-        text: q.text || q.question, // Handle both field names (text or question)
+        text: q.text || q.question,
         type: q.type,
         options: q.type === 'mcq' ? q.options : undefined,
       })),
@@ -135,14 +153,28 @@ exports.getQuiz = async (req, res) => {
 
     const { data: quiz, error } = await supabase
       .from('quizzes')
+      // Select questions column only if it exists — fallback handled below
       .select('id, title, questions, question_count, created_at')
       .eq('id', id)
       .eq('user_id', userId)
       .single();
 
-    if (error || !quiz) {
+    if (error) {
+      // PGRST204 = column not in schema cache; still return the row without questions
+      if (error.code === 'PGRST204') {
+        const { data: quizMin, error: minErr } = await supabase
+          .from('quizzes')
+          .select('id, title, created_at')
+          .eq('id', id)
+          .eq('user_id', userId)
+          .single();
+        if (minErr || !quizMin) return res.status(404).json({ error: 'Quiz not found' });
+        return res.json({ data: { ...quizMin, questions: [], question_count: 0 } });
+      }
       return res.status(404).json({ error: 'Quiz not found' });
     }
+
+    if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
 
     // Handle both JSON string and already-parsed objects
     let questions = quiz.questions;

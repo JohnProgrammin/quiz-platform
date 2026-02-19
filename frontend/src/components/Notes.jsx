@@ -61,8 +61,31 @@ function Notes({ user }) {
 
   const processFile = async (file) => {
     if (!file) return;
+
+    // Client-side PPTX guard for free tier
+    const isPptx = /\.(pptx|ppt)$/i.test(file.name) ||
+      file.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+      file.type === 'application/vnd.ms-powerpoint';
+
+    if (isPptx && isFree) {
+      toast('🚀 Upgrade to Pro to upload PowerPoint files!', {
+        description: 'PPTX/PPT upload is a Pro feature. Upgrade for unlimited files, AI feedback, and more.',
+        action: {
+          label: 'Upgrade →',
+          onClick: () => window.location.href = '/pricing',
+        },
+        duration: 6000,
+        icon: '👑',
+      });
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     if (!canUploadMore) {
-      toast.error(`Note limit reached (${noteLimit} max). Upgrade to Pro for unlimited notes.`);
+      toast.warning(`You've used all ${noteLimit} free notes. Upgrade to Pro for unlimited uploads! 🚀`, {
+        action: { label: 'Upgrade →', onClick: () => window.location.href = '/pricing' },
+        duration: 5000,
+      });
       return;
     }
 
@@ -73,7 +96,7 @@ function Notes({ user }) {
 
     try {
       await uploadNote(formData);
-      toast.success('Note uploaded! 🎉');
+      toast.success('Note uploaded successfully! 🎉');
       loadNotes();
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (error) {
@@ -81,8 +104,23 @@ function Notes({ user }) {
         const data = error.response.data;
         setQuotaError({ type: 'notes', limit: data.limit || 3, used: data.used || notes.length });
         setShowQuotaModal(true);
+      } else if (error.response?.status === 403 || error.response?.data?.requiredTier) {
+        // Backend tier gate (e.g. PPTX blocked)
+        const required = error.response?.data?.requiredTier || 'Pro';
+        toast('Upgrade required 👑', {
+          description: `This file type requires a ${required} subscription. Unlock it and get unlimited notes, AI feedback & more.`,
+          action: { label: 'Upgrade →', onClick: () => window.location.href = '/pricing' },
+          duration: 6000,
+          icon: '🚀',
+        });
+      } else if (error.response?.status === 415) {
+        toast('Unsupported file type', {
+          description: 'Please upload a PDF, TXT, MD, or DOCX file. Pro users can also upload PPTX.',
+          icon: '📎',
+          duration: 4000,
+        });
       } else {
-        const msg = error.response?.data?.error || error.message || 'Upload failed';
+        const msg = error.response?.data?.error || error.message || 'Upload failed. Please try again.';
         toast.error(msg);
       }
     } finally {

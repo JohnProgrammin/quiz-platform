@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import {
     Home, FileText, BarChart3, Sparkles,
-    LogOut, Crown, ChevronLeft, ChevronRight, User, Zap
+    LogOut, Crown, ChevronLeft, ChevronRight, User, Zap, Globe
 } from 'lucide-react';
+import LanguageSwitcher from './LanguageSwitcher';
 
 function DashboardLayout({ user, onLogout, children }) {
     const { t } = useTranslation();
@@ -89,6 +90,11 @@ function DashboardLayout({ user, onLogout, children }) {
                 >
                     {expanded ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
                 </button>
+
+                {/* Language Switcher */}
+                <div className="mt-2 w-full flex justify-center">
+                    <LanguageSwitcher inSidebar={expanded} />
+                </div>
 
                 {/* User Section */}
                 <div className="mt-4 w-full">

@@ -69,11 +69,32 @@ function App() {
           <Toaster
             position="top-center"
             richColors
+            expand={false}
+            closeButton
             toastOptions={{
               style: {
                 fontFamily: 'Nunito, sans-serif',
                 fontWeight: 700,
                 borderRadius: '16px',
+                border: '2px solid #e8e8e8',
+                boxShadow: '0 4px 0 #e0e0e0',
+                background: '#ffffff',
+                color: '#1a1a2e',
+                fontSize: '14px',
+              },
+              actionButtonStyle: {
+                background: '#7c5bfc',
+                color: '#fff',
+                fontWeight: 800,
+                borderRadius: '8px',
+                fontSize: '12px',
+              },
+              cancelButtonStyle: {
+                background: '#f3f4f6',
+                color: '#6b7280',
+                fontWeight: 800,
+                borderRadius: '8px',
+                fontSize: '12px',
               },
             }}
           />

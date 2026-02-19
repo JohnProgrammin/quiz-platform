@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 
 const languages = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
   { code: 'yo', name: 'Pidgin', flag: '🇳🇬' },
+  { code: 'ko', name: '한국어', flag: '🇰🇷' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
 ];
 
-function LanguageSwitcher() {
+function LanguageSwitcher({ inSidebar = false }) {
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef(null);
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setIsOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const changeLanguage = (code) => {
     i18n.changeLanguage(code);
@@ -19,27 +32,40 @@ function LanguageSwitcher() {
     setIsOpen(false);
   };
 
+  const current = languages.find(l => l.code === i18n.language) || languages[0];
+
   return (
-    <div className="relative z-50">
+    <div className="relative" ref={ref}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        className={`flex items-center gap-1.5 transition-all rounded-xl font-bold text-sm ${inSidebar
+            ? 'text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 w-full'
+            : 'text-slate hover:text-ink hover:bg-surface border border-border px-3 py-2'
+          }`}
         title="Change language"
       >
-        <Globe className="w-5 h-5 text-gray-700" />
+        <Globe className="w-4 h-4 flex-shrink-0" />
+        {inSidebar && <span className="truncate">{current.flag} {current.name}</span>}
+        {!inSidebar && <span>{current.flag}</span>}
       </button>
+
       {isOpen && (
-        <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-lg p-2 min-w-[160px] z-50 shadow-lg">
+        <div className={`absolute z-[200] bg-white border-2 border-border rounded-2xl p-1.5 min-w-[170px] shadow-xl ${inSidebar ? 'left-full ml-2 bottom-0' : 'top-full mt-2 right-0'
+          }`}>
           {languages.map((lang) => (
             <button
               key={lang.code}
               onClick={() => changeLanguage(lang.code)}
-              className={`flex items-center gap-2 px-3 py-2 w-full text-left text-sm rounded hover:bg-brand-50 transition-colors ${
-                i18n.language === lang.code ? 'bg-brand-100 font-semibold text-brand-700' : ''
-              }`}
+              className={`flex items-center gap-2.5 px-3 py-2 w-full text-left text-sm rounded-xl font-bold transition-all ${i18n.language === lang.code
+                  ? 'bg-brand-50 text-brand-600 border border-brand-200'
+                  : 'text-ink hover:bg-surface'
+                }`}
             >
-              <span>{lang.flag}</span>
+              <span className="text-base">{lang.flag}</span>
               <span>{lang.name}</span>
+              {i18n.language === lang.code && (
+                <span className="ml-auto w-2 h-2 rounded-full bg-brand-400" />
+              )}
             </button>
           ))}
         </div>
