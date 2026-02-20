@@ -40,6 +40,8 @@ exports.uploadNote = async (req, res) => {
       fileUrl = `file://${file.originalname}`;
     }
 
+    const { folderId } = req.body;
+
     // Build the insert payload — only use columns that exist in the schema.
     // Columns like file_size, file_type, storage_key etc. are NOT in the
     // Supabase notes table and will cause a 'column not found' error if included.
@@ -52,10 +54,11 @@ exports.uploadNote = async (req, res) => {
       updated_at: new Date().toISOString(),
     };
 
-    // Only add filename / storage_url if columns exist in the table
+    // Only add filename / storage_url / folder_id if columns exist in the table
     // (they're safe extras that Supabase ignores if not present)
     try { insertPayload.filename = file.originalname; } catch (_) { }
     try { insertPayload.storage_url = fileUrl; } catch (_) { }
+    try { if (folderId) insertPayload.folder_id = folderId; } catch (_) { }
 
     const { data, error } = await supabase
       .from('notes')
@@ -91,7 +94,7 @@ exports.getNotes = async (req, res) => {
     // Get notes for user using Supabase
     const { data: notes, error } = await supabase
       .from('notes')
-      .select('id, title, filename, storage_url, content, created_at')
+      .select('id, title, filename, storage_url, content, folder_id, created_at')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
@@ -176,5 +179,109 @@ exports.deleteNote = async (req, res) => {
   } catch (error) {
     console.error('Delete note error:', error);
     res.status(500).json({ error: 'Failed to delete note' });
+  }
+};
+
+/**
+ * Update a note (e.g. change folder)
+ */
+exports.updateNote = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, folderId } = req.body;
+    const userId = req.user.id;
+
+    const updates = { updated_at: new Date().toISOString() };
+    if (title !== undefined) updates.title = title;
+    if (folderId !== undefined) updates.folder_id = folderId || null;
+
+    const { data, error } = await supabase
+      .from('notes')
+      .update(updates)
+      .eq('id', id)
+      .eq('user_id', userId)
+      .select();
+
+    if (error) throw new Error(error.message);
+
+    res.json({ message: 'Note updated successfully', data: data?.[0] });
+  } catch (error) {
+    console.error('Update note error:', error);
+    res.status(500).json({ error: 'Failed to update note' });
+  }
+};
+
+/**
+ * Create a new folder
+ */
+exports.createFolder = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name, color } = req.body;
+
+    if (!name) return res.status(400).json({ error: 'Folder name is required' });
+
+    const folderId = uuidv4();
+    const { data, error } = await supabase
+      .from('folders')
+      .insert([{
+        id: folderId,
+        user_id: userId,
+        name,
+        color: color || '#22c55e'
+      }])
+      .select();
+
+    if (error) throw new Error(error.message);
+
+    res.status(201).json({ message: 'Folder created', data: data?.[0] });
+  } catch (error) {
+    console.error('Create folder error:', error);
+    res.status(500).json({ error: 'Failed to create folder' });
+  }
+};
+
+/**
+ * Get all folders for user
+ */
+exports.getFolders = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const { data, error } = await supabase
+      .from('folders')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw new Error(error.message);
+
+    res.json({ data: data || [] });
+  } catch (error) {
+    console.error('Get folders error:', error);
+    res.status(500).json({ error: 'Failed to get folders' });
+  }
+};
+
+/**
+ * Delete a folder
+ */
+exports.deleteFolder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const { error } = await supabase
+      .from('folders')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId);
+
+    if (error) throw new Error(error.message);
+
+    res.json({ message: 'Folder deleted successfully' });
+  } catch (error) {
+    console.error('Delete folder error:', error);
+    res.status(500).json({ error: 'Failed to delete folder' });
   }
 };

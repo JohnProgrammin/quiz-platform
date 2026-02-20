@@ -32,11 +32,25 @@ async function createTables() {
     `;
     console.log('✅ Users table created');
 
+    // Create folders table
+    await sql`
+      CREATE TABLE IF NOT EXISTS folders (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        name VARCHAR(255) NOT NULL,
+        color VARCHAR(50) DEFAULT '#22c55e',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    console.log('✅ Folders table created');
+
     // Create notes table
     await sql`
       CREATE TABLE IF NOT EXISTS notes (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        folder_id UUID REFERENCES folders(id) ON DELETE SET NULL,
         title VARCHAR(500),
         filename VARCHAR(500),
         file_size BIGINT,
@@ -170,8 +184,12 @@ async function createTables() {
     await sql`CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_users_subscription_tier ON users(subscription_tier)`;
 
+    // Folders indexes
+    await sql`CREATE INDEX IF NOT EXISTS idx_folders_user_id ON folders(user_id)`;
+
     // Notes indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_notes_folder_id ON notes(folder_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_notes_created_at ON notes(created_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_notes_user_created ON notes(user_id, created_at DESC)`;
 

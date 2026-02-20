@@ -26,6 +26,9 @@ router.post(
 // Get all quizzes for user
 router.get('/', authenticateToken, quizController.getQuizzes);
 
+// Get daily review (Spaced Repetition)
+router.get('/daily-review', authenticateToken, quizController.getDailyReview);
+
 // Get specific quiz details
 router.get('/:id', authenticateToken, quizController.getQuiz);
 

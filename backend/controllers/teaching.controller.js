@@ -28,8 +28,10 @@ exports.getPreQuizSummary = async (req, res) => {
     const note = notes[0];
 
     // Generate teaching summary
+    const userName = req.user?.fullName?.split(' ')[0] || req.user?.username || 'Student';
     const summary = await aiService.generateTeachingSummary(
-      note.content
+      note.content,
+      userName
     );
 
     res.json({
@@ -313,11 +315,13 @@ exports.sendMessage = async (req, res) => {
     }
 
     // 4. Call AI service
+    const userName = req.user?.fullName?.split(' ')[0] || req.user?.username || 'there';
     const aiResponse = await aiService.teachingConversation(
       session.topic,
       message.trim(),
       history,
-      noteContent
+      noteContent,
+      userName
     );
 
     // 5. Create message objects

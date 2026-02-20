@@ -74,7 +74,7 @@ api.interceptors.response.use(
   },
   (error) => {
     const duration = new Date() - error.config.metadata.startTime;
-    
+
     // Handle timeout errors
     if (error.code === 'ECONNABORTED') {
       console.error('[API Error] Request timeout:', error.config.url);
@@ -123,6 +123,7 @@ export const getQuizResults = (quizId, attemptId) => api.get(`/v1/quiz/${quizId}
 export const getQuizHistory = () => api.get('/v1/quiz/history/all');
 export const getAllAttempts = () => api.get('/v1/quiz/attempts/all');
 export const getQuizAttempts = (quizId) => api.get(`/v1/quiz/${quizId}/attempts`);
+export const getDailyReview = () => api.get('/v1/quiz/daily-review');
 
 // Teaching (Pre-Quiz & Weakness Quizzes)
 export const getPreQuizSummary = (noteId) => api.post('/v1/teaching/pre-quiz-summary', { noteId });

@@ -12,40 +12,63 @@ exports.generateQuiz = async (req, res) => {
     console.log('\n🔵 generateQuiz called');
     const userId = req.user.id;
     const userTier = req.user?.subscription_tier || 'free';
-    const { noteId, questionCount } = req.body;
+    const { noteId, noteIds, questionCount } = req.body;
 
-    console.log(`  User: ${userId}, Tier: ${userTier}, NoteId: ${noteId}`);
-
-    if (!noteId) {
-      return res.status(400).json({ error: 'noteId is required' });
+    // Support both single noteId and array of noteIds
+    let idsToFetch = [];
+    if (noteIds && Array.isArray(noteIds) && noteIds.length > 0) {
+      idsToFetch = noteIds;
+    } else if (noteId) {
+      idsToFetch = [noteId];
     }
 
-    console.log('  ✓ NoteId validation passed');
+    console.log(`  User: ${userId}, Tier: ${userTier}, NoteIds: ${idsToFetch.join(', ')}`);
 
-    // Verify note belongs to user
-    const { data: note, error: noteError } = await supabase
+    if (idsToFetch.length === 0) {
+      return res.status(400).json({ error: 'noteId or noteIds array is required' });
+    }
+
+    if (idsToFetch.length > 1 && userTier === 'free') {
+      return res.status(403).json({ error: 'Compound quizzes (multiple notes) require a Pro or Premium subscription.' });
+    }
+
+    console.log('  ✓ Note validation passed');
+
+    // Verify notes belong to user and get content
+    const { data: notes, error: notesError } = await supabase
       .from('notes')
-      .select('id, content')
-      .eq('id', noteId)
-      .eq('user_id', userId)
-      .single();
+      .select('id, title, content')
+      .in('id', idsToFetch)
+      .eq('user_id', userId);
 
-    if (noteError || !note) {
-      return res.status(404).json({ error: 'Note not found' });
+    if (notesError || !notes || notes.length === 0) {
+      return res.status(404).json({ error: 'Notes not found' });
     }
 
     const quizId = uuidv4();
 
+    // Combine content
+    let combinedContent = '';
+    let quizTitle = '';
+
+    if (notes.length === 1) {
+      combinedContent = notes[0].content;
+      quizTitle = 'Quiz from ' + (notes[0].title || notes[0].id);
+    } else {
+      combinedContent = notes.map(n => `--- Source: ${n.title || n.id} ---\n${n.content}`).join('\n\n');
+      quizTitle = `Compound Quiz from ${notes.length} notes`;
+    }
+
     // Generate questions using AI
-    console.log('  ✓ Note retrieved');
-    const contentLength = note.content?.length || 0;
+    console.log('  ✓ Notes retrieved');
+    const contentLength = combinedContent.length || 0;
     console.log(`  Note content length: ${contentLength} characters`);
 
     const finalQuestionCount = questionCount || (userTier === 'free' ? 10 : 15);
     console.log(`  Calling AI service to generate ${finalQuestionCount} questions...`);
 
     const questions = await aiService.generateQuizQuestions(
-      note.content,
+      combinedContent,
       finalQuestionCount,
       userTier
     );
@@ -65,17 +88,13 @@ exports.generateQuiz = async (req, res) => {
     console.log(`✅ Generated ${questions.length} questions successfully`);
 
     // ── DB Insert ────────────────────────────────────────────────────────────
-    // NOTE: If you see PGRST204 errors, run this SQL migration in Supabase:
-    //   ALTER TABLE quizzes ADD COLUMN IF NOT EXISTS questions JSONB;
-    //   ALTER TABLE quizzes ADD COLUMN IF NOT EXISTS question_count INT;
-    // Until then, we store a minimal row and return questions directly.
-    // ─────────────────────────────────────────────────────────────────────────
     const insertPayload = {
       id: quizId,
       user_id: userId,
-      note_id: noteId,
-      title: 'Quiz from ' + note.id,
+      note_id: idsToFetch.length === 1 ? idsToFetch[0] : null,
+      title: quizTitle,
       created_at: new Date(),
+      ai_generation_metadata: { noteIds: idsToFetch }
     };
 
     // Try to store questions/count — OK if columns don't exist yet
@@ -397,10 +416,12 @@ exports.getResults = async (req, res) => {
     let weakTopics = [];
 
     if (userTier !== 'free') {
+      const userName = req.user?.fullName?.split(' ')[0] || req.user?.username || 'there';
       aiFeedback = await aiService.generateQuizFeedback(
         '', // noteContent — not available in results endpoint
         questions,
-        gradedAnswers
+        gradedAnswers,
+        userName
       );
 
       // Extract weak topics from feedback
@@ -502,3 +523,100 @@ exports.getHistory = async (req, res) => {
     res.status(500).json({ error: 'Failed to get history' });
   }
 };
+
+/**
+ * Generate Daily Review Quiz (Spaced Repetition)
+ * Finds recent weak topics and generates a mastery quiz
+ */
+exports.getDailyReview = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const userTier = req.user?.subscription_tier || 'free';
+
+    // Pro+ feature only
+    if (userTier === 'free') {
+      return res.status(403).json({ error: 'Daily Review is a Pro feature.' });
+    }
+
+    // 1. Find recent weak topics from quiz attempts
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const { data: attempts, error } = await supabase
+      .from('quiz_attempts')
+      .select('quiz_id, weak_topics, quizzes(questions)')
+      .eq('user_id', userId)
+      .gte('completed_at', thirtyDaysAgo.toISOString())
+      .order('completed_at', { ascending: false });
+
+    if (error) throw error;
+
+    let allWeakTopics = new Set();
+    let allQuestions = [];
+
+    (attempts || []).forEach(attempt => {
+      if (attempt.weak_topics && attempt.weak_topics.length > 0) {
+        attempt.weak_topics.forEach(t => allWeakTopics.add(t));
+      }
+
+      if (attempt.quizzes && attempt.quizzes.questions) {
+        let qList = attempt.quizzes.questions;
+        if (typeof qList === 'string') qList = JSON.parse(qList);
+        if (Array.isArray(qList)) allQuestions = allQuestions.concat(qList);
+      }
+    });
+
+    const weakTopicsArray = Array.from(allWeakTopics).slice(0, 5); // Take top 5
+
+    if (weakTopicsArray.length === 0) {
+      return res.json({ message: 'No weak topics found for review. Great job!', data: null });
+    }
+
+    const reviewQuizId = uuidv4();
+
+    // Provide a sample of past questions safely as context
+    const recentQuestionsSample = allQuestions.slice(0, 30).map(q => q.question || q.text).join('\n---\n');
+
+    const questions = await aiService.generateWeaknessMasteryQuiz(
+      weakTopicsArray.join(', '),
+      recentQuestionsSample || 'General knowledge'
+    );
+
+    if (!questions || questions.length === 0) {
+      return res.status(400).json({ error: 'Failed to generate review questions' });
+    }
+
+    questions.forEach((q, i) => { if (!q.id) q.id = `q_rev_${i + 1}`; });
+
+    const insertPayload = {
+      id: reviewQuizId,
+      user_id: userId,
+      title: 'Daily Review: ' + new Date().toLocaleDateString(),
+      created_at: new Date(),
+      ai_generation_metadata: { type: 'daily_review', topics: weakTopicsArray }
+    };
+
+    const { error: quizError } = await supabase
+      .from('quizzes')
+      .insert([{ ...insertPayload, questions, question_count: questions.length }]);
+
+    if (quizError) throw quizError;
+
+    res.status(201).json({
+      id: reviewQuizId,
+      title: insertPayload.title,
+      topics: weakTopicsArray,
+      questionCount: questions.length,
+      questions: questions.map((q) => ({
+        id: q.id,
+        text: q.text || q.question,
+        type: q.type,
+        options: q.type === 'mcq' ? q.options : undefined,
+      })),
+    });
+  } catch (error) {
+    console.error('Get daily review error:', error);
+    res.status(500).json({ error: 'Failed to generate daily review' });
+  }
+};
+

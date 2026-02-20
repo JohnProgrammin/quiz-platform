@@ -50,8 +50,20 @@ router.post('/', authenticateToken, upload.single('file'), checkNoteQuota, notes
 // Get all notes for user (with tier-based limits)
 router.get('/', authenticateToken, notesController.getNotes);
 
+/**
+ * Folders Routes
+ * Base: /api/v1/notes/folders
+ * (Must be defined before /:id routes so "folders" isn't treated as an ID)
+ */
+router.post('/folders', authenticateToken, notesController.createFolder);
+router.get('/folders', authenticateToken, notesController.getFolders);
+router.delete('/folders/:id', authenticateToken, notesController.deleteFolder);
+
 // Get specific note
 router.get('/:id', authenticateToken, notesController.getNote);
+
+// Update note (e.g. change folder)
+router.patch('/:id', authenticateToken, notesController.updateNote);
 
 // Delete note
 router.delete('/:id', authenticateToken, notesController.deleteNote);

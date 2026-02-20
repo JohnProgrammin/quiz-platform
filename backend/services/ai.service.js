@@ -99,14 +99,15 @@ Return ONLY the JSON array, no markdown, no explanation.`;
    * @param {string} noteContent - Extracted text from note
    * @returns {object} - { summary, keyPoints, readingTime }
    */
-  async generateTeachingSummary(noteContent) {
+  async generateTeachingSummary(noteContent, userName = 'Student') {
     try {
-      const prompt = `Create a concise teaching summary of the following study material for a student.
+      const prompt = `You are a world-class, empathetic personal AI tutor for ${userName}.
+Create a highly engaging, concise teaching summary of the following study material.
 
 Include:
-1. A 2-3 sentence executive summary
-2. 5 key concepts the student should understand
-3. 3 important details to remember
+1. A 2-3 sentence executive summary that speaks directly to ${userName}, building excitement for the topic.
+2. 5 key concepts they absolutely must understand.
+3. 3 critical details to remember.
 
 Study Material:
 ${noteContent.substring(0, 2000)}
@@ -150,7 +151,7 @@ Return as JSON with keys: summary, keyPoints (array), importantDetails (array)`;
    * @param {array} answers - User's answers
    * @returns {object} - { feedback, weakTopics, strengths }
    */
-  async generateQuizFeedback(noteContent, questions, answers) {
+  async generateQuizFeedback(noteContent, questions, answers, userName = 'there') {
     try {
       // Calculate score and identify correct/incorrect
       let score = 0;
@@ -175,17 +176,18 @@ Return as JSON with keys: summary, keyPoints (array), importantDetails (array)`;
       const strengths = [...new Set(correctQuestions.map(q => q.topic).slice(0, 2))];
 
       // Generate personalized feedback
-      const prompt = `A student just completed a quiz with ${percentage}% accuracy on material about: ${noteContent.substring(0, 200)}
+      const prompt = `Your student, ${userName}, just completed a quiz with ${percentage}% accuracy on material about: ${noteContent.substring(0, 200)}
 
 Topics they struggled with: ${weakTopics.join(', ')}
 Topics they mastered: ${strengths.join(', ')}
 
-Write a short, encouraging 2-3 sentence feedback message that:
-1. Acknowledges their score
-2. Highlights one strength
-3. Suggests focusing on weak areas with specific study advice
+You are an encouraging, human-like, world-class personal tutor. 
+Write a short, engaging 2-3 sentence feedback message directly addressing ${userName} by name.
+1. Acknowledge their score warmly.
+2. Highlight their strength: ${strengths.length > 0 ? strengths.join(', ') : 'their hard work'}.
+3. Give specific, actionable advice on focusing on their weak areas: ${weakTopics.length > 0 ? weakTopics.join(', ') : 'general review'}.
 
-Keep it concise and motivating.`;
+Keep it highly personal, empathetic, and motivating. Speak directly to them.`;
 
       const message = await this.groq.chat.completions.create({
         model: this.model,
@@ -270,20 +272,22 @@ Return ONLY JSON array with 5 questions. Each must be multiple-choice with 4 opt
    * @param {string} noteContent - Optional: related note content for context
    * @returns {string} - AI response
    */
-  async teachingConversation(topic, userMessage, conversationHistory = [], noteContent = '') {
+  async teachingConversation(topic, userMessage, conversationHistory = [], noteContent = '', userName = 'there') {
     try {
       // Build conversation messages
       const messages = [
         {
           role: 'system',
-          content: `You are a helpful, direct AI tutor. A student is learning about "${topic}".
+          content: `You are a world-class, empathetic, and highly engaging personal AI tutor. Your student is named ${userName}.
+They are learning about "${topic}".
 ${noteContent ? `They have study material about this: ${noteContent.substring(0, 1000)}` : ''}
 
 CRITICAL INSTRUCTIONS:
-1. ALWAYS provide the direct answer/solution first.
-2. Keep your entire response under 30 words if possible.
-3. Be encouraging but brief.
-4. Do not lecture unless asked.`,
+1. Speak directly to ${userName} in a warm, encouraging, human-like tone, using their name naturally.
+2. ALWAYS provide the direct answer/solution first.
+3. Keep your entire response under 40 words if possible.
+4. Be exceptionally encouraging but brief.
+5. Do not lecture unless explicitly asked.`,
         },
       ];
 
@@ -337,17 +341,17 @@ CRITICAL INSTRUCTIONS:
    * @param {string} userAnswer - Student's answer
    * @returns {object} - { isCorrect, score (0-100), feedback }
    */
-  async gradeTextAnswer(question, modelAnswer, userAnswer) {
+  async gradeTextAnswer(question, modelAnswer, userAnswer, userName = 'there') {
     try {
-      const prompt = `You are an expert grader evaluating a student's answer to a quiz question.
+      const prompt = `You are an expert, highly encouraging tutor grading your student ${userName}'s answer to a quiz question.
 
 Question: ${question}
 
-Model Answer (correct answer): ${modelAnswer}
+Correct Model Answer: ${modelAnswer}
 
-Student's Answer: ${userAnswer}
+${userName}'s Answer: ${userAnswer}
 
-Score the student's answer from 0-100 based on:
+Score ${userName}'s answer from 0-100 based on:
 1. Accuracy: How correctly does it match the model answer?
 2. Completeness: Does it cover the key points?
 3. Clarity: Is it well-explained?
@@ -356,10 +360,10 @@ Respond with ONLY valid JSON (no markdown, no extra text):
 {
   "score": <number 0-100>,
   "isCorrect": <boolean true if score >= 70>,
-  "feedback": "<brief explanation of score and how to improve>"
+  "feedback": "<brief, 1-2 sentence feedback addressing ${userName} directly, explaining the score in a warm, constructive way.>"
 }
 
-Score 70+ is considered correct. Provide constructive feedback.`;
+Score 70+ is considered correct. Ensure the feedback is highly personal and coaching.`;
 
       const message = await this.groq.chat.completions.create({
         model: this.model,

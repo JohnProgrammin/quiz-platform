@@ -6,11 +6,11 @@ import UpgradePrompt from './UpgradePrompt';
 import { SkeletonDashboard } from './Skeleton';
 import XPBar from './XPBar';
 import StreakIndicator from './StreakIndicator';
-import { getQuizHistory, getQuizzes, getNotes, getUserStats } from '../api';
+import { getQuizHistory, getQuizzes, getNotes, getUserStats, getDailyReview } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import {
   FileText, BookOpen, Target, Trophy, ArrowRight,
-  Flame, Zap, Sparkles, Plus, Crown
+  Flame, Zap, Sparkles, Plus, Crown, Clock
 } from 'lucide-react';
 
 function Dashboard({ user, onLogout }) {
@@ -23,6 +23,7 @@ function Dashboard({ user, onLogout }) {
   });
   const [recentAttempts, setRecentAttempts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [startingReview, setStartingReview] = useState(false);
   const [gamificationStats, setGamificationStats] = useState(null);
   const navigate = useNavigate();
   const { isFree, isPro, isPremium, tier } = useSubscription();
@@ -78,6 +79,23 @@ function Dashboard({ user, onLogout }) {
       console.error('Error loading dashboard:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDailyReview = async () => {
+    try {
+      setStartingReview(true);
+      const res = await getDailyReview();
+      if (res.data?.data === null) {
+        alert(res.data.message || 'No weak areas to review yet! Keep taking quizzes.');
+      } else if (res.data?.id) {
+        navigate(`/quiz/${res.data.id}`);
+      }
+    } catch (error) {
+      console.error('Failed to start daily review:', error);
+      alert('Failed to start daily review. ' + (error.response?.data?.error || ''));
+    } finally {
+      setStartingReview(false);
     }
   };
 
@@ -178,7 +196,15 @@ function Dashboard({ user, onLogout }) {
               <p className="text-white/80 font-bold mt-1">Enjoy unlimited quizzes, notes, and AI feedback.</p>
             </div>
             <div className="relative z-10 flex flex-col sm:flex-row gap-3">
-              <button onClick={() => navigate('/notes')} className="inline-flex items-center gap-2 bg-white text-violet-700 font-black px-5 py-3 rounded-2xl hover:bg-violet-50 transition-all" style={{ boxShadow: '0 4px 0 #4c1d95' }}>
+              <button
+                onClick={handleDailyReview}
+                disabled={startingReview}
+                className="inline-flex items-center gap-2 bg-white text-violet-700 font-black px-5 py-3 rounded-2xl hover:bg-violet-50 transition-all disabled:opacity-75"
+                style={{ boxShadow: '0 4px 0 #4c1d95' }}
+              >
+                <Clock className="w-5 h-5" /> {startingReview ? 'Loading...' : 'Daily Review'}
+              </button>
+              <button onClick={() => navigate('/notes')} className="inline-flex items-center gap-2 bg-white/20 text-white font-black px-5 py-3 rounded-2xl border border-white/30 hover:bg-white/30 transition-all">
                 <Plus className="w-5 h-5" /> Upload Note
               </button>
               <button onClick={() => navigate('/ai-teaching')} className="inline-flex items-center gap-2 bg-white/20 text-white font-black px-5 py-3 rounded-2xl border border-white/30 hover:bg-white/30 transition-all">
@@ -212,7 +238,15 @@ function Dashboard({ user, onLogout }) {
               <p className="text-white/80 font-bold mt-1">Full platform access — AI Teaching, custom quizzes, and more.</p>
             </div>
             <div className="relative z-10 flex flex-col sm:flex-row gap-3">
-              <button onClick={() => navigate('/ai-teaching')} className="inline-flex items-center gap-2 bg-white text-amber-700 font-black px-5 py-3 rounded-2xl hover:bg-amber-50 transition-all" style={{ boxShadow: '0 4px 0 #78350f' }}>
+              <button
+                onClick={handleDailyReview}
+                disabled={startingReview}
+                className="inline-flex items-center gap-2 bg-white text-amber-700 font-black px-5 py-3 rounded-2xl hover:bg-amber-50 transition-all disabled:opacity-75"
+                style={{ boxShadow: '0 4px 0 #78350f' }}
+              >
+                <Clock className="w-5 h-5" /> {startingReview ? 'Loading...' : 'Daily Mastery'}
+              </button>
+              <button onClick={() => navigate('/ai-teaching')} className="inline-flex items-center gap-2 bg-white/20 text-white font-black px-5 py-3 rounded-2xl border border-white/30 hover:bg-white/30 transition-all">
                 <Sparkles className="w-5 h-5" /> AI Tutor
               </button>
               <button onClick={() => navigate('/notes')} className="inline-flex items-center gap-2 bg-white/20 text-white font-black px-5 py-3 rounded-2xl border border-white/30 hover:bg-white/30 transition-all">
