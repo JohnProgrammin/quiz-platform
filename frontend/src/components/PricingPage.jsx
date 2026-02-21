@@ -5,8 +5,10 @@ import { createCheckoutSession } from '../api';
 import { ArrowLeft, Check } from 'lucide-react';
 
 import { useSubscription } from '../contexts/SubscriptionContext';
+import { useTranslation } from 'react-i18next';
 
 function PricingPage() {
+  const { t } = useTranslation();
   const { tier: currentPlanTier } = useSubscription();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState(null);
@@ -17,39 +19,39 @@ function PricingPage() {
   const plans = [
     {
       tier: 'pro',
-      name: 'Pro',
+      name: t('pricing.pro') || 'Pro',
       price: { monthly: 5000, yearly: 50000 }, // 2 months free
       currency: 'NGN',
-      description: 'Perfect for serious learners.',
+      description: t('pricing.forSeriousLearners') || 'Perfect for serious learners.',
       isPopular: true,
-      badge: 'Most Popular',
+      badge: t('landing.pricing.mostPopular') || 'Most Popular',
       features: [
-        'Unlimited quizzes',
-        'Unlimited notes & uploads',
-        'Upload PPTX & PDF files',
-        'AI Quiz Summary & Feedback',
-        'Weakness mastery',
-        'Enhanced analytics',
+        t('pricing.unlimitedQuizzesNotes') || 'Unlimited quizzes',
+        t('pricing.unlimitedQuizzesNotes') || 'Unlimited notes & uploads',
+        t('pricing.unlimitedQuizzesNotes') || 'Upload PPTX & PDF files',
+        t('pricing.advancedAiFeedback') || 'AI Quiz Summary & Feedback',
+        t('pricing.weaknessMasteryMiniQuizzes') || 'Weakness mastery',
+        t('pricing.enhancedAnalyticsPdf') || 'Enhanced analytics',
       ],
-      buttonText: 'Get Started',
+      buttonText: t('pricing.upgradePro') || 'Get Started',
       buttonVariant: 'primary',
     },
     {
       tier: 'premium',
-      name: 'Premium',
+      name: t('pricing.premium') || 'Premium',
       price: { monthly: 10000, yearly: 100000 }, // 2 months free
       currency: 'NGN',
-      description: 'For power users needing 1-on-1 tutoring.',
+      description: t('pricing.forMasterySeekers') || 'For power users needing 1-on-1 tutoring.',
       isPopular: false,
-      badge: 'Best Value',
+      badge: t('landing.pricing.premium') || 'Best Value',
       features: [
-        'Everything in Pro',
-        'Unlimited AI Tutoring Chat',
-        'Priority Support',
-        'Custom Quiz Settings',
-        'Advanced Analytics',
+        t('pricing.everythingInPro') || 'Everything in Pro',
+        t('pricing.unlimitedTeachingSessions') || 'Unlimited AI Tutoring Chat',
+        t('pricing.prioritySupport') || 'Priority Support',
+        t('pricing.customQuizSettings') || 'Custom Quiz Settings',
+        t('pricing.apiAccess') || 'Advanced Analytics',
       ],
-      buttonText: 'Go Premium',
+      buttonText: t('pricing.premium') || 'Go Premium',
       buttonVariant: 'dark', // New variant
     },
   ];
@@ -85,10 +87,10 @@ function PricingPage() {
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-ink mb-4">
-              Plans and features
+              {t('pricing.plansAndFeatures') || 'Plans and features'}
             </h1>
             <p className="text-xl text-slate font-bold">
-              Simple pricing. No hidden fees.
+              {t('pricing.simplePricing') || 'Simple pricing. No hidden fees.'}
             </p>
           </div>
 
@@ -99,17 +101,17 @@ function PricingPage() {
               className={`px - 6 py - 2 rounded - lg text - sm font - black transition - all ${billingCycle === 'monthly' ? 'bg-white shadow-sm text-ink' : 'text-slate hover:text-ink'
                 } `}
             >
-              Pay monthly
+              {t('subscription.monthly') || 'Pay monthly'}
             </button>
             <button
               onClick={() => setBillingCycle('yearly')}
               className={`px - 6 py - 2 rounded - lg text - sm font - black transition - all ${billingCycle === 'yearly' ? 'bg-white shadow-sm text-ink' : 'text-slate hover:text-ink'
                 } `}
             >
-              Pay annually
+              {t('subscription.yearly') || 'Pay annually'}
             </button>
             <div className="absolute -top-3 -right-2 bg-green-100 text-green-700 text-[10px] font-black px-2 py-0.5 rounded-full border border-green-200 uppercase tracking-wide">
-              Save 17%
+              {t('pricing.saveX', { amount: '17%' }) || 'Save 17%'}
             </div>
           </div>
         </div>
@@ -127,8 +129,8 @@ function PricingPage() {
             <div
               key={plan.tier}
               className={`relative rounded - 3xl p - 8 transition - all duration - 300 ${plan.isPopular
-                  ? 'bg-white border-2 border-brand-500 shadow-xl shadow-brand-500/10'
-                  : 'bg-white border-2 border-border hover:border-brand-300 hover:shadow-lg'
+                ? 'bg-white border-2 border-brand-500 shadow-xl shadow-brand-500/10'
+                : 'bg-white border-2 border-border hover:border-brand-300 hover:shadow-lg'
                 } `}
             >
               {/* Badge */}
@@ -151,11 +153,11 @@ function PricingPage() {
                   <span className="text-5xl font-black text-ink">
                     ₦{plan.price[billingCycle].toLocaleString()}
                   </span>
-                  <span className="text-slate font-bold text-lg">/{billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
+                  <span className="text-slate font-bold text-lg">/{billingCycle === 'monthly' ? (t('pricing.mo') || 'mo') : (t('pricing.yr') || 'yr')}</span>
                 </div>
                 {billingCycle === 'yearly' && (
                   <p className="text-xs font-black text-green-600 mt-1">
-                    Billed yearly (2 months free)
+                    {t('pricing.billedYearly') || 'Billed yearly (2 months free)'}
                   </p>
                 )}
               </div>
@@ -169,23 +171,23 @@ function PricingPage() {
                 onClick={() => handleSelectPlan(plan)}
                 disabled={loadingPlan !== null || plan.tier === currentPlanTier}
                 className={`w - full py - 4 rounded - 2xl font - black text - lg transition - all mb - 10 shadow - lg active: scale - 95 ${plan.tier === currentPlanTier
-                    ? 'bg-slate-200 text-slate-500 cursor-not-allowed shadow-none'
-                    : plan.buttonVariant === 'primary' // Pro
-                      ? 'bg-brand-500 text-white hover:bg-brand-600 shadow-brand-500/25'
-                      : 'bg-ink text-white hover:bg-slate-800 shadow-slate-900/25' // Premium
+                  ? 'bg-slate-200 text-slate-500 cursor-not-allowed shadow-none'
+                  : plan.buttonVariant === 'primary' // Pro
+                    ? 'bg-brand-500 text-white hover:bg-brand-600 shadow-brand-500/25'
+                    : 'bg-ink text-white hover:bg-slate-800 shadow-slate-900/25' // Premium
                   } `}
               >
                 {loadingPlan === plan.tier
-                  ? 'Processing...'
+                  ? (t('common.loading') || 'Processing...')
                   : plan.tier === currentPlanTier
-                    ? 'Current Plan'
+                    ? (t('pricing.currentPlan') || 'Current Plan')
                     : plan.buttonText}
               </button>
 
               {/* Features List */}
               <div className="space-y-4">
                 <p className="text-xs font-black text-slate uppercase tracking-wider mb-4 border-b border-border pb-2">
-                  Everything in {plan.tier === 'premium' ? 'Pro' : 'Free'}
+                  {t('pricing.everythingInTier', { tier: plan.tier === 'premium' ? 'Pro' : 'Free' }) || `Everything in ${plan.tier === 'premium' ? 'Pro' : 'Free'}`}
                 </p>
                 {plan.features.map((feature, idx) => (
                   <div key={idx} className="flex items-start gap-3">
@@ -203,7 +205,7 @@ function PricingPage() {
         {/* Trust Message */}
         <div className="text-center">
           <p className="text-sm font-semibold text-slate">
-            ✓ 7-day money-back guarantee • ✓ Secure payment with Paystack • ✓ Start learning immediately
+            {t('pricing.trustMessage') || '✓ 7-day money-back guarantee • ✓ Secure payment with Paystack • ✓ Start learning immediately'}
           </p>
         </div>
       </div>

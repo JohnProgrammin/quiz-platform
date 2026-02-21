@@ -204,21 +204,21 @@ function Landing() {
     {
       name: t('landing.pricing.pro'),
       price: '₦5,000',
-      period: '/month',
-      description: 'Perfect for serious learners wanting to master any topic',
+      period: t('pricing.mo') ? `/${t('pricing.mo')}` : '/month',
+      description: t('pricing.forSeriousLearners') || 'Perfect for serious learners wanting to master any topic',
       icon: <Sparkles className="w-7 h-7" />,
       color: 'text-brand-500',
       bg: 'bg-white',
       border: 'border-2 border-brand-500 ring-4 ring-brand-500/10',
       features: [
-        'Unlimited quizzes',
-        'Unlimited notes & uploads',
-        'Upload PPTX files',
-        'AI-powered feedback on answers',
-        'Identify weak topics automatically',
-        'Focused mastery quizzes',
-        'Pre-quiz AI teaching summaries',
-        'Enhanced analytics & insights',
+        t('pricing.unlimitedQuizzesNotes') || 'Unlimited quizzes',
+        t('pricing.unlimitedQuizzesNotes') || 'Unlimited notes & uploads',
+        t('pricing.unlimitedQuizzesNotes') || 'Upload PPTX files',
+        t('pricing.advancedAiFeedback') || 'AI-powered feedback on answers',
+        t('pricing.weaknessMasteryMiniQuizzes') || 'Identify weak topics automatically',
+        t('pricing.weaknessMasteryMiniQuizzes') || 'Focused mastery quizzes',
+        t('pricing.advancedAiFeedback') || 'Pre-quiz AI teaching summaries',
+        t('pricing.enhancedAnalyticsPdf') || 'Enhanced analytics & insights',
       ],
       cta: t('landing.pricing.upgradePro'),
       href: '/signup',
@@ -228,20 +228,20 @@ function Landing() {
     {
       name: t('landing.pricing.premium'),
       price: '₦10,000',
-      period: '/month',
-      description: 'Everything in Pro, plus 1-on-1 AI tutoring',
+      period: t('pricing.mo') ? `/${t('pricing.mo')}` : '/month',
+      description: t('pricing.forMasterySeekers') || 'Everything in Pro, plus 1-on-1 AI tutoring',
       icon: <Crown className="w-7 h-7" />,
       color: 'text-amber-500',
       bg: 'bg-white',
       border: 'border-2 border-border',
       features: [
-        'Everything in Pro',
-        'Unlimited AI Teaching sessions',
-        '1-on-1 conversational tutoring',
-        'Ask AI any question you want',
-        'Custom quiz settings',
-        'Advanced analytics',
-        'Priority support',
+        t('pricing.everythingInPro') || 'Everything in Pro',
+        t('pricing.unlimitedTeachingSessions') || 'Unlimited AI Teaching sessions',
+        t('pricing.unlimitedTeachingSessions') || '1-on-1 conversational tutoring',
+        t('pricing.unlimitedTeachingSessions') || 'Ask AI any question you want',
+        t('pricing.customQuizSettings') || 'Custom quiz settings',
+        t('pricing.apiAccess') || 'Advanced analytics',
+        t('pricing.prioritySupport') || 'Priority support',
       ],
       cta: t('landing.pricing.goPremium'),
       href: '/signup',
@@ -567,7 +567,7 @@ function Landing() {
                     </div>
                   )}
                   {tier.nairaPrice && (
-                    <p className="text-[11px] text-muted mt-1.5 font-semibold">Pay in Naira · Billed monthly</p>
+                    <p className="text-[11px] text-muted mt-1.5 font-semibold">{t('pricing.payInNairaInfo') || 'Pay in Naira · Billed monthly'}</p>
                   )}
                 </div>
 
