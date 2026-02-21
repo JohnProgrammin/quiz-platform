@@ -1,185 +1,226 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// High-quality placeholder images for the students/professionals
+// High-quality placeholder images matching the professional aesthetic requested
 const CAROUSEL_DATA = [
     {
         id: 1,
         name: 'Sophia Brown',
         role: 'Teacher',
-        image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-        color: 'bg-orange-500',
+        image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
     },
     {
         id: 2,
         name: 'Natalie Ramirez',
         role: 'Software Engineer',
-        image: 'https://images.unsplash.com/photo-1531123897727-8f129e1eb7ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-        color: 'bg-blue-500',
+        image: 'https://images.unsplash.com/photo-1531123897727-8f129e1eb7ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
     },
     {
         id: 3,
         name: 'James Whitman',
         role: 'Researcher',
-        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-        color: 'bg-purple-500',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
     },
     {
         id: 4,
         name: 'David Chen',
         role: 'Medical Student',
-        image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-        color: 'bg-green-500',
+        image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
     },
     {
         id: 5,
         name: 'Aisha Patel',
         role: 'Product Designer',
-        image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-        color: 'bg-pink-500',
+        image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
     }
 ];
 
-// Helper to determine active, previous, and next positions
-const getCardPositions = (activeIndex, total) => {
-    const prev = (activeIndex - 1 + total) % total;
-    const next = (activeIndex + 1) % total;
-    return { prev, next };
-};
-
 const LiquidGlassCarousel = () => {
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(1); // Start with the second item active
+    const [isHovered, setIsHovered] = useState(false);
 
-    // Auto-advance loop
+    // Auto-advance loop, pauses on hover
     useEffect(() => {
+        if (isHovered) return;
         const timer = setInterval(() => {
             setActiveIndex((current) => (current + 1) % CAROUSEL_DATA.length);
-        }, 3500); // Wait 3.5 seconds before transitioning
+        }, 4000);
         return () => clearInterval(timer);
-    }, []);
+    }, [isHovered]);
 
-    const total = CAROUSEL_DATA.length;
-    const { prev, next } = getCardPositions(activeIndex, total);
+    const handleNext = () => {
+        setActiveIndex((current) => (current + 1) % CAROUSEL_DATA.length);
+    };
 
-    // Framer Motion variants for 3D depth and positioning
-    const cardVariants = {
-        active: {
-            x: 0,
-            scale: 1.1,
-            zIndex: 30,
-            filter: 'blur(0px)',
-            opacity: 1,
-            transition: { type: 'spring', stiffness: 200, damping: 20 }
-        },
-        prev: {
-            x: '-60%',
-            scale: 0.85,
-            zIndex: 20,
-            filter: 'blur(1px)',
-            opacity: 0.7,
-            transition: { type: 'spring', stiffness: 200, damping: 20 }
-        },
-        next: {
-            x: '60%',
-            scale: 0.85,
-            zIndex: 20,
-            filter: 'blur(1px)',
-            opacity: 0.7,
-            transition: { type: 'spring', stiffness: 200, damping: 20 }
-        },
-        hiddenLeft: {
-            x: '-80%',
-            scale: 0.7,
-            zIndex: 10,
-            filter: 'blur(4px)',
-            opacity: 0,
-            transition: { type: 'spring', stiffness: 200, damping: 20 }
-        },
-        hiddenRight: {
-            x: '80%',
-            scale: 0.7,
-            zIndex: 10,
-            filter: 'blur(4px)',
-            opacity: 0,
-            transition: { type: 'spring', stiffness: 200, damping: 20 }
+    const handlePrev = () => {
+        setActiveIndex((current) => (current - 1 + CAROUSEL_DATA.length) % CAROUSEL_DATA.length);
+    };
+
+    const handleDragEnd = (event, info) => {
+        const threshold = 50;
+        if (info.offset.x > threshold) {
+            handlePrev();
+        } else if (info.offset.x < -threshold) {
+            handleNext();
         }
     };
 
-    const getVariant = (index) => {
-        if (index === activeIndex) return 'active';
-        if (index === prev) return 'prev';
-        if (index === next) return 'next';
+    const total = CAROUSEL_DATA.length;
 
-        // For off-screen cards, decide if they hide to the left or right
-        // Simple logic: if it's right before 'prev', hide left. Else hide right.
-        const beforePrev = (prev - 1 + total) % total;
-        if (index === beforePrev) return 'hiddenLeft';
-        return 'hiddenRight';
+    // Layout Calculation Constants
+    const cardWidth = 320;
+    const offset = 180;
+
+    const getCardProps = (index) => {
+        // Calculate relative position to active index
+        let diff = index - activeIndex;
+        // Adjust for seamless wrapping
+        if (diff > Math.floor(total / 2)) diff -= total;
+        if (diff < -Math.floor(total / 2)) diff += total;
+
+        const isCenter = diff === 0;
+        const isLeft = diff === -1;
+        const isRight = diff === 1;
+
+        // Visual properties based on position
+        let x = 0;
+        let scale = 0.85;
+        let zIndex = 10 - Math.abs(diff);
+        let opacity = 1;
+        let brightness = 1;
+
+        if (isCenter) {
+            x = 0;
+            scale = 1.05;
+            zIndex = 30;
+            brightness = 1;
+        } else if (isLeft) {
+            x = -offset;
+            scale = 0.85;
+            zIndex = 20;
+            brightness = 0.6; // Darken flanking cards slightly to push focus to center
+        } else if (isRight) {
+            x = offset;
+            scale = 0.85;
+            zIndex = 20;
+            brightness = 0.6;
+        } else {
+            // Hide cards that are further away
+            x = diff < 0 ? -(offset * 1.5) : (offset * 1.5);
+            scale = 0.7;
+            opacity = 0;
+            zIndex = 0;
+        }
+
+        return { x, scale, zIndex, opacity, brightness, isCenter };
     };
 
+    // Spring physics configuration for Apple-like smoothness
+    const springConfig = { type: "spring", stiffness: 300, damping: 30, mass: 1 };
+
     return (
-        <div className="relative w-full max-w-2xl mx-auto h-[350px] sm:h-[450px] flex items-center justify-center overflow-visible mt-12 mb-10 pt-4 px-4 sm:px-0 pointer-events-none">
-            <AnimatePresence initial={false}>
-                {CAROUSEL_DATA.map((item, index) => {
-                    const variant = getVariant(index);
-                    const isActive = variant === 'active';
+        <div
+            className="relative w-full overflow-hidden py-24 flex items-center justify-center select-none"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            {/* Optional SVG Filter for advanced chromatic/liquid distortion (requires Firefox/Safari) - can be ignored by Chrome while standard blur works */}
+            <svg style={{ width: 0, height: 0, position: 'absolute' }} aria-hidden="true" focusable="false">
+                <filter id="liquid-distortion">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="1" result="noise" />
+                    <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" in="noise" result="coloredNoise" />
+                    <feDisplacementMap in="SourceGraphic" in2="coloredNoise" scale="10" xChannelSelector="R" yChannelSelector="G" result="displacement" />
+                </filter>
+            </svg>
 
-                    return (
-                        <motion.div
-                            key={item.id}
-                            variants={cardVariants}
-                            animate={variant}
-                            initial="hiddenRight"
-                            className="absolute w-56 sm:w-64 h-72 sm:h-80 rounded-[2rem] overflow-hidden shadow-2xl"
-                            style={{
-                                // Enhanced shadow for the active card
-                                boxShadow: isActive
-                                    ? '0 30px 60px -12px rgba(0, 0, 0, 0.25), 0 18px 36px -18px rgba(0, 0, 0, 0.15)'
-                                    : '0 10px 30px -10px rgba(0,0,0,0.1)'
-                            }}
-                        >
-                            {/* Background Image Container */}
-                            <div className="absolute inset-0 bg-slate-200">
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
+            <div className="relative w-full max-w-4xl h-[400px] flex items-center justify-center perspective-1000">
+                <AnimatePresence initial={false}>
+                    {CAROUSEL_DATA.map((item, index) => {
+                        const { x, scale, zIndex, opacity, brightness, isCenter } = getCardProps(index);
 
-                            {/* Top Gradient for subtle contrast near edges */}
-                            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-transparent pointer-events-none" />
-
-                            {/* LIQUID GLASS OVERLAY (Lower Third) */}
-                            <div className="absolute bottom-0 left-0 right-0 h-1/2 flex flex-col justify-end p-5 pt-10">
-                                {/* The heavy blur / refraction shield */}
-                                <div
-                                    className="absolute inset-x-0 bottom-0 h-full backdrop-blur-xl bg-white/10 dark:bg-black/10 transition-colors duration-500"
-                                    style={{
-                                        // Safari compatibility for heavy blur
-                                        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                                        maskImage: 'linear-gradient(to bottom, transparent, black 30%)',
-                                        WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 30%)',
+                        return (
+                            <motion.div
+                                key={item.id}
+                                className="absolute cursor-grab active:cursor-grabbing origin-center"
+                                animate={{
+                                    x,
+                                    scale,
+                                    zIndex,
+                                    opacity,
+                                    filter: `brightness(${brightness})`,
+                                }}
+                                transition={springConfig}
+                                drag="x"
+                                dragConstraints={{ left: 0, right: 0 }}
+                                dragElastic={0.2}
+                                onDragEnd={handleDragEnd}
+                                onClick={() => !isCenter && setActiveIndex(index)}
+                                style={{
+                                    width: cardWidth,
+                                    height: 400,
+                                    // Massive premium squircle rounding matching the reference
+                                    borderRadius: '3rem',
+                                    // Heavy 3D shadow for active card
+                                    boxShadow: isCenter
+                                        ? '0 30px 60px -12px rgba(0, 0, 0, 0.4), 0 18px 36px -18px rgba(0, 0, 0, 0.2)'
+                                        : '0 10px 30px -10px rgba(0, 0, 0, 0.2)',
+                                    overflow: 'hidden',
+                                    backgroundColor: '#fff'
+                                }}
+                            >
+                                {/* Background Image */}
+                                <motion.div
+                                    className="absolute inset-0 w-full h-full"
+                                    animate={{
+                                        scale: isCenter ? 1 : 1.1 // Slight inner scale shift
                                     }}
-                                />
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    <img
+                                        src={item.image}
+                                        alt={item.name}
+                                        className="w-full h-full object-cover"
+                                        draggable="false"
+                                    />
+                                </motion.div>
 
-                                {/* Text Content - Positioned absolutely inside the glass area to remain crisp */}
-                                <div className="relative z-10 text-center transform translate-y-1">
-                                    <h3 className="text-white text-xl sm:text-2xl font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                                        {item.name}
-                                    </h3>
-                                    <p className="text-white/90 text-sm sm:text-base font-semibold tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
-                                        {item.role}
-                                    </p>
+                                {/* Premium Liquid Glass Layer */}
+                                <div className="absolute bottom-0 left-0 w-full h-[45%] flex flex-col justify-end pb-8">
+                                    {/* The glass refraction shield */}
+                                    <div
+                                        className="absolute inset-0 w-full h-full backdrop-blur-3xl bg-white/20 dark:bg-black/10"
+                                        style={{
+                                            // Extreme glassmorphism blur and saturation
+                                            WebkitBackdropFilter: 'blur(30px) saturate(200%) contrast(120%)',
+                                            // Optional Safari SVG filter reference
+                                            // filter: 'url(#liquid-distortion)',
+                                            // Soft gradient mask so the glass fades out seamlessly at the top
+                                            maskImage: 'linear-gradient(to top, black 50%, transparent 100%)',
+                                            WebkitMaskImage: 'linear-gradient(to top, black 50%, transparent 100%)',
+                                        }}
+                                    />
+
+                                    {/* Top edge subtle highlight on the glass */}
+                                    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-50" />
+
+                                    {/* Subject Details */}
+                                    <div className="relative z-10 w-full text-center px-4 transform translate-y-1">
+                                        <h3 className="text-white text-2xl sm:text-3xl font-bold tracking-tight mb-1 drop-shadow-md">
+                                            {item.name}
+                                        </h3>
+                                        <p className="text-white/90 text-sm sm:text-base font-medium tracking-wide drop-shadow-sm mix-blend-overlay">
+                                            {item.role}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Soft Inner Border to accentuate the glass feeling */}
-                            <div className="absolute inset-0 border border-white/20 rounded-[2rem] pointer-events-none z-20" />
-                        </motion.div>
-                    );
-                })}
-            </AnimatePresence>
+                                {/* Subtle inner border stroke (Apple hardware style) */}
+                                <div className="absolute inset-0 rounded-[3rem] border border-white/20 pointer-events-none mix-blend-overlay" />
+                            </motion.div>
+                        );
+                    })}
+                </AnimatePresence>
+            </div>
         </div>
     );
 };
