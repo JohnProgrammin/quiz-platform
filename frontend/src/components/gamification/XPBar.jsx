@@ -13,7 +13,7 @@ export const XPBar = ({ currentXP = 0, xpForNextLevel = 1000, level = 1 }) => {
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100"
+      className="bg-gradient-to-r from-brand-50 to-brand-50 rounded-xl p-4 border border-brand-100"
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -38,7 +38,7 @@ export const XPBar = ({ currentXP = 0, xpForNextLevel = 1000, level = 1 }) => {
           <motion.div
             key={milestone}
             className={`w-2 h-2 rounded-full ${
-              xpPercentage >= milestone ? 'bg-purple-500' : 'bg-gray-300'
+              xpPercentage >= milestone ? 'bg-brand-500' : 'bg-gray-300'
             }`}
             animate={{
               scale: xpPercentage >= milestone ? [1, 1.3, 1] : 1,

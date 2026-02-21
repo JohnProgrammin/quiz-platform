@@ -38,7 +38,7 @@ export const TrendChart = ({ data = [] }) => {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white p-4 rounded-lg shadow-lg border-2 border-purple-200"
+          className="bg-white p-4 rounded-lg shadow-lg border-2 border-brand-200"
         >
           <p className="font-semibold text-gray-900">{payload[0].payload.date}</p>
           {payload.map((entry, index) => (
@@ -101,13 +101,13 @@ export const TrendChart = ({ data = [] }) => {
       </ResponsiveContainer>
 
       <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-        <div className="p-3 rounded-lg bg-purple-50 border border-purple-200">
+        <div className="p-3 rounded-lg bg-brand-50 border border-brand-200">
           <p className="text-gray-600">Avg Score</p>
-          <p className="text-2xl font-bold text-purple-600">88%</p>
+          <p className="text-2xl font-bold text-brand-600">88%</p>
         </div>
-        <div className="p-3 rounded-lg bg-pink-50 border border-pink-200">
+        <div className="p-3 rounded-lg bg-brand-50 border border-brand-200">
           <p className="text-gray-600">Total Quizzes</p>
-          <p className="text-2xl font-bold text-pink-600">23</p>
+          <p className="text-2xl font-bold text-brand-600">23</p>
         </div>
       </div>
     </motion.div>

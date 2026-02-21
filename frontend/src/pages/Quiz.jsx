@@ -77,7 +77,7 @@ export const Quiz = () => {
   if (currentQuestion === questions.length) {
     return (
       <PageTransition>
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-brand-50 to-brand-50 flex items-center justify-center p-4">
           <motion.div
             className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl text-center"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -95,7 +95,7 @@ export const Quiz = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Quiz Complete!</h1>
 
             <div className="mb-6">
-              <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+              <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-600">
                 {score}/{questions.length}
               </div>
               <p className="text-gray-600 mt-2">
@@ -122,7 +122,7 @@ export const Quiz = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 p-4 md:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-50 p-4 md:p-8">
         {/* Header */}
         <motion.div
           className="max-w-2xl mx-auto mb-8"
@@ -146,7 +146,7 @@ export const Quiz = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-purple-100 mb-8">
+          <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-brand-100 mb-8">
             {/* Question */}
             <motion.h2
               className="text-2xl font-bold text-gray-900 mb-8 leading-relaxed"
@@ -177,7 +177,7 @@ export const Quiz = () => {
                     disabled={answered}
                     className={`w-full p-4 rounded-xl font-semibold text-left transition-all border-2 ${
                       !answered
-                        ? 'border-gray-200 bg-gray-50 hover:border-purple-300 hover:bg-purple-50'
+                        ? 'border-gray-200 bg-gray-50 hover:border-brand-300 hover:bg-brand-50'
                         : isSelected
                           ? isCorrect
                             ? 'border-green-400 bg-green-50 text-green-900'

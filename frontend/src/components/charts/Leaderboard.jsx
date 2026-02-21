@@ -110,7 +110,7 @@ export const Leaderboard = ({ users = [] }) => {
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="w-full mt-6 py-3 rounded-lg bg-purple-50 border-2 border-purple-200 text-purple-700 font-semibold hover:bg-purple-100 transition-colors"
+        className="w-full mt-6 py-3 rounded-lg bg-brand-50 border-2 border-brand-200 text-brand-700 font-semibold hover:bg-brand-100 transition-colors"
       >
         View Full Leaderboard →
       </motion.button>

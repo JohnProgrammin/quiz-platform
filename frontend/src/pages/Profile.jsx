@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button, Tabs, PageTransition } from '../components';
-import { users, auth } from '../services/api';
+import { updateProfile } from '../api';
 import { User, Settings, Lock, LogOut, Save, Edit2, Download } from 'lucide-react';
 import { staggerContainer, staggerItem } from '../lib/animations';
 
@@ -35,7 +35,7 @@ export const Profile = () => {
   const handleSave = async () => {
     setLoading(true);
     try {
-      await users.updateProfile(formData);
+      await updateProfile(formData);
       setProfile(formData);
       setIsEditing(false);
     } catch (error) {
@@ -46,8 +46,8 @@ export const Profile = () => {
   };
 
   const handleLogout = () => {
-    auth.logout();
-    navigate('/login');
+    localStorage.removeItem('token');
+    window.location.href = '/login';
   };
 
   const tabs = [
@@ -58,7 +58,7 @@ export const Profile = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 p-4 md:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-50 p-4 md:p-8">
         {/* Header */}
         <motion.div
           className="mb-8"
@@ -107,7 +107,7 @@ export const Profile = () => {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => setIsEditing(true)}
-                          className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-100 text-purple-700 font-semibold hover:bg-purple-200 transition-colors"
+                          className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-100 text-brand-700 font-semibold hover:bg-brand-200 transition-colors"
                         >
                           <Edit2 size={18} />
                           Edit Profile
@@ -126,7 +126,7 @@ export const Profile = () => {
                           value={formData.fullName}
                           onChange={handleChange}
                           disabled={!isEditing}
-                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 transition-all outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
                         />
                       </motion.div>
 
@@ -139,7 +139,7 @@ export const Profile = () => {
                           value={formData.username}
                           onChange={handleChange}
                           disabled={!isEditing}
-                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 transition-all outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
                         />
                       </motion.div>
 
@@ -166,7 +166,7 @@ export const Profile = () => {
                           onChange={handleChange}
                           disabled={!isEditing}
                           rows={3}
-                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 transition-all outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
                           placeholder="Tell us about yourself..."
                         />
                       </motion.div>
@@ -217,7 +217,7 @@ export const Profile = () => {
                         <p className="font-semibold text-gray-900">Email Notifications</p>
                         <p className="text-sm text-gray-600">Get updates on achievements and streaks</p>
                       </div>
-                      <input type="checkbox" defaultChecked className="w-5 h-5 rounded accent-purple-600" />
+                      <input type="checkbox" defaultChecked className="w-5 h-5 rounded accent-brand-600" />
                     </motion.div>
 
                     <motion.div
@@ -229,7 +229,7 @@ export const Profile = () => {
                         <p className="font-semibold text-gray-900">Sound Effects</p>
                         <p className="text-sm text-gray-600">Play sounds for correct answers</p>
                       </div>
-                      <input type="checkbox" defaultChecked className="w-5 h-5 rounded accent-purple-600" />
+                      <input type="checkbox" defaultChecked className="w-5 h-5 rounded accent-brand-600" />
                     </motion.div>
 
                     <motion.div
@@ -241,7 +241,7 @@ export const Profile = () => {
                         <p className="font-semibold text-gray-900">Daily Reminders</p>
                         <p className="text-sm text-gray-600">Remind me to practice daily</p>
                       </div>
-                      <input type="checkbox" defaultChecked className="w-5 h-5 rounded accent-purple-600" />
+                      <input type="checkbox" defaultChecked className="w-5 h-5 rounded accent-brand-600" />
                     </motion.div>
 
                     <motion.div
@@ -270,24 +270,24 @@ export const Profile = () => {
                       variants={staggerItem}
                     >
                       <div className="flex items-center gap-3 mb-6">
-                        <Lock className="w-6 h-6 text-purple-600" />
+                        <Lock className="w-6 h-6 text-brand-600" />
                         <h3 className="text-lg font-bold text-gray-900">Change Password</h3>
                       </div>
                       <div className="space-y-4">
                         <input
                           type="password"
                           placeholder="Current password"
-                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none"
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none"
                         />
                         <input
                           type="password"
                           placeholder="New password"
-                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none"
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none"
                         />
                         <input
                           type="password"
                           placeholder="Confirm new password"
-                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none"
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none"
                         />
                         <Button variant="primary">Update Password</Button>
                       </div>

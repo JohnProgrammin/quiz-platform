@@ -9,8 +9,8 @@ export const LevelBadge = ({ level = 1, isNew = false, className = '' }) => {
   // Get color based on level
   const getLevelColor = (lvl) => {
     if (lvl < 5) return 'from-blue-400 to-blue-600';
-    if (lvl < 10) return 'from-purple-400 to-purple-600';
-    if (lvl < 20) return 'from-pink-400 to-pink-600';
+    if (lvl < 10) return 'from-brand-400 to-brand-600';
+    if (lvl < 20) return 'from-brand-400 to-brand-600';
     if (lvl < 50) return 'from-orange-400 to-orange-600';
     return 'from-yellow-400 to-yellow-600';
   };
@@ -95,7 +95,7 @@ export const LevelBadge = ({ level = 1, isNew = false, className = '' }) => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-center text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600"
+          className="text-center text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-600"
         >
           🎉 Level Up! 🎉
         </motion.p>

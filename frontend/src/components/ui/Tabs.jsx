@@ -13,12 +13,12 @@ export const Tabs = ({ defaultValue, tabs, children }) => {
           <RadixTabs.Trigger
             key={tab.value}
             value={tab.value}
-            className="relative px-4 py-3 font-semibold text-gray-700 hover:text-gray-900 transition-colors data-[state=active]:text-purple-600"
+            className="relative px-4 py-3 font-semibold text-gray-700 hover:text-gray-900 transition-colors data-[state=active]:text-brand-600"
             asChild
           >
             <motion.button>
               {tab.label}
-              <RadixTabs.Indicator className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600" asChild>
+              <RadixTabs.Indicator className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600" asChild>
                 <motion.div layoutId="tabIndicator" />
               </RadixTabs.Indicator>
             </motion.button>

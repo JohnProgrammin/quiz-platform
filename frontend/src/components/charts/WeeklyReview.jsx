@@ -12,7 +12,7 @@ export const WeeklyReview = ({ week = 'This Week' }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 rounded-xl p-6 border-2 border-purple-200 shadow-sm"
+      className="bg-gradient-to-br from-brand-50 via-brand-50 to-brand-50 rounded-xl p-6 border-2 border-brand-200 shadow-sm"
     >
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
@@ -38,11 +38,11 @@ export const WeeklyReview = ({ week = 'This Week' }) => {
         {/* Quizzes Completed */}
         <motion.div
           variants={staggerItem}
-          className="bg-white rounded-lg p-4 border border-purple-200"
+          className="bg-white rounded-lg p-4 border border-brand-200"
           whileHover={{ scale: 1.05 }}
         >
           <div className="flex items-center justify-between mb-2">
-            <BookOpen className="w-5 h-5 text-purple-600" />
+            <BookOpen className="w-5 h-5 text-brand-600" />
           </div>
           <p className="text-3xl font-bold text-gray-900">18</p>
           <p className="text-xs text-gray-600 mt-1">Quizzes</p>
@@ -97,7 +97,7 @@ export const WeeklyReview = ({ week = 'This Week' }) => {
       >
         <motion.div
           variants={staggerItem}
-          className="bg-white rounded-lg p-4 border-l-4 border-l-purple-600"
+          className="bg-white rounded-lg p-4 border-l-4 border-l-brand-600"
         >
           <p className="font-semibold text-gray-900 flex items-center gap-2">
             <span>🏆</span> Achievement Unlocked
@@ -121,7 +121,7 @@ export const WeeklyReview = ({ week = 'This Week' }) => {
 
         <motion.div
           variants={staggerItem}
-          className="bg-white rounded-lg p-4 border-l-4 border-l-pink-600"
+          className="bg-white rounded-lg p-4 border-l-4 border-l-brand-600"
         >
           <p className="font-semibold text-gray-900 flex items-center gap-2">
             <span>💡</span> Learning Insight
@@ -137,9 +137,9 @@ export const WeeklyReview = ({ week = 'This Week' }) => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.8 }}
-        className="mt-6 p-4 rounded-lg bg-gradient-to-r from-purple-100 to-pink-100 text-center"
+        className="mt-6 p-4 rounded-lg bg-gradient-to-r from-brand-100 to-brand-100 text-center"
       >
-        <p className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+        <p className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-600">
           Keep the momentum going! You're crushing it! 💪
         </p>
       </motion.div>

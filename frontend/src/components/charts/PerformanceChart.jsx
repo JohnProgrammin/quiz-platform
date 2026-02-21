@@ -31,7 +31,7 @@ export const PerformanceChart = ({ data = [] }) => {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white p-4 rounded-lg shadow-lg border-2 border-purple-200"
+          className="bg-white p-4 rounded-lg shadow-lg border-2 border-brand-200"
         >
           <p className="font-semibold text-gray-900">{payload[0].payload.week}</p>
           {payload.map((entry, index) => (
@@ -118,11 +118,11 @@ export const PerformanceChart = ({ data = [] }) => {
         </motion.div>
 
         <motion.div
-          className="p-3 rounded-lg bg-purple-50 border border-purple-200"
+          className="p-3 rounded-lg bg-brand-50 border border-brand-200"
           whileHover={{ scale: 1.05 }}
         >
           <p className="text-gray-600">Streak</p>
-          <p className="text-2xl font-bold text-purple-600">12 days</p>
+          <p className="text-2xl font-bold text-brand-600">12 days</p>
           <p className="text-xs text-gray-500 mt-1">Current</p>
         </motion.div>
       </div>

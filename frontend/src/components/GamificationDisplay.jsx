@@ -36,7 +36,7 @@ function GamificationDisplay({ xpAwarded, leveledUp, newLevel, currentStreak }) 
 
         {/* Level Up */}
         {leveledUp && (
-          <div className="animate-slide-up-delay bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-4 text-white shadow-xl transform hover:scale-105 transition-transform">
+          <div className="animate-slide-up-delay bg-gradient-to-r from-brand-500 to-brand-500 rounded-2xl p-4 text-white shadow-xl transform hover:scale-105 transition-transform">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center animate-pulse">
                 <Trophy className="w-6 h-6" />

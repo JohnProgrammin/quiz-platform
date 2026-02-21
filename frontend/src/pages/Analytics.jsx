@@ -27,7 +27,7 @@ export const Analytics = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 p-4 md:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-50 p-4 md:p-8">
         {/* Header */}
         <motion.div
           className="mb-8"
@@ -42,11 +42,11 @@ export const Analytics = () => {
 
           {/* Action Buttons */}
           <motion.div variants={staggerItem} className="flex gap-3 mt-4">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-100 text-purple-700 font-semibold hover:bg-purple-200 transition-colors">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-100 text-brand-700 font-semibold hover:bg-brand-200 transition-colors">
               <Download size={18} />
               Export PDF
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-pink-100 text-pink-700 font-semibold hover:bg-pink-200 transition-colors">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-100 text-brand-700 font-semibold hover:bg-brand-200 transition-colors">
               <Share2 size={18} />
               Share Progress
             </button>
@@ -128,7 +128,7 @@ export const Analytics = () => {
                           {[
                             { subject: 'Biology', score: 92, color: 'from-green-400 to-green-600' },
                             { subject: 'Chemistry', score: 88, color: 'from-blue-400 to-blue-600' },
-                            { subject: 'Physics', score: 85, color: 'from-purple-400 to-purple-600' },
+                            { subject: 'Physics', score: 85, color: 'from-brand-400 to-brand-600' },
                             { subject: 'History', score: 78, color: 'from-orange-400 to-orange-600' },
                           ].map((item) => (
                             <motion.div key={item.subject} variants={staggerItem}>
@@ -199,7 +199,7 @@ export const Analytics = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-6 text-white text-center"
+          className="bg-gradient-to-r from-brand-600 to-brand-600 rounded-xl p-6 text-white text-center"
         >
           <h3 className="text-lg font-bold mb-2">Last Updated</h3>
           <p className="text-sm opacity-90">2 hours ago</p>

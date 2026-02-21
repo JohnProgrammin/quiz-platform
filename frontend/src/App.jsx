@@ -3,17 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import Landing from './components/Landing';
-import Login from './components/Login';
-import Signup from './components/Signup';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 import DashboardLayout from './components/DashboardLayout';
-import Dashboard from './components/Dashboard';
-import Profile from './components/Profile';
+import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
 import Notes from './components/Notes';
-import Quiz from './components/Quiz';
+import Quiz from './pages/Quiz';
 import QuizResults from './components/QuizResults';
 import PricingPage from './components/PricingPage';
 import AITeaching from './components/AITeaching';
-import Analytics from './components/Analytics';
+import Analytics from './pages/Analytics';
 import PaymentCallback from './components/PaymentCallback';
 import ErrorBoundary from './components/ErrorBoundary';
 import Loading from './components/Loading';
@@ -103,18 +103,17 @@ function App() {
             {/* Public routes — no sidebar */}
             <Route
               path="/login"
-              element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/dashboard" />}
+              element={!user ? <Login /> : <Navigate to="/dashboard" />}
             />
             <Route
               path="/signup"
-              element={!user ? <Signup onLogin={handleLogin} /> : <Navigate to="/dashboard" />}
+              element={!user ? <Signup /> : <Navigate to="/dashboard" />}
             />
             <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
 
-            {/* Authenticated routes — with sidebar */}
             <Route
               path="/dashboard"
-              element={user ? <WithLayout><Dashboard user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
+              element={user ? <WithLayout><Dashboard /></WithLayout> : <Navigate to="/login" />}
             />
             <Route
               path="/pricing"

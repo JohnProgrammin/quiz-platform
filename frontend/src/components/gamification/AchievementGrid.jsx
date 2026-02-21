@@ -60,14 +60,14 @@ export const AchievementGrid = ({ achievements = [], limit = 9 }) => {
               whileHover={achievement.unlocked ? { scale: 1.1, rotate: 5 } : {}}
               className={`flex flex-col items-center gap-2 p-3 rounded-lg cursor-help transition-colors ${
                 achievement.unlocked
-                  ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200'
+                  ? 'bg-gradient-to-br from-brand-50 to-brand-50 border-2 border-brand-200'
                   : 'bg-gray-100 border-2 border-gray-200'
               }`}
             >
               <motion.div
                 className={`w-12 h-12 rounded-full flex items-center justify-center ${
                   achievement.unlocked
-                    ? `bg-gradient-to-br ${achievement.color || 'from-purple-400 to-pink-400'}`
+                    ? `bg-gradient-to-br ${achievement.color || 'from-brand-400 to-brand-400'}`
                     : 'bg-gray-400'
                 }`}
                 animate={achievement.unlocked ? { rotate: [0, 10, -10, 0] } : {}}
@@ -92,7 +92,7 @@ export const AchievementGrid = ({ achievements = [], limit = 9 }) => {
                 <motion.span
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-xs text-purple-600 font-bold"
+                  className="text-xs text-brand-600 font-bold"
                 >
                   +{achievement.xpReward} XP
                 </motion.span>

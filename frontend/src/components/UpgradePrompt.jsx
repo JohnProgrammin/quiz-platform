@@ -35,10 +35,10 @@ function UpgradePrompt({ feature, compact = false, className = '' }) {
   }
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl p-8 text-center border bg-white/50 backdrop-blur-xl shadow-lg ${requiredTier === 'Premium' ? 'border-amber-200/50' : 'border-purple-200/50'
+    <div className={`relative overflow-hidden rounded-2xl p-8 text-center border bg-white/50 backdrop-blur-xl shadow-lg ${requiredTier === 'Premium' ? 'border-amber-200/50' : 'border-brand-200/50'
       } ${className}`}>
       {/* Decorative background blur elements */}
-      <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full blur-3xl -z-10 ${requiredTier === 'Premium' ? 'bg-amber-500/20' : 'bg-purple-500/20'
+      <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full blur-3xl -z-10 ${requiredTier === 'Premium' ? 'bg-amber-500/20' : 'bg-brand-500/20'
         }`} />
 
       <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg ring-4 ring-white/50 ${requiredTier === 'Premium' ? 'bg-gradient-to-br from-amber-400 to-orange-600 shadow-amber-500/30' : 'bg-gradient-to-br from-brand-400 to-brand-600 shadow-brand-500/30'

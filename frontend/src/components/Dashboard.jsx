@@ -158,7 +158,7 @@ function Dashboard({ user, onLogout }) {
       value: stats.totalAttempts,
       icon: <Target className="w-6 h-6" />,
       gradient: 'from-purple to-purple/70',
-      bg: 'bg-purple-50'
+      bg: 'bg-brand-50'
     },
     {
       label: t('dashboard.stats.averageScore'),

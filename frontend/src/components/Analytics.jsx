@@ -261,17 +261,17 @@ function Analytics({ user, onLogout }) {
           </motion.div>
 
           {/* Study Time */}
-          <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="card p-6 border-2 border-purple-500 transition-shadow hover:shadow-lg">
+          <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="card p-6 border-2 border-brand-500 transition-shadow hover:shadow-lg">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-sm font-semibold text-slate mb-1">{t('analytics.studyTime')}</p>
-                <p className="text-4xl font-black text-purple-500">{Math.round(stats.totalTime / 60)}</p>
+                <p className="text-4xl font-black text-brand-500">{Math.round(stats.totalTime / 60)}</p>
               </div>
-              <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center">
-                <Clock className="w-6 h-6 text-purple-500" />
+              <div className="w-12 h-12 rounded-2xl bg-brand-100 flex items-center justify-center">
+                <Clock className="w-6 h-6 text-brand-500" />
               </div>
             </div>
-            <p className="text-xs font-semibold text-purple-600">{t('analytics.hours')}</p>
+            <p className="text-xs font-semibold text-brand-600">{t('analytics.hours')}</p>
           </motion.div>
         </motion.div>
 

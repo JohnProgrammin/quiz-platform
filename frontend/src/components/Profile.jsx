@@ -191,7 +191,7 @@ function Profile({ user, setUser, onLogout }) {
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             className="absolute inset-0 rounded-full bg-brand-400 blur-md -z-10"
           />
-          <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-brand-400 to-purple-500 shadow-xl flex items-center justify-center transform hover:scale-105 transition-transform duration-300 border-4 border-white dark:border-slate-800 z-10 relative overflow-hidden">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-brand-400 to-brand-500 shadow-xl flex items-center justify-center transform hover:scale-105 transition-transform duration-300 border-4 border-white dark:border-slate-800 z-10 relative overflow-hidden">
             {user.avatarUrl ? (
               <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
@@ -236,7 +236,7 @@ function Profile({ user, setUser, onLogout }) {
             {isPremium && (
               <Tabs.Trigger
                 value="developer"
-                className="px-6 py-3 font-bold text-slate flex items-center gap-2 hover:text-purple-500 data-[state=active]:text-purple-600 data-[state=active]:border-b-4 data-[state=active]:border-purple-500 transition-colors whitespace-nowrap"
+                className="px-6 py-3 font-bold text-slate flex items-center gap-2 hover:text-brand-500 data-[state=active]:text-brand-600 data-[state=active]:border-b-4 data-[state=active]:border-brand-500 transition-colors whitespace-nowrap"
               >
                 VIP Features <Crown className="w-4 h-4 text-gold" />
               </Tabs.Trigger>
@@ -247,7 +247,7 @@ function Profile({ user, setUser, onLogout }) {
         {/* --- GENERAL TAB --- */}
         <Tabs.Content value="general" className="focus:outline-none focus:ring-0">
           <motion.div variants={itemVariants} className="card relative overflow-hidden">
-            <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-brand-400 to-purple-500" />
+            <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-brand-400 to-brand-500" />
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
               {message && (
                 <div
@@ -363,7 +363,7 @@ function Profile({ user, setUser, onLogout }) {
             <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
               {/* API Keys Feature */}
               <motion.div variants={itemVariants} className="card p-6 border-2 border-brand-200 bg-brand-50/50 hover:bg-white transition-colors relative overflow-hidden">
-                <div className="absolute top-0 w-full h-1 left-0 bg-gradient-to-r from-brand-400 to-purple-500" />
+                <div className="absolute top-0 w-full h-1 left-0 bg-gradient-to-r from-brand-400 to-brand-500" />
                 <h2 className="text-xl font-extrabold text-ink mb-2 flex items-center gap-2">
                   <KeyRound className="w-6 h-6 text-brand-500" /> Production API Keys
                 </h2>
@@ -425,10 +425,10 @@ function Profile({ user, setUser, onLogout }) {
               </motion.div>
 
               {/* Priority Support Feature */}
-              <motion.div variants={itemVariants} className="card p-6 border-2 border-purple-200 bg-purple-50/50 hover:bg-white transition-colors relative overflow-hidden">
-                <div className="absolute top-0 w-full h-1 left-0 bg-gradient-to-r from-purple-500 to-pink-500" />
+              <motion.div variants={itemVariants} className="card p-6 border-2 border-brand-200 bg-brand-50/50 hover:bg-white transition-colors relative overflow-hidden">
+                <div className="absolute top-0 w-full h-1 left-0 bg-gradient-to-r from-brand-500 to-brand-500" />
                 <h2 className="text-xl font-extrabold text-ink mb-2 flex items-center gap-2">
-                  <MessageSquare className="w-6 h-6 text-purple-500" /> Concierge Support
+                  <MessageSquare className="w-6 h-6 text-brand-500" /> Concierge Support
                 </h2>
                 <p className="text-sm font-semibold text-slate mb-6">
                   Skip the queue. As a Premium member, you get priority engineering and data ingestion support 24x7.

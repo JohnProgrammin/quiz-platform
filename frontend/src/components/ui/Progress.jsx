@@ -16,10 +16,10 @@ export const Progress = ({
   const percentage = (value / max) * 100;
 
   const variants = {
-    default: 'bg-gradient-to-r from-purple-500 to-pink-500',
+    default: 'bg-gradient-to-r from-brand-500 to-brand-500',
     success: 'bg-gradient-to-r from-green-500 to-emerald-500',
     warning: 'bg-gradient-to-r from-yellow-500 to-orange-500',
-    danger: 'bg-gradient-to-r from-red-500 to-pink-500',
+    danger: 'bg-gradient-to-r from-red-500 to-brand-500',
   };
 
   return (

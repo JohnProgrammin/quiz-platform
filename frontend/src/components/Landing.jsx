@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useScrollReveal, useStaggerReveal } from '../hooks/useScrollReveal';
 import LanguageSwitcher from './LanguageSwitcher';
+import { SEO } from './SEO';
 import {
   Upload, Sparkles, Trophy, Brain, Zap, Target,
   BookOpen, BarChart3, ArrowRight, CheckCircle, Star,
@@ -205,7 +206,7 @@ function Landing() {
     {
       name: t('landing.pricing.pro'),
       price: '₦5,000',
-      period: `/${t('pricing.mo', 'mo')}`,
+      period: `/ ${t('pricing.mo', 'mo')} `,
       description: t('pricing.forSeriousLearners') || 'Perfect for serious learners wanting to master any topic',
       icon: <Sparkles className="w-7 h-7" />,
       color: 'text-brand-500',
@@ -229,7 +230,7 @@ function Landing() {
     {
       name: t('landing.pricing.premium'),
       price: '₦10,000',
-      period: `/${t('pricing.mo', 'mo')}`,
+      period: `/ ${t('pricing.mo', 'mo')} `,
       description: t('pricing.forMasterySeekers') || 'Everything in Pro, plus 1-on-1 AI tutoring',
       icon: <Crown className="w-7 h-7" />,
       color: 'text-amber-500',
@@ -270,15 +271,19 @@ function Landing() {
       role: t('landing.testimonials.priya.role'),
       text: t('landing.testimonials.priya.text'),
       avatar: 'P',
-      color: 'bg-purple-500',
+      color: 'bg-brand-500',
     },
   ];
 
   return (
     <div className="min-h-screen bg-white overflow-hidden">
+      <SEO
+        title="FloraQuiz | AI Study Platform & Quiz Generator"
+        description="Generate quizzes from notes instantly. Improve your grades with AI-powered personalized studying."
+      />
       {/* ── Navbar (Duolingo-style responsive) ── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md border-b-2 border-border shadow-sm' : 'bg-transparent'
-        }`}>
+      <nav className={`fixed top - 0 left - 0 right - 0 z - 50 transition - all duration - 300 ${scrolled ? 'bg-white/95 backdrop-blur-md border-b-2 border-border shadow-sm' : 'bg-transparent'
+        } `}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
@@ -322,7 +327,7 @@ function Landing() {
       {/* ── Playful Gamified Hero ── */}
       <section className="relative pt-32 pb-20 sm:pt-48 sm:pb-32 px-4 bg-white overflow-hidden min-h-[90vh] flex flex-col justify-center border-b-2 border-slate-100">
 
-        <div ref={heroRef} className={`reveal ${heroVisible ? 'visible' : ''}`}>
+        <div ref={heroRef} className={`reveal ${heroVisible ? 'visible' : ''} `}>
           <div className="max-w-6xl mx-auto text-center relative z-10 flex flex-col items-center">
 
             <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-brand-50 border-2 border-brand-200 mb-8 font-bold text-brand-600 uppercase tracking-widest text-xs">
@@ -402,22 +407,22 @@ function Landing() {
                   ].map((opt, i) => (
                     <div
                       key={i}
-                      className={`demo-option p-4 rounded-2xl border-2 flex items-center gap-4 font-bold text-sm cursor-pointer transition-all ${visibleOptions.has(i)
-                        ? 'opacity-100'
-                        : 'opacity-0 pointer-events-none'
+                      className={`demo - option p - 4 rounded - 2xl border - 2 flex items - center gap - 4 font - bold text - sm cursor - pointer transition - all ${visibleOptions.has(i)
+                          ? 'opacity-100'
+                          : 'opacity-0 pointer-events-none'
                         } ${demoPhase === 3 && i === 1
                           ? 'border-brand-500 bg-blue-50 text-brand-600 demo-correct shadow-sm'
                           : 'border-border/60 bg-white hover:bg-surface text-slate'
-                        }`}
+                        } `}
                       style={{
-                        '--delay': `${i * 0.25}s`,
+                        '--delay': `${i * 0.25} s`,
                       }}
                     >
                       <span
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs transition-all flex-shrink-0 ${demoPhase === 3 && i === 1
-                          ? 'bg-brand-500 text-white shadow-sm'
-                          : 'bg-slate-100 text-slate-600'
-                          }`}
+                        className={`w - 8 h - 8 rounded - lg flex items - center justify - center font - black text - xs transition - all flex - shrink - 0 ${demoPhase === 3 && i === 1
+                            ? 'bg-brand-500 text-white shadow-sm'
+                            : 'bg-slate-100 text-slate-600'
+                          } `}
                       >
                         {['A', 'B', 'C', 'D'][i]}
                       </span>
@@ -437,9 +442,9 @@ function Landing() {
                   </div>
                   <div className="progress-bar overflow-hidden h-2 bg-slate-200/50 rounded-full border border-border/30">
                     <div
-                      className={`progress-bar-fill h-full transition-all ${demoPhase >= 4 ? 'demo-progress' : ''}`}
+                      className={`progress - bar - fill h - full transition - all ${demoPhase >= 4 ? 'demo-progress' : ''} `}
                       style={{
-                        width: `${progressWidth}%`,
+                        width: `${progressWidth}% `,
                       }}
                     />
                   </div>
@@ -466,7 +471,7 @@ function Landing() {
       {/* ── Features ── */}
       <section className="py-20 sm:py-28 px-4 bg-surface">
         <div className="max-w-6xl mx-auto">
-          <div ref={featuresHeadRef} className={`reveal ${featuresHeadVisible ? 'visible' : ''} text-center mb-16`}>
+          <div ref={featuresHeadRef} className={`reveal ${featuresHeadVisible ? 'visible' : ''} text - center mb - 16`}>
             <span className="text-sm font-black text-brand-500 uppercase tracking-widest">{t('landing.features.why')}</span>
             <h2 className="text-3xl sm:text-4xl font-black text-ink mt-3 mb-4">
               {t('landing.features.title')}
@@ -480,10 +485,10 @@ function Landing() {
             {/* Bento Card 1 - Large Span */}
             <div
               ref={setFeatureRef(0)}
-              className={`reveal-scale ${visibleFeatures.has(0) ? 'visible' : ''} bento-card bento-col-span-2 sm:bento-row-span-2 p-10 flex flex-col justify-between`}
+              className={`reveal - scale ${visibleFeatures.has(0) ? 'visible' : ''} bento - card bento - col - span - 2 sm: bento - row - span - 2 p - 10 flex flex - col justify - between`}
             >
               <div>
-                <div className={`w-16 h-16 rounded-2xl ${features[0].bg} flex items-center justify-center mb-6 ${features[0].color} shadow-sm border border-white/50`}>
+                <div className={`w - 16 h - 16 rounded - 2xl ${features[0].bg} flex items - center justify - center mb - 6 ${features[0].color} shadow - sm border border - white / 50`}>
                   {features[0].icon}
                 </div>
                 <h3 className="text-3xl font-black text-ink mb-3">{features[0].title}</h3>
@@ -506,16 +511,16 @@ function Landing() {
             {/* Bento Card 2 */}
             <div
               ref={setFeatureRef(1)}
-              className={`reveal-scale ${visibleFeatures.has(1) ? 'visible' : ''} bento-card p-8 flex flex-col justify-between`}
+              className={`reveal - scale ${visibleFeatures.has(1) ? 'visible' : ''} bento - card p - 8 flex flex - col justify - between`}
             >
               <div>
-                <div className={`w-14 h-14 rounded-2xl ${features[1].bg} flex items-center justify-center mb-6 ${features[1].color} shadow-sm border border-white/50`}>
+                <div className={`w - 14 h - 14 rounded - 2xl ${features[1].bg} flex items - center justify - center mb - 6 ${features[1].color} shadow - sm border border - white / 50`}>
                   {features[1].icon}
                 </div>
                 <h3 className="text-2xl font-black text-ink mb-2">{features[1].title}</h3>
                 <p className="text-slate font-medium leading-relaxed">{features[1].description}</p>
               </div>
-              <div className="mt-8 h-32 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 relative overflow-hidden flex items-end">
+              <div className="mt-8 h-32 rounded-2xl bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-100 relative overflow-hidden flex items-end">
                 <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNFMEU3RkYiLz48L3N2Zz4=')] opacity-50" />
                 <div className="w-full h-1/2 bg-gradient-to-t from-blue-500/10 to-transparent" />
               </div>
@@ -524,9 +529,9 @@ function Landing() {
             {/* Bento Card 3 */}
             <div
               ref={setFeatureRef(2)}
-              className={`reveal-scale ${visibleFeatures.has(2) ? 'visible' : ''} bento-card p-8 bg-gradient-to-br from-amber-500 to-orange-400 text-white`}
+              className={`reveal - scale ${visibleFeatures.has(2) ? 'visible' : ''} bento - card p - 8 bg - gradient - to - br from - amber - 500 to - orange - 400 text - white`}
             >
-              <div className={`w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-6 text-white border border-white/30`}>
+              <div className={`w - 14 h - 14 rounded - full bg - white / 20 backdrop - blur - md flex items - center justify - center mb - 6 text - white border border - white / 30`}>
                 {features[2].icon}
               </div>
               <h3 className="text-2xl font-black mb-2 drop-shadow-sm">{features[2].title}</h3>
@@ -551,7 +556,7 @@ function Landing() {
       {/* ── How it works ── */}
       <section className="py-20 sm:py-28 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div ref={howHeadRef} className={`reveal ${howHeadVisible ? 'visible' : ''} text-center mb-16`}>
+          <div ref={howHeadRef} className={`reveal ${howHeadVisible ? 'visible' : ''} text - center mb - 16`}>
             <span className="text-sm font-black text-brand-500 uppercase tracking-widest">{t('landing.steps.how')}</span>
             <h2 className="text-3xl sm:text-4xl font-black text-ink mt-3 mb-4">
               {t('landing.steps.title')}
@@ -568,11 +573,11 @@ function Landing() {
                 <div
                   key={i}
                   ref={setStepRef(i)}
-                  className={`reveal ${visibleSteps.has(i) ? 'visible' : ''} flex gap-6 sm:gap-8 group`}
+                  className={`reveal ${visibleSteps.has(i) ? 'visible' : ''} flex gap - 6 sm: gap - 8 group`}
                 >
                   {/* Vertical Progress Line Logic Container */}
                   <div className="relative flex flex-col items-center">
-                    <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ${step.color} flex items-center justify-center text-white relative z-10 shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                    <div className={`w - 14 h - 14 sm: w - 16 sm: h - 16 rounded - 2xl ${step.color} flex items - center justify - center text - white relative z - 10 shadow - lg group - hover: scale - 110 transition - transform duration - 500`}>
                       {step.icon}
                     </div>
                     {i < steps.length - 1 && (
@@ -591,42 +596,34 @@ function Landing() {
               ))}
             </div>
 
-            {/* Right Column: Sticky Visuals container */}
-            <div className="hidden lg:block w-1/2 sticky top-32 h-[600px] bg-slate-50 border border-slate-200 rounded-[3rem] overflow-hidden shadow-2xl p-8">
-              <div className="w-full h-full relative rounded-2xl bg-gradient-to-br from-indigo-100 via-purple-50 to-brand-50 flex items-center justify-center">
+            {/* Right Column: Clean SVG Visuals */}
+            <div className="hidden lg:block w-1/2 sticky top-32 h-[600px] bg-slate-50 border border-slate-200 rounded-[3rem] overflow-hidden p-8 flex items-center justify-center">
+              <div className="w-full h-full relative flex items-center justify-center">
+                {/* SVG Illustration mimicking a clean App Window */}
+                <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[120%] h-auto opacity-90 drop-shadow-xl">
+                  {/* Backdrop shapes */}
+                  <rect x="20" y="20" width="300" height="240" rx="16" fill="#f0fdf4" />
 
-                {/* Floating abstract UI elements representing the platform */}
-                <div className="glass-panel w-64 h-80 absolute animate-float shadow-2xl rounded-2xl overflow-hidden border border-white/60 z-20">
-                  <div className="w-full h-12 border-b border-border/50 bg-white/50 flex items-center px-4 gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                  </div>
-                  <div className="p-6 space-y-4">
-                    <div className="h-4 w-3/4 bg-slate-200 rounded-full"></div>
-                    <div className="h-4 w-full bg-slate-200 rounded-full"></div>
-                    <div className="h-4 w-5/6 bg-slate-200 rounded-full"></div>
-                    <div className="h-4 w-1/2 bg-slate-200 rounded-full"></div>
-                  </div>
-                </div>
+                  {/* Main Window */}
+                  <rect x="60" y="50" width="280" height="200" rx="12" fill="#ffffff" stroke="#e2e8f0" strokeWidth="2" />
+                  {/* Window Controls */}
+                  <circle cx="80" cy="65" r="4" fill="#f87171" />
+                  <circle cx="95" cy="65" r="4" fill="#fbbf24" />
+                  <circle cx="110" cy="65" r="4" fill="#34d399" />
+                  {/* Content Rectangles */}
+                  <rect x="80" y="90" width="240" height="14" rx="4" fill="#f1f5f9" />
+                  <rect x="80" y="120" width="180" height="14" rx="4" fill="#f1f5f9" />
+                  <rect x="80" y="150" width="200" height="14" rx="4" fill="#f1f5f9" />
 
-                <div className="glass-panel w-48 h-48 absolute top-20 -right-10 animate-float shadow-xl rounded-2xl border border-white/60 z-10 bg-white/60" style={{ animationDelay: '1s' }}>
-                  <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-                    <Sparkles className="w-10 h-10 text-brand-500" />
-                    <div className="h-2 w-20 bg-slate-200 rounded-full"></div>
-                  </div>
-                </div>
+                  {/* Sparkling / Magic UI element */}
+                  <rect x="240" y="40" width="100" height="100" rx="16" fill="#ffffff" stroke="#e2e8f0" strokeWidth="2" className="drop-shadow-sm" />
+                  <path d="M290 80L286 86L280 90L286 94L290 100L294 94L300 90L294 86L290 80Z" fill="#58cc02" />
+                  <path d="M275 75L273 78L270 80L273 82L275 85L277 82L280 80L277 78L275 75Z" fill="#58cc02" />
 
-                <div className="glass-panel w-56 h-32 absolute bottom-20 -left-12 animate-float shadow-xl rounded-xl border border-white/60 z-30 flex items-center px-6" style={{ animationDelay: '2s' }}>
-                  <div className="flex gap-4 items-center w-full">
-                    <CheckCircle className="w-8 h-8 text-green-500" />
-                    <div className="flex-1">
-                      <div className="h-3 w-full bg-slate-200 rounded-full mb-2"></div>
-                      <div className="h-3 w-1/2 bg-slate-200 rounded-full"></div>
-                    </div>
-                  </div>
-                </div>
-
+                  {/* Checkbox confirmation element */}
+                  <rect x="40" y="180" width="90" height="70" rx="12" fill="#ffffff" stroke="#e2e8f0" strokeWidth="2" className="drop-shadow-sm" />
+                  <path d="M72 225L82 235L98 210" stroke="#10b981" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </div>
             </div>
           </div>
@@ -636,7 +633,7 @@ function Landing() {
       {/* ── Pricing ── */}
       <section className="py-20 sm:py-28 px-4 bg-surface">
         <div className="max-w-6xl mx-auto">
-          <div ref={pricingHeadRef} className={`reveal ${pricingHeadVisible ? 'visible' : ''} text-center mb-16`}>
+          <div ref={pricingHeadRef} className={`reveal ${pricingHeadVisible ? 'visible' : ''} text - center mb - 16`}>
             <span className="text-sm font-black text-brand-500 uppercase tracking-widest">{t('landing.pricing.label')}</span>
             <h2 className="text-3xl sm:text-4xl font-black text-ink mt-3 mb-4">
               {t('landing.pricing.title')}
@@ -651,9 +648,9 @@ function Landing() {
               <div
                 key={i}
                 ref={setPricingRef(i)}
-                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} ${tier.highlighted ? 'z-10 bg-brand-50 rounded-[2rem] border-4 border-brand-500 shadow-card transform md:-translate-y-4' : 'z-0 bg-white rounded-[2rem] border-2 border-slate-200 border-b-[6px] border-b-slate-300'}`}
+                className={`reveal - scale ${visiblePricing.has(i) ? 'visible' : ''} ${tier.highlighted ? 'z-10 bg-brand-50 rounded-[2rem] border-4 border-brand-500 shadow-card transform md:-translate-y-4' : 'z-0 bg-white rounded-[2rem] border-2 border-slate-200 border-b-[6px] border-b-slate-300'} `}
               >
-                <div className={`relative p-8 h-full rounded-[2rem] transition-transform duration-300`}>
+                <div className={`relative p - 8 h - full rounded - [2rem] transition - transform duration - 300`}>
                   {/* Badge */}
                   {tier.badge && (
                     <div className="absolute -top-4 left-0 right-0 flex justify-center">
@@ -665,7 +662,7 @@ function Landing() {
                   )}
 
                   {/* Icon */}
-                  <div className={`w-14 h-14 rounded-2xl ${tier.bg} flex items-center justify-center mb-6 ${tier.color} shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-slate-100`}>
+                  <div className={`w - 14 h - 14 rounded - 2xl ${tier.bg} flex items - center justify - center mb - 6 ${tier.color} shadow - [0_4px_20px_ - 4px_rgba(0, 0, 0, 0.1)] border border - slate - 100`}>
                     {tier.icon}
                   </div>
 
@@ -695,7 +692,7 @@ function Landing() {
                   <ul className="space-y-4 mb-10">
                     {tier.features.map((feature, j) => (
                       <li key={j} className="flex items-start gap-3">
-                        <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${tier.highlighted ? 'text-brand-500' : 'text-slate-400'}`} />
+                        <CheckCircle className={`w - 5 h - 5 flex - shrink - 0 mt - 0.5 ${tier.highlighted ? 'text-brand-500' : 'text-slate-400'} `} />
                         <span className="text-ink font-medium text-sm">{feature}</span>
                       </li>
                     ))}
@@ -704,7 +701,7 @@ function Landing() {
                   {/* CTA Button */}
                   <Link
                     to={tier.href}
-                    className={`mt-4 block w-full text-center py-4 rounded-2xl font-black transition-all border-none ${tier.highlighted ? 'bg-brand-500 text-white shadow-btn-brand active:shadow-none active:translate-y-1 hover:bg-brand-400' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-b-4 border-slate-300 active:border-b-0 active:translate-y-1'}`}
+                    className={`mt - 4 block w - full text - center py - 4 rounded - 2xl font - black transition - all border - none ${tier.highlighted ? 'bg-brand-500 text-white shadow-btn-brand active:shadow-none active:translate-y-1 hover:bg-brand-400' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-b-4 border-slate-300 active:border-b-0 active:translate-y-1'} `}
                   >
                     {tier.cta}
                   </Link>
@@ -716,10 +713,10 @@ function Landing() {
       </section>
 
       {/* ── Stats ── */}
-      <section className="py-20 sm:py-24 px-4 bg-ink text-white">
+      <section className="py-20 sm:py-24 px-4 bg-brand-900 border-t-[8px] border-brand-800 text-white">
         <div
           ref={statsRef}
-          className={`reveal-scale ${statsVisible ? 'visible' : ''} max-w-6xl mx-auto`}
+          className={`reveal - scale ${statsVisible ? 'visible' : ''} max - w - 6xl mx - auto`}
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
@@ -742,7 +739,7 @@ function Landing() {
       {/* ── Testimonials ── */}
       <section className="py-20 sm:py-28 px-4 bg-surface">
         <div className="max-w-6xl mx-auto">
-          <div ref={testimonialRef} className={`reveal ${testimonialVisible ? 'visible' : ''} text-center mb-16`}>
+          <div ref={testimonialRef} className={`reveal ${testimonialVisible ? 'visible' : ''} text - center mb - 16`}>
             <span className="text-sm font-black text-amber-500 uppercase tracking-widest">{t('landing.testimonials.label')}</span>
             <h2 className="text-3xl sm:text-4xl font-black text-ink mt-3 mb-4">
               {t('landing.testimonials.title')}
@@ -755,10 +752,10 @@ function Landing() {
               <div
                 key={i}
                 ref={setTestimonialRef(i)}
-                className={`reveal-scale ${visibleTestimonials.has(i) ? 'visible' : ''} break-inside-avoid bg-white rounded-3xl p-8 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-shadow duration-300`}
+                className={`reveal - scale ${visibleTestimonials.has(i) ? 'visible' : ''} break-inside - avoid bg - white rounded - 3xl p - 8 border border - slate - 100 shadow - [0_8px_30px_rgb(0, 0, 0, 0.04)] hover: shadow - [0_8px_30px_rgb(0, 0, 0, 0.08)] transition - shadow duration - 300`}
               >
                 <div className="flex items-center gap-4 mb-6">
-                  <div className={`w-12 h-12 rounded-full ${t.color} flex items-center justify-center shadow-inner`}>
+                  <div className={`w - 12 h - 12 rounded - full ${t.color} flex items - center justify - center shadow - inner`}>
                     <span className="text-lg font-black text-white">{t.avatar}</span>
                   </div>
                   <div>
@@ -778,72 +775,30 @@ function Landing() {
         </div>
       </section>
 
-      {/* ── Mega Footer ── */}
-      <footer className="bg-ink text-white pt-32 pb-12 px-4 relative overflow-hidden">
-        {/* Abstract Background Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-brand-500/20 blur-[100px] rounded-full pointer-events-none" />
+      {/* ── Minimal Footer ── */}
+      <footer className="bg-slate-900 text-slate-300 py-12 px-6">
+        <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
+          <Link to="/" className="flex items-center gap-2 mb-6">
+            <span className="text-3xl font-black text-white tracking-tight">floraquiz<span className="text-brand-500">.</span></span>
+          </Link>
 
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div
-            ref={ctaRef}
-            className={`reveal-scale ${ctaVisible ? 'visible' : ''} text-center mb-32`}
-          >
-            <h2 className="text-5xl sm:text-7xl font-black mb-8 tracking-tight">
-              {t('landing.cta.title') || "Ready to accelerate your learning?"}
-            </h2>
-            <p className="text-xl text-slate-400 font-medium mb-12 max-w-2xl mx-auto leading-relaxed">
-              {t('landing.cta.subtitle') || "Join the elite students who are mastering subjects in half the time. Stop memorizing, start understanding."}
-            </p>
-            <div className="flex justify-center">
-              <Link to="/signup" className="magnetic-wrap group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-purple-600 rounded-full blur opacity-40 group-hover:opacity-100 transition duration-500"></div>
-                <button className="relative px-12 py-5 bg-white text-ink font-black text-lg rounded-full hover:scale-105 transition-transform duration-300 shadow-2xl flex items-center justify-center gap-3">
-                  {t('landing.cta.cta', 'Start Learning Free').toUpperCase()}
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </Link>
-            </div>
+          <p className="max-w-md mx-auto mb-8 font-medium">
+            Learn anything instantly. Just upload your notes, and we'll generate the perfect practice quizzes.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-6 mb-12 font-bold text-sm">
+            <Link to="/features" className="hover:text-white transition-colors">Features</Link>
+            <Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link>
+            <Link to="/about" className="hover:text-white transition-colors">About</Link>
+            <Link to="/contact" className="hover:text-white transition-colors">Contact</Link>
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
           </div>
 
-          {/* Clean Architectural Links */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20 p-12 bg-white/5 rounded-[3rem] border border-white/10 backdrop-blur-md">
-            <div className="col-span-2">
-              <Link to="/" className="flex items-center gap-2 mb-6">
-                <span className="text-3xl font-black text-white tracking-tight">floraquiz<span className="text-brand-500">.</span></span>
-              </Link>
-              <p className="text-slate-400 font-medium leading-relaxed max-w-sm">
-                The AI-powered platform designed for students who refuse to settle for average.
-              </p>
-            </div>
+          <div className="w-full h-px bg-slate-800 mb-8" />
 
-            <div>
-              <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-sm">Platform</h4>
-              <ul className="space-y-4">
-                <li><Link to="/features" className="text-slate-400 hover:text-white font-medium transition-colors">Features</Link></li>
-                <li><Link to="/pricing" className="text-slate-400 hover:text-white font-medium transition-colors">Pricing</Link></li>
-                <li><Link to="/ai-tutor" className="text-slate-400 hover:text-white font-medium transition-colors">AI Tutor</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-sm">Company</h4>
-              <ul className="space-y-4">
-                <li><Link to="/about" className="text-slate-400 hover:text-white font-medium transition-colors">About</Link></li>
-                <li><Link to="/blog" className="text-slate-400 hover:text-white font-medium transition-colors">Blog</Link></li>
-                <li><Link to="/contact" className="text-slate-400 hover:text-white font-medium transition-colors">Contact</Link></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row items-center justify-between border-t border-white/10 pt-8 mt-8">
-            <p className="text-slate-500 font-medium text-sm mb-4 md:mb-0">
-              © {new Date().getFullYear()} FloraQuiz. {t('landing.footer', 'All rights reserved.')}
-            </p>
-            <div className="flex gap-6">
-              <Link to="/privacy" className="text-slate-500 hover:text-white text-sm font-medium transition-colors">Privacy Policy</Link>
-              <Link to="/terms" className="text-slate-500 hover:text-white text-sm font-medium transition-colors">Terms of Service</Link>
-            </div>
-          </div>
+          <p className="text-xs font-semibold text-slate-500">
+            © {new Date().getFullYear()} FloraQuiz. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>

@@ -6,6 +6,7 @@ import { ArrowLeft, Check } from 'lucide-react';
 
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useTranslation } from 'react-i18next';
+import { SEO } from './SEO';
 
 function PricingPage() {
   const { t } = useTranslation();
@@ -81,6 +82,7 @@ function PricingPage() {
 
   return (
     <div className="min-h-screen bg-surface font-nunito">
+      <SEO title="FloraQuiz Pricing | Plans for Every Student" description="Upgrade to FloraQuiz Pro for unlimited AI quizzes, personalized tutoring, and priority support. Pick a plan that fits your study needs." />
 
       <div className="max-w-7xl mx-auto px-4 py-16">
         {/* Header */}
@@ -191,8 +193,8 @@ function PricingPage() {
                 </p>
                 {plan.features.map((feature, idx) => (
                   <div key={idx} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 text-pink-500 stroke-[4]" />
+                    <div className="w-5 h-5 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-brand-500 stroke-[4]" />
                     </div>
                     <span className="text-ink font-bold text-sm tracking-tight">{feature}</span>
                   </div>

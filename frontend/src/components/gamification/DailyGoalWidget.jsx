@@ -29,7 +29,7 @@ export const DailyGoalWidget = ({
       className={`rounded-xl p-4 border-2 transition-all ${
         isCompleted
           ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300'
-          : 'bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200'
+          : 'bg-gradient-to-br from-blue-50 to-brand-50 border-blue-200'
       }`}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}

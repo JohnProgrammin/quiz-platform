@@ -288,7 +288,7 @@ function Notes({ user }) {
                   {/* Progress bar */}
                   <div className="w-full max-w-[280px] mx-auto bg-violet-100 rounded-full h-2.5 overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-violet-400 to-indigo-500 rounded-full"
+                      className="h-full bg-gradient-to-r from-violet-400 to-slate-500 rounded-full"
                       initial={{ width: '0%' }}
                       animate={{ width: `${uploadProgress}%` }}
                       transition={{ ease: 'easeOut', duration: 0.3 }}
@@ -322,7 +322,7 @@ function Notes({ user }) {
 
           {/* Pro PPTX badge */}
           {!isPro && (
-            <div className="absolute top-3 right-3 flex items-center gap-1 bg-gradient-to-r from-violet-500 to-indigo-500 text-white text-xs font-black px-3 py-1.5 rounded-full cursor-pointer"
+            <div className="absolute top-3 right-3 flex items-center gap-1 bg-gradient-to-r from-violet-500 to-slate-500 text-white text-xs font-black px-3 py-1.5 rounded-full cursor-pointer"
               onClick={() => navigate('/pricing')}>
               <Crown className="w-3 h-3" /> Unlock PPTX
             </div>

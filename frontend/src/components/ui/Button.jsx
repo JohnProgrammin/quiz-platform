@@ -18,7 +18,7 @@ export const Button = ({
   const baseStyles = 'font-semibold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2';
 
   const variants = {
-    primary: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-lg focus:ring-purple-300',
+    primary: 'bg-gradient-to-r from-brand-500 to-brand-500 text-white hover:shadow-lg focus:ring-brand-300',
     secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-300',
     danger: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-300',
     ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-gray-300',
