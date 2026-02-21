@@ -181,7 +181,7 @@ function QuizResults({ user, onLogout }) {
             {getScoreMessage(percentage)}
           </h1>
           <p className="text-slate font-bold">
-            {latestAttempt?.score} out of {latestAttempt?.totalQuestions} correct
+            {latestAttempt?.score} {t('results.outOf') || 'out of'} {latestAttempt?.totalQuestions} {t('results.correctAnswers') || 'correct'}
           </p>
 
           {/* Stats row */}
@@ -318,7 +318,7 @@ function QuizResults({ user, onLogout }) {
                       {/* Show score if available (mostly for partially correct text answers) */}
                       {score !== undefined && score !== null && score !== 0 && score !== 100 && (
                         <span className="inline-block mt-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">
-                          Partial Credit: {score}%
+                          {t('results.partialCredit') || 'Partial Credit'}: {score}%
                         </span>
                       )}
                     </div>
@@ -328,14 +328,14 @@ function QuizResults({ user, onLogout }) {
                   {question.type === 'text' || question.type === 'free_text' ? (
                     <div className="ml-11 space-y-4">
                       <div className={`p-4 rounded-xl border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                        <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">Your Answer</p>
-                        <p className="font-semibold text-ink">{userValue || '(No answer provided)'}</p>
+                        <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{t('results.yourAnswer') || 'Your Answer'}</p>
+                        <p className="font-semibold text-ink">{userValue || (t('results.noAnswerProvided') || '(No answer provided)')}</p>
                       </div>
 
                       {!isCorrect && (
                         <div className="p-4 rounded-xl border-2 bg-slate-50 border-slate-200">
-                          <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">Model Answer</p>
-                          <p className="font-semibold text-slate">{question.sampleAnswer || question.correctAnswer || 'No model answer available'}</p>
+                          <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{t('results.modelAnswer') || 'Model Answer'}</p>
+                          <p className="font-semibold text-slate">{question.sampleAnswer || question.correctAnswer || (t('results.noModelAnswer') || 'No model answer available')}</p>
                         </div>
                       )}
 
@@ -343,7 +343,7 @@ function QuizResults({ user, onLogout }) {
                         <div className="p-4 rounded-xl border-2 bg-blue-50 border-blue-200 flex gap-3">
                           <Sparkles className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
                           <div>
-                            <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">AI Feedback</p>
+                            <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">{t('results.feedback') || 'AI Feedback'}</p>
                             <p className="text-blue-900 font-medium">{feedback}</p>
                           </div>
                         </div>
@@ -376,14 +376,14 @@ function QuizResults({ user, onLogout }) {
                             {isCorrectAnswer && (
                               <div className="flex items-center gap-1 text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
                                 <CheckCircle className="w-3.5 h-3.5" />
-                                <span className="hidden sm:inline">Correct Answer</span>
+                                <span className="hidden sm:inline">{t('results.correctAnswerKey') || 'Correct Answer'}</span>
                               </div>
                             )}
 
                             {isUserAnswer && !isCorrect && (
                               <div className="flex items-center gap-1 text-xs font-bold text-red-700 bg-red-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
                                 <XCircle className="w-3.5 h-3.5" />
-                                <span className="hidden sm:inline">Your Answer</span>
+                                <span className="hidden sm:inline">{t('results.yourAnswer') || 'Your Answer'}</span>
                               </div>
                             )}
                           </div>

@@ -198,18 +198,18 @@ function Notes({ user }) {
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-black text-ink">{t('notes.myNotes')}</h1>
-            <p className="text-slate font-bold mt-1">Upload a file → generate a quiz instantly</p>
+            <p className="text-slate font-bold mt-1">{t('notes.uploadFileDesc') || 'Upload a file → generate a quiz instantly'}</p>
           </div>
           <div className="flex items-center gap-2 bg-white border-2 border-border rounded-2xl px-3 sm:px-5 py-2 sm:py-3 scale-90 sm:scale-100 origin-right">
             {isFree ? (
               <>
                 <span className="text-2xl font-black text-ink">{notes.length}<span className="text-muted">/3</span></span>
-                <button onClick={() => navigate('/pricing')} className="btn-primary text-xs py-1.5 px-3 ml-2">Upgrade</button>
+                <button onClick={() => navigate('/pricing')} className="btn-primary text-xs py-1.5 px-3 ml-2">{t('subscription.upgrade') || 'Upgrade'}</button>
               </>
             ) : (
               <>
                 <span className="text-2xl font-black text-violet-500">∞</span>
-                <span className="text-xs font-black text-violet-500 ml-1">Unlimited</span>
+                <span className="text-xs font-black text-violet-500 ml-1">{t('subscription.unlimited') || 'Unlimited'}</span>
               </>
             )}
           </div>
@@ -242,7 +242,7 @@ function Notes({ user }) {
                     <Upload className={`w-9 h-9 ${dragOver ? 'text-violet-600' : 'text-violet-400'}`} />
                   </motion.div>
                   <p className="text-xl font-black text-ink mb-1">
-                    {dragOver ? '🎯 Drop it!' : 'Click or drag a file here'}
+                    {dragOver ? '🎯 ' + (t('notes.dropIt') || 'Drop it!') : (t('notes.clickOrDrag') || 'Click or drag a file here')}
                   </p>
                   <p className="text-sm font-bold text-muted">
                     PDF, TXT, MD, DOCX
@@ -275,7 +275,7 @@ function Notes({ user }) {
                     </motion.div>
                   </div>
 
-                  <p className="text-lg font-black text-ink mb-1">Uploading your note…</p>
+                  <p className="text-lg font-black text-ink mb-1">{t('notes.uploadingNote') || 'Uploading your note…'}</p>
                   <p className="text-xs font-bold text-muted mb-5 truncate max-w-[200px] mx-auto">{uploadedFileName}</p>
 
                   {/* Progress bar */}
@@ -303,10 +303,10 @@ function Notes({ user }) {
                     <CheckCircle2 className="w-10 h-10 text-green-500" />
                   </motion.div>
                   <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-xl font-black text-green-600">
-                    Note uploaded! 🎉
+                    {t('notes.uploadSuccess') || 'Note uploaded! 🎉'}
                   </motion.p>
                   <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }} className="text-sm font-bold text-muted mt-1">
-                    AI quiz is ready to generate
+                    {t('notes.aiQuizReady') || 'AI quiz is ready to generate'}
                   </motion.p>
                 </motion.div>
               )}
@@ -391,8 +391,8 @@ function Notes({ user }) {
                       className="btn-primary flex items-center gap-2 text-sm py-2 px-4 whitespace-nowrap"
                     >
                       {generatingQuiz === note.id
-                        ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating…</>
-                        : <><Sparkles className="w-4 h-4" /> Quiz it</>
+                        ? <><Loader2 className="w-4 h-4 animate-spin" /> {t('common.loading') || 'Generating…'}</>
+                        : <><Sparkles className="w-4 h-4" /> {t('notes.generateQuiz') || 'Quiz it'}</>
                       }
                     </button>
 

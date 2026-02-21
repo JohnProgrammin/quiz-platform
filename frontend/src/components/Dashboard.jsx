@@ -169,7 +169,7 @@ function Dashboard({ user, onLogout }) {
               <p className="text-lg text-slate font-bold mt-1">{t('dashboard.statistics')}</p>
             </div>
             <button onClick={() => navigate('/notes')} className="btn-primary flex items-center gap-2 whitespace-nowrap">
-              <Plus className="w-5 h-5" /> Upload Note
+              <Plus className="w-5 h-5" /> {t('notes.uploadFile') || 'Upload Note'}
             </button>
           </div>
         )}
@@ -191,9 +191,9 @@ function Dashboard({ user, onLogout }) {
                 </span>
               </div>
               <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-                Welcome back, {user.fullName?.split(' ')[0] || user.username}! ✨
+                {t('dashboard.welcome', { name: user.fullName?.split(' ')[0] || user.username })} ✨
               </h1>
-              <p className="text-white/80 font-bold mt-1">Enjoy unlimited quizzes, notes, and AI feedback.</p>
+              <p className="text-white/80 font-bold mt-1">{t('dashboard.couponDescription') || 'Enjoy unlimited quizzes, notes, and AI feedback'}.</p>
             </div>
             <div className="relative z-10 flex flex-col sm:flex-row gap-3">
               <button
@@ -202,13 +202,13 @@ function Dashboard({ user, onLogout }) {
                 className="inline-flex items-center gap-2 bg-white text-violet-700 font-black px-5 py-3 rounded-2xl hover:bg-violet-50 transition-all disabled:opacity-75"
                 style={{ boxShadow: '0 4px 0 #4c1d95' }}
               >
-                <Clock className="w-5 h-5" /> {startingReview ? 'Loading...' : 'Daily Review'}
+                <Clock className="w-5 h-5" /> {startingReview ? t('common.loading') : (t('results.weakness') || 'Daily Review')}
               </button>
               <button onClick={() => navigate('/notes')} className="inline-flex items-center gap-2 bg-white/20 text-white font-black px-5 py-3 rounded-2xl border border-white/30 hover:bg-white/30 transition-all">
-                <Plus className="w-5 h-5" /> Upload Note
+                <Plus className="w-5 h-5" /> {t('notes.uploadFile') || 'Upload Note'}
               </button>
               <button onClick={() => navigate('/ai-teaching')} className="inline-flex items-center gap-2 bg-white/20 text-white font-black px-5 py-3 rounded-2xl border border-white/30 hover:bg-white/30 transition-all">
-                <Sparkles className="w-5 h-5" /> AI Tutor
+                <Sparkles className="w-5 h-5" /> {t('navbar.aiTeaching') || 'AI Tutor'}
               </button>
             </div>
           </div>
@@ -233,9 +233,9 @@ function Dashboard({ user, onLogout }) {
                 </span>
               </div>
               <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-                Welcome back, {user.fullName?.split(' ')[0] || user.username}! 👑
+                {t('dashboard.welcome', { name: user.fullName?.split(' ')[0] || user.username })} 👑
               </h1>
-              <p className="text-white/80 font-bold mt-1">Full platform access — AI Teaching, custom quizzes, and more.</p>
+              <p className="text-white/80 font-bold mt-1">{t('dashboard.couponDescription') || 'Full platform access — AI Teaching, custom quizzes, and more.'}</p>
             </div>
             <div className="relative z-10 flex flex-col sm:flex-row gap-3">
               <button
@@ -244,13 +244,13 @@ function Dashboard({ user, onLogout }) {
                 className="inline-flex items-center gap-2 bg-white text-amber-700 font-black px-5 py-3 rounded-2xl hover:bg-amber-50 transition-all disabled:opacity-75"
                 style={{ boxShadow: '0 4px 0 #78350f' }}
               >
-                <Clock className="w-5 h-5" /> {startingReview ? 'Loading...' : 'Daily Mastery'}
+                <Clock className="w-5 h-5" /> {startingReview ? t('common.loading') : (t('results.weakness') || 'Daily Mastery')}
               </button>
               <button onClick={() => navigate('/ai-teaching')} className="inline-flex items-center gap-2 bg-white/20 text-white font-black px-5 py-3 rounded-2xl border border-white/30 hover:bg-white/30 transition-all">
-                <Sparkles className="w-5 h-5" /> AI Tutor
+                <Sparkles className="w-5 h-5" /> {t('navbar.aiTeaching') || 'AI Tutor'}
               </button>
               <button onClick={() => navigate('/notes')} className="inline-flex items-center gap-2 bg-white/20 text-white font-black px-5 py-3 rounded-2xl border border-white/30 hover:bg-white/30 transition-all">
-                <Plus className="w-5 h-5" /> Upload Note
+                <Plus className="w-5 h-5" /> {t('notes.uploadFile') || 'Upload Note'}
               </button>
             </div>
           </div>

@@ -108,7 +108,7 @@ function Quiz({ user, onLogout }) {
 
         <div className="flex flex-col items-center justify-center h-96">
           <Loader className="w-10 h-10 text-brand-500 animate-spin" />
-          <p className="text-slate font-bold mt-4">Loading quiz...</p>
+          <p className="text-slate font-bold mt-4">{t('quiz.loadingQuiz') || 'Loading quiz...'}</p>
         </div>
       </div>
     );
@@ -120,7 +120,7 @@ function Quiz({ user, onLogout }) {
 
         <div className="flex flex-col items-center justify-center h-96">
           <X className="w-16 h-16 text-danger mb-4" />
-          <p className="text-ink font-black text-2xl">Quiz not found or has no questions</p>
+          <p className="text-ink font-black text-2xl">{t('quiz.notFound') || 'Quiz not found or has no questions'}</p>
         </div>
       </div>
     );
@@ -137,7 +137,7 @@ function Quiz({ user, onLogout }) {
               <div className="w-12 h-12 rounded-lg bg-brand-50 flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-brand-500" />
               </div>
-              <h2 className="text-3xl font-black text-ink">Pre-Quiz Teaching</h2>
+              <h2 className="text-3xl font-black text-ink">{t('quiz.preQuizTeaching') || 'Pre-Quiz Teaching'}</h2>
             </div>
 
             <div className="mb-10">
@@ -145,7 +145,7 @@ function Quiz({ user, onLogout }) {
 
               {teaching.data?.keyPoints && (
                 <div className="bg-green-50 p-6 rounded-lg border border-green-300">
-                  <h3 className="font-black text-ink mb-4 text-lg">Key Concepts:</h3>
+                  <h3 className="font-black text-ink mb-4 text-lg">{t('quiz.keyConcepts') || 'Key Concepts:'}</h3>
                   <ul className="space-y-3">
                     {teaching.data.keyPoints.map((point, idx) => (
                       <li key={idx} className="flex gap-3">
@@ -162,7 +162,7 @@ function Quiz({ user, onLogout }) {
               onClick={() => setShowTeaching(false)}
               className="w-full inline-flex items-center justify-center px-8 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
             >
-              Start Quiz →
+              {t('quiz.startQuiz') || 'Start Quiz'} →
             </button>
           </div>
         </div>
@@ -191,7 +191,7 @@ function Quiz({ user, onLogout }) {
 
         {/* Question Card */}
         <div className="bg-white border border-gray-300 rounded-lg p-10 mb-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate mb-2">Question {currentQuestion + 1}</p>
+          <p className="text-lg font-semibold text-slate mb-2">{t('quiz.question', { current: currentQuestion + 1, total: quiz.questions.length }) || `Question ${currentQuestion + 1}`}</p>
           <h2 className="text-3xl font-black text-ink leading-tight">
             {question.question || question.text || question.q}
           </h2>
@@ -230,7 +230,7 @@ function Quiz({ user, onLogout }) {
             <textarea
               value={answers[currentQuestion] || ''}
               onChange={(e) => handleSelectAnswer(currentQuestion, e.target.value)}
-              placeholder="Type your answer here..."
+              placeholder={t('quiz.typeAnswerHere') || 'Type your answer here...'}
               className="w-full h-40 p-6 border-2 border-border rounded-2xl resize-none focus:border-violet-500 focus:outline-none transition-colors font-semibold text-lg"
             />
             <p className="text-sm font-semibold text-slate mt-3 text-right">{(answers[currentQuestion]?.length || 0).toLocaleString()} characters</p>
@@ -240,7 +240,7 @@ function Quiz({ user, onLogout }) {
         {/* Progress Section (Moved to Bottom) */}
         <div className="mb-8">
           <div className="flex items-end justify-between mb-2">
-            <span className="text-xs font-black text-slate uppercase tracking-wider">Question Progress</span>
+            <span className="text-xs font-black text-slate uppercase tracking-wider">{t('landing.demo.questionProgress') || 'Question Progress'}</span>
             <span className="text-sm font-black text-violet-600">{Math.round(progress)}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
@@ -260,7 +260,7 @@ function Quiz({ user, onLogout }) {
             disabled={currentQuestion === 0}
             className="flex-1 px-6 py-4 border border-gray-400 text-ink font-black rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            ← Previous
+            {t('quiz.previousQuestion') || '← Previous'}
           </button>
 
           {currentQuestion === quiz.questions.length - 1 ? (
@@ -269,21 +269,21 @@ function Quiz({ user, onLogout }) {
               disabled={submitting}
               className="flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60"
             >
-              {submitting ? 'Submitting...' : 'Submit Quiz'}
+              {submitting ? (t('common.loading') || 'Submitting...') : (t('quiz.submitQuiz') || 'Submit Quiz')}
             </button>
           ) : (
             <button
               onClick={handleNext}
               className="flex-1 px-6 py-4 bg-brand-500 text-white font-black rounded-lg hover:bg-brand-600 transition-colors"
             >
-              Next →
+              {t('quiz.nextQuestion') || 'Next →'}
             </button>
           )}
         </div>
 
         {/* Question Navigator */}
         <div className="bg-white border border-gray-300 rounded-lg p-6 shadow-sm">
-          <p className="text-sm font-black text-slate mb-4 uppercase tracking-wide">Jump to question</p>
+          <p className="text-sm font-black text-slate mb-4 uppercase tracking-wide">{t('quiz.jumpToQuestion') || 'Jump to question'}</p>
           <div className="flex flex-wrap gap-2">
             {quiz.questions.map((_, index) => (
               <button
