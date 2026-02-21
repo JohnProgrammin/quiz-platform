@@ -153,9 +153,9 @@ exports.enforceQuestionLimits = (req, res, next) => {
     req.body.questionCount = 10;
     req.body.questionType = 'mcq_only'; // Only MCQ
   } else {
-    // Pro/Premium: 10-30 variable
-    if (questionCount && questionCount < 10) {
-      req.body.questionCount = 10;
+    // Pro/Premium: 5-30 variable
+    if (questionCount && questionCount < 5) {
+      req.body.questionCount = 5;
     } else if (questionCount && questionCount > 30) {
       req.body.questionCount = 30;
     }

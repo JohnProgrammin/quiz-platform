@@ -51,6 +51,11 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
+  const language = localStorage.getItem('language');
+  if (language) {
+    config.headers['Accept-Language'] = language;
+  }
+
   // For FormData, don't set Content-Type (let axios/browser set it automatically with boundary)
   if (config.data instanceof FormData) {
     delete config.headers['Content-Type'];

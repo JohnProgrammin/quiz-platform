@@ -25,7 +25,7 @@ class AIService {
    * @param {string} tier - Subscription tier (free, pro, premium)
    * @returns {array} - Array of question objects
    */
-  async generateQuizQuestions(noteContent, questionCount = 10, tier = 'free') {
+  async generateQuizQuestions(noteContent, questionCount = 10, tier = 'free', language = 'en') {
     try {
       // Determine question types based on tier
       const questionTypes = tier === 'free'
@@ -36,6 +36,7 @@ class AIService {
 
 Generate exactly ${questionCount} quiz questions based on the following study notes.
 Make questions ${questionTypes}.
+IMPORTANT: You MUST generate all the questions and answers in this exact language code/locale: ${language}. (e.g. if 'yo', generate in Nigerian Pidgin English. If 'es', generate in Spanish).
 
 For multiple-choice questions: Include 4 options with exactly 1 correct answer.
 For free-text questions: Provide a sample answer and keywords to check.

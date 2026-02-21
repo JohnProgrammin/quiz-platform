@@ -12,6 +12,7 @@ exports.generateQuiz = async (req, res) => {
     console.log('\n🔵 generateQuiz called');
     const userId = req.user.id;
     const userTier = req.user?.subscription_tier || 'free';
+    const language = req.headers['accept-language'] || 'en';
     const { noteId, noteIds, questionCount } = req.body;
 
     // Support both single noteId and array of noteIds
@@ -70,7 +71,8 @@ exports.generateQuiz = async (req, res) => {
     const questions = await aiService.generateQuizQuestions(
       combinedContent,
       finalQuestionCount,
-      userTier
+      userTier,
+      language
     );
 
     console.log(`  ✓ AI generated ${questions?.length || 0} questions`);
@@ -131,6 +133,9 @@ exports.generateQuiz = async (req, res) => {
         text: q.text || q.question,
         type: q.type,
         options: q.type === 'mcq' ? q.options : undefined,
+        correctAnswer: q.correctAnswer,
+        sampleAnswer: q.sampleAnswer,
+        keywords: q.keywords,
       })),
     });
   } catch (error) {
@@ -213,6 +218,8 @@ exports.getQuiz = async (req, res) => {
           type: q.type || 'mcq',
           options: q.options || [],
           correctAnswer: q.correctAnswer !== undefined ? q.correctAnswer : q.correct_answer,
+          sampleAnswer: q.sampleAnswer,
+          keywords: q.keywords || [],
           explanation: q.explanation || '',
         })),
       },
