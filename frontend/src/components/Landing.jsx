@@ -319,31 +319,44 @@ function Landing() {
         </div>
       </nav>
 
-      {/* ── Hero ── */}
-      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-32 px-4 overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-green-100 rounded-full opacity-30 blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-100 rounded-full opacity-30 blur-3xl" />
+      {/* ── Premium Hero ── */}
+      <section className="relative pt-32 pb-20 sm:pt-48 sm:pb-32 px-4 overflow-hidden min-h-[90vh] flex flex-col justify-center">
+        {/* Animated Mesh Orbs */}
+        <div className="mesh-orb w-[600px] h-[600px] bg-brand-400/30 -top-40 -left-20" />
+        <div className="mesh-orb w-[500px] h-[500px] bg-purple-500/20 top-20 -right-20" style={{ animationDelay: '-5s' }} />
+        <div className="mesh-orb w-[800px] h-[800px] bg-blue-300/20 -bottom-60 left-1/2 -ml-[400px]" style={{ animationDelay: '-10s' }} />
 
         <div ref={heroRef} className={`reveal ${heroVisible ? 'visible' : ''}`}>
-          <div className="max-w-6xl mx-auto text-center relative z-10">
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-ink leading-tight mb-6">
+          <div className="max-w-6xl mx-auto text-center relative z-10 flex flex-col items-center">
+
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-border mb-8 shadow-sm">
+              <span className="flex h-2 w-2 rounded-full bg-brand-500 animate-pulse"></span>
+              <span className="text-xs font-bold tracking-wide text-slate uppercase">FloraQuiz 2.0 is Here</span>
+            </div>
+
+            <h1 className="text-display-hero text-ink mb-6">
               {t('landing.hero.title')}
               <br />
-              <span className="text-brand-500">{t('landing.hero.titleSpan')}</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-purple-600 to-brand-500">
+                {t('landing.hero.titleSpan')}
+              </span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-slate font-semibold max-w-2xl mx-auto mb-10 leading-relaxed">
+            <p className="text-lg sm:text-2xl text-slate font-medium max-w-3xl mx-auto mb-12 leading-relaxed">
               {t('landing.hero.subtitle')}
               <br />
-              <strong className="text-ink">{t('landing.hero.subtitleStrong')}</strong> — {t('landing.hero.subtitleCta')}
+              <strong className="text-ink font-bold">{t('landing.hero.subtitleStrong')}</strong> — {t('landing.hero.subtitleCta')}
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-              <Link to="/signup" className="btn-primary text-lg px-8 py-4">
-                {t('landing.hero.startLearning').toUpperCase()}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20 w-full max-w-md mx-auto sm:max-w-none">
+              <Link to="/signup" className="magnetic-wrap group w-full sm:w-auto">
+                <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-purple-600 rounded-[2rem] blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
+                <button className="relative w-full sm:w-auto px-10 py-5 bg-ink text-white font-black text-lg rounded-[2rem] hover:scale-105 transition-transform duration-300 shadow-xl flex items-center justify-center gap-3">
+                  {t('landing.hero.startLearning').toUpperCase()}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
               </Link>
-              <Link to="/login" className="btn-secondary text-lg px-8 py-4 flex items-center gap-2">
+              <Link to="/login" className="px-10 py-5 text-ink font-bold text-lg rounded-[2rem] hover:bg-slate-100 transition-colors duration-300 w-full sm:w-auto flex justify-center border border-transparent hover:border-border">
                 {t('landing.hero.alreadyHaveAccount').toUpperCase()}
               </Link>
             </div>
@@ -467,20 +480,74 @@ function Landing() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {features.map((feature, i) => (
-              <div
-                key={i}
-                ref={setFeatureRef(i)}
-                className={`reveal-scale ${visibleFeatures.has(i) ? 'visible' : ''} card p-8 hover:shadow-sm transition-shadow`}
-              >
-                <div className={`w-14 h-14 rounded-2xl ${feature.bg} flex items-center justify-center mb-5 ${feature.color}`}>
-                  {feature.icon}
+          <div className="bento-grid w-full">
+            {/* Bento Card 1 - Large Span */}
+            <div
+              ref={setFeatureRef(0)}
+              className={`reveal-scale ${visibleFeatures.has(0) ? 'visible' : ''} bento-card bento-col-span-2 sm:bento-row-span-2 p-10 flex flex-col justify-between`}
+            >
+              <div>
+                <div className={`w-16 h-16 rounded-2xl ${features[0].bg} flex items-center justify-center mb-6 ${features[0].color} shadow-sm border border-white/50`}>
+                  {features[0].icon}
                 </div>
-                <h3 className="text-xl font-extrabold text-ink mb-2">{feature.title}</h3>
-                <p className="text-slate font-semibold leading-relaxed">{feature.description}</p>
+                <h3 className="text-3xl font-black text-ink mb-3">{features[0].title}</h3>
+                <p className="text-slate text-lg font-medium leading-relaxed max-w-md">{features[0].description}</p>
               </div>
-            ))}
+
+              {/* Abstract Graphic Element for Premium Feel */}
+              <div className="mt-10 h-48 rounded-2xl bg-gradient-to-tr from-green-50 to-emerald-100/50 border border-green-200/50 flex items-center justify-center overflow-hidden relative">
+                <div className="absolute w-64 h-64 bg-green-400/20 blur-3xl rounded-full" />
+                <div className="glass-panel px-6 py-4 rounded-xl flex items-center gap-4 animate-float">
+                  <span className="text-2xl">🌱</span>
+                  <div>
+                    <div className="h-2 w-24 bg-slate-200 rounded-full mb-2"></div>
+                    <div className="h-2 w-16 bg-slate-200 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bento Card 2 */}
+            <div
+              ref={setFeatureRef(1)}
+              className={`reveal-scale ${visibleFeatures.has(1) ? 'visible' : ''} bento-card p-8 flex flex-col justify-between`}
+            >
+              <div>
+                <div className={`w-14 h-14 rounded-2xl ${features[1].bg} flex items-center justify-center mb-6 ${features[1].color} shadow-sm border border-white/50`}>
+                  {features[1].icon}
+                </div>
+                <h3 className="text-2xl font-black text-ink mb-2">{features[1].title}</h3>
+                <p className="text-slate font-medium leading-relaxed">{features[1].description}</p>
+              </div>
+              <div className="mt-8 h-32 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 relative overflow-hidden flex items-end">
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNFMEU3RkYiLz48L3N2Zz4=')] opacity-50" />
+                <div className="w-full h-1/2 bg-gradient-to-t from-blue-500/10 to-transparent" />
+              </div>
+            </div>
+
+            {/* Bento Card 3 */}
+            <div
+              ref={setFeatureRef(2)}
+              className={`reveal-scale ${visibleFeatures.has(2) ? 'visible' : ''} bento-card p-8 bg-gradient-to-br from-amber-500 to-orange-400 text-white`}
+            >
+              <div className={`w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-6 text-white border border-white/30`}>
+                {features[2].icon}
+              </div>
+              <h3 className="text-2xl font-black mb-2 drop-shadow-sm">{features[2].title}</h3>
+              <p className="text-white/90 font-medium leading-relaxed">{features[2].description}</p>
+
+              <div className="mt-8 relative">
+                <div className="glass-panel border-white/20 p-4 rounded-xl">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-bold text-slate/80">Mastery</span>
+                    <span className="text-xs font-black text-brand-500">98%</span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-1.5">
+                    <div className="bg-brand-500 h-1.5 rounded-full w-[98%]" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -498,27 +565,74 @@ function Landing() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {steps.map((step, i) => (
-              <div
-                key={i}
-                ref={setStepRef(i)}
-                className={`reveal ${visibleSteps.has(i) ? 'visible' : ''} text-center relative`}
-              >
-                {/* Connector line */}
-                {i < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-surface" />
-                )}
-                <div className={`w-20 h-20 rounded-full ${step.color} flex items-center justify-center mx-auto mb-6 text-white relative z-10`}>
-                  {step.icon}
+          <div className="flex flex-col lg:flex-row gap-16 relative items-start">
+            {/* Left Column: Scrolling Steps */}
+            <div className="w-full lg:w-1/2 space-y-12 sm:space-y-24 py-10 lg:py-20">
+              {steps.map((step, i) => (
+                <div
+                  key={i}
+                  ref={setStepRef(i)}
+                  className={`reveal ${visibleSteps.has(i) ? 'visible' : ''} flex gap-6 sm:gap-8 group`}
+                >
+                  {/* Vertical Progress Line Logic Container */}
+                  <div className="relative flex flex-col items-center">
+                    <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ${step.color} flex items-center justify-center text-white relative z-10 shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                      {step.icon}
+                    </div>
+                    {i < steps.length - 1 && (
+                      <div className="w-0.5 h-full bg-slate-200 mt-4 absolute top-16 bottom-[-2rem]" />
+                    )}
+                  </div>
+
+                  <div className="pt-2">
+                    <div className="inline-flex items-center gap-2 mb-3">
+                      <span className="text-sm font-black text-brand-500 bg-brand-50 px-3 py-1 rounded-full uppercase tracking-widest">Step {step.number}</span>
+                    </div>
+                    <h3 className="text-2xl sm:text-3xl font-black text-ink mb-4">{step.title}</h3>
+                    <p className="text-slate text-lg font-medium leading-relaxed max-w-sm">{step.description}</p>
+                  </div>
                 </div>
-                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface border-2 border-border text-sm font-black text-slate -mt-3 mb-4">
-                  {step.number}
+              ))}
+            </div>
+
+            {/* Right Column: Sticky Visuals container */}
+            <div className="hidden lg:block w-1/2 sticky top-32 h-[600px] bg-slate-50 border border-slate-200 rounded-[3rem] overflow-hidden shadow-2xl p-8">
+              <div className="w-full h-full relative rounded-2xl bg-gradient-to-br from-indigo-100 via-purple-50 to-brand-50 flex items-center justify-center">
+
+                {/* Floating abstract UI elements representing the platform */}
+                <div className="glass-panel w-64 h-80 absolute animate-float shadow-2xl rounded-2xl overflow-hidden border border-white/60 z-20">
+                  <div className="w-full h-12 border-b border-border/50 bg-white/50 flex items-center px-4 gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    <div className="h-4 w-3/4 bg-slate-200 rounded-full"></div>
+                    <div className="h-4 w-full bg-slate-200 rounded-full"></div>
+                    <div className="h-4 w-5/6 bg-slate-200 rounded-full"></div>
+                    <div className="h-4 w-1/2 bg-slate-200 rounded-full"></div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-extrabold text-ink mb-2">{step.title}</h3>
-                <p className="text-slate font-semibold max-w-xs mx-auto leading-relaxed">{step.description}</p>
+
+                <div className="glass-panel w-48 h-48 absolute top-20 -right-10 animate-float shadow-xl rounded-2xl border border-white/60 z-10 bg-white/60" style={{ animationDelay: '1s' }}>
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+                    <Sparkles className="w-10 h-10 text-brand-500" />
+                    <div className="h-2 w-20 bg-slate-200 rounded-full"></div>
+                  </div>
+                </div>
+
+                <div className="glass-panel w-56 h-32 absolute bottom-20 -left-12 animate-float shadow-xl rounded-xl border border-white/60 z-30 flex items-center px-6" style={{ animationDelay: '2s' }}>
+                  <div className="flex gap-4 items-center w-full">
+                    <CheckCircle className="w-8 h-8 text-green-500" />
+                    <div className="flex-1">
+                      <div className="h-3 w-full bg-slate-200 rounded-full mb-2"></div>
+                      <div className="h-3 w-1/2 bg-slate-200 rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
@@ -536,67 +650,69 @@ function Landing() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto items-center">
             {pricingTiers.map((tier, i) => (
               <div
                 key={i}
                 ref={setPricingRef(i)}
-                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} rounded-2xl p-8 transition-all hover:shadow-sm ${tier.bg} ${tier.border} ${tier.highlighted ? 'md:scale-105 shadow-xl' : ''
-                  }`}
+                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} ${tier.highlighted ? 'border-flow rounded-3xl z-10' : 'rounded-3xl z-0'}`}
               >
-                {/* Badge */}
-                {tier.badge && (
-                  <div className="flex justify-center mb-4">
-                    <div className="inline-flex items-center gap-1 bg-brand-500 text-white px-3 py-1 rounded-full text-xs font-black">
-                      ⭐ {tier.badge}
-                    </div>
-                  </div>
-                )}
-
-                {/* Icon */}
-                <div className={`w-12 h-12 rounded-2xl ${tier.bg} flex items-center justify-center mx-auto mb-4 ${tier.color}`}>
-                  {tier.icon}
-                </div>
-
-                {/* Tier name */}
-                <h3 className="text-2xl font-extrabold text-ink text-center mb-2">{tier.name}</h3>
-                <p className="text-slate font-semibold text-center text-sm mb-6">{tier.description}</p>
-
-                {/* Price */}
-                <div className="text-center mb-6">
-                  <div className="text-4xl font-black text-ink">
-                    {tier.price}
-                    {tier.period && <span className="text-lg text-slate">{tier.period}</span>}
-                  </div>
-                  {tier.nairaPrice && (
-                    <div className="mt-1.5">
-                      <span className="inline-flex items-center gap-1 bg-green-50 border border-green-200 text-green-700 text-sm font-black px-3 py-1 rounded-full">
-                        🇳🇬 {tier.nairaPrice}/mo
-                      </span>
+                <div className={`relative p-8 h-full rounded-3xl transition-transform duration-500 bg-white ${tier.highlighted ? 'glass-panel md:scale-105 shadow-2xl m-[2px]' : 'border border-slate-200 hover:shadow-xl'}`}>
+                  {/* Badge */}
+                  {tier.badge && (
+                    <div className="absolute -top-4 left-0 right-0 flex justify-center">
+                      <div className="inline-flex items-center gap-1.5 bg-brand-500 text-white px-4 py-1.5 rounded-full text-xs font-black shadow-lg">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        {tier.badge}
+                      </div>
                     </div>
                   )}
-                  {tier.nairaPrice && (
-                    <p className="text-[11px] text-muted mt-1.5 font-semibold">{t('pricing.payInNairaInfo') || 'Pay in Naira · Billed monthly'}</p>
-                  )}
+
+                  {/* Icon */}
+                  <div className={`w-14 h-14 rounded-2xl ${tier.bg} flex items-center justify-center mb-6 ${tier.color} shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-slate-100`}>
+                    {tier.icon}
+                  </div>
+
+                  {/* Tier name */}
+                  <h3 className="text-2xl font-black text-ink mb-2">{tier.name}</h3>
+                  <p className="text-slate font-medium text-sm mb-6 h-10">{tier.description}</p>
+
+                  {/* Price */}
+                  <div className="mb-8">
+                    <div className="text-5xl font-black text-ink tracking-tight flex items-baseline">
+                      {tier.price}
+                      {tier.period && <span className="text-lg font-bold text-slate ml-1 tracking-normal">{tier.period}</span>}
+                    </div>
+                    {tier.nairaPrice && (
+                      <div className="mt-3">
+                        <span className="inline-flex items-center gap-1.5 bg-green-50/80 border border-green-200 text-green-700 text-sm font-black px-4 py-1.5 rounded-full">
+                          🇳🇬 {tier.nairaPrice}/mo
+                        </span>
+                        <p className="text-xs text-slate mt-2 font-medium">{t('pricing.payInNairaInfo') || 'Pay in Naira · Billed monthly'}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="w-full h-px bg-slate-100 mb-8" />
+
+                  {/* Features */}
+                  <ul className="space-y-4 mb-10">
+                    {tier.features.map((feature, j) => (
+                      <li key={j} className="flex items-start gap-3">
+                        <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${tier.highlighted ? 'text-brand-500' : 'text-slate-400'}`} />
+                        <span className="text-ink font-medium text-sm">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA Button */}
+                  <Link
+                    to={tier.href}
+                    className={`block w-full text-center py-4 rounded-2xl font-black transition-all ${tier.highlighted ? 'bg-ink text-white shadow-xl hover:-translate-y-1' : 'bg-surface text-ink hover:bg-slate-100'}`}
+                  >
+                    {tier.cta}
+                  </Link>
                 </div>
-
-                {/* Features */}
-                <ul className="space-y-3 mb-8">
-                  {tier.features.map((feature, j) => (
-                    <li key={j} className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-brand-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-slate font-semibold text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA Button */}
-                <Link
-                  to={tier.href}
-                  className={tier.highlighted ? 'btn-primary w-full justify-center' : 'btn-secondary w-full justify-center'}
-                >
-                  {tier.cta}
-                </Link>
               </div>
             ))}
           </div>
@@ -637,62 +753,102 @@ function Landing() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Premium Masonry Wall of Love */}
+          <div className="columns-1 md:columns-3 gap-6 space-y-6">
             {testimonials.map((t, i) => (
               <div
                 key={i}
                 ref={setTestimonialRef(i)}
-                className={`reveal-scale ${visibleTestimonials.has(i) ? 'visible' : ''} card p-6`}
+                className={`reveal-scale ${visibleTestimonials.has(i) ? 'visible' : ''} break-inside-avoid bg-white rounded-3xl p-8 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-shadow duration-300`}
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-11 h-11 rounded-full ${t.color} flex items-center justify-center`}>
-                    <span className="text-sm font-black text-white">{t.avatar}</span>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className={`w-12 h-12 rounded-full ${t.color} flex items-center justify-center shadow-inner`}>
+                    <span className="text-lg font-black text-white">{t.avatar}</span>
                   </div>
                   <div>
-                    <div className="font-extrabold text-ink">{t.name}</div>
-                    <div className="text-sm font-bold text-slate">{t.role}</div>
+                    <div className="font-black text-ink">{t.name}</div>
+                    <div className="text-sm font-semibold text-slate/70">{t.role}</div>
                   </div>
                 </div>
-                <div className="flex gap-1 mb-3">
+                <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="w-4 h-4 text-warning fill-warning" />
+                    <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />
                   ))}
                 </div>
-                <p className="text-slate font-semibold leading-relaxed">"{t.text}"</p>
+                <p className="text-ink font-medium leading-relaxed">"{t.text}"</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA ── */}
-      <section className="py-20 sm:py-28 px-4 bg-white">
-        <div
-          ref={ctaRef}
-          className={`reveal-scale ${ctaVisible ? 'visible' : ''} max-w-3xl mx-auto text-center`}
-        >
-          <h2 className="text-3xl sm:text-5xl font-black text-ink mb-4">
-            {t('landing.cta.title')}
-          </h2>
-          <p className="text-lg text-slate font-semibold mb-8 max-w-lg mx-auto">
-            {t('landing.cta.subtitle')}
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/signup" className="btn-primary text-lg px-10 py-4">
-              {t('landing.cta.cta').toUpperCase()}
-            </Link>
+      {/* ── Mega Footer ── */}
+      <footer className="bg-ink text-white pt-32 pb-12 px-4 relative overflow-hidden">
+        {/* Abstract Background Glows */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-brand-500/20 blur-[100px] rounded-full pointer-events-none" />
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div
+            ref={ctaRef}
+            className={`reveal-scale ${ctaVisible ? 'visible' : ''} text-center mb-32`}
+          >
+            <h2 className="text-5xl sm:text-7xl font-black mb-8 tracking-tight">
+              {t('landing.cta.title') || "Ready to accelerate your learning?"}
+            </h2>
+            <p className="text-xl text-slate-400 font-medium mb-12 max-w-2xl mx-auto leading-relaxed">
+              {t('landing.cta.subtitle') || "Join the elite students who are mastering subjects in half the time. Stop memorizing, start understanding."}
+            </p>
+            <div className="flex justify-center">
+              <Link to="/signup" className="magnetic-wrap group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-purple-600 rounded-full blur opacity-40 group-hover:opacity-100 transition duration-500"></div>
+                <button className="relative px-12 py-5 bg-white text-ink font-black text-lg rounded-full hover:scale-105 transition-transform duration-300 shadow-2xl flex items-center justify-center gap-3">
+                  {t('landing.cta.cta', 'Start Learning Free').toUpperCase()}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Clean Architectural Links */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20 p-12 bg-white/5 rounded-[3rem] border border-white/10 backdrop-blur-md">
+            <div className="col-span-2">
+              <Link to="/" className="flex items-center gap-2 mb-6">
+                <span className="text-3xl font-black text-white tracking-tight">floraquiz<span className="text-brand-500">.</span></span>
+              </Link>
+              <p className="text-slate-400 font-medium leading-relaxed max-w-sm">
+                The AI-powered platform designed for students who refuse to settle for average.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-sm">Platform</h4>
+              <ul className="space-y-4">
+                <li><Link to="/features" className="text-slate-400 hover:text-white font-medium transition-colors">Features</Link></li>
+                <li><Link to="/pricing" className="text-slate-400 hover:text-white font-medium transition-colors">Pricing</Link></li>
+                <li><Link to="/ai-tutor" className="text-slate-400 hover:text-white font-medium transition-colors">AI Tutor</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-sm">Company</h4>
+              <ul className="space-y-4">
+                <li><Link to="/about" className="text-slate-400 hover:text-white font-medium transition-colors">About</Link></li>
+                <li><Link to="/blog" className="text-slate-400 hover:text-white font-medium transition-colors">Blog</Link></li>
+                <li><Link to="/contact" className="text-slate-400 hover:text-white font-medium transition-colors">Contact</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-between border-t border-white/10 pt-8 mt-8">
+            <p className="text-slate-500 font-medium text-sm mb-4 md:mb-0">
+              © {new Date().getFullYear()} FloraQuiz. {t('landing.footer', 'All rights reserved.')}
+            </p>
+            <div className="flex gap-6">
+              <Link to="/privacy" className="text-slate-500 hover:text-white text-sm font-medium transition-colors">Privacy Policy</Link>
+              <Link to="/terms" className="text-slate-500 hover:text-white text-sm font-medium transition-colors">Terms of Service</Link>
+            </div>
           </div>
         </div>
-      </section>
-
-      {/* ── Footer ── */}
-      <footer className="py-8 px-4 bg-ink text-center">
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <span className="text-lg font-extrabold text-brand-500">floraquiz</span>
-        </div>
-        <p className="text-slate font-semibold text-sm">
-          {t('landing.footer')}
-        </p>
       </footer>
     </div>
   );
