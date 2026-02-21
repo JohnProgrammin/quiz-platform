@@ -141,6 +141,13 @@
     "attempts": "Tries",
     "best": "Best",
     "average": "Average",
+    "outOf": "inside",
+    "correctAnswerKey": "The Real Answer",
+    "partialCredit": "Half Mark",
+    "yourAnswer": "Your Answer",
+    "noAnswerProvided": "(You no write anything)",
+    "modelAnswer": "Oga Answer",
+    "noModelAnswer": "No answer guide dey",
     "aiFeatureUpgrade": "AI advice (Enter Pro)",
     "aiFeatureDescription": "Make AI tell you where you dey fall hand, so you fit master am.",
     "upgradeToProBtn": "Enter Pro Level",
@@ -216,7 +223,9 @@
       "good": "You try",
       "fair": "Fair",
       "needsWork": "You need help"
-    }
+    },
+    "exportComingSoon": "PDF Export dey come soon!",
+    "exportPdf": "Download PDF"
   },
   "subscription": {
     "subscription": "Subscription",

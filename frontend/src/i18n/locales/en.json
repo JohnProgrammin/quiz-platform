@@ -141,6 +141,13 @@
     "attempts": "Attempts",
     "best": "Best",
     "average": "Average",
+    "outOf": "out of",
+    "correctAnswerKey": "Correct Answer",
+    "partialCredit": "Partial Credit",
+    "yourAnswer": "Your Answer",
+    "noAnswerProvided": "(No answer provided)",
+    "modelAnswer": "Model Answer",
+    "noModelAnswer": "No model answer available",
     "aiFeatureUpgrade": "AI Feedback (Upgrade to Pro)",
     "aiFeatureDescription": "Get personalized AI feedback, identify weak topics, and generate focused mastery quizzes.",
     "upgradeToProBtn": "Upgrade to Pro",
@@ -216,7 +223,9 @@
       "good": "Good",
       "fair": "Fair",
       "needsWork": "Needs Work"
-    }
+    },
+    "exportComingSoon": "PDF Export coming soon!",
+    "exportPdf": "Export PDF"
   },
   "subscription": {
     "subscription": "Subscription",
