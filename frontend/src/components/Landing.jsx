@@ -8,6 +8,7 @@ import {
   BookOpen, BarChart3, ArrowRight, CheckCircle, Star,
   Users, FileText, Shield, Crown, Gift, Wand2
 } from 'lucide-react';
+import LiquidGlassCarousel from './LiquidGlassCarousel';
 
 function AnimatedCounter({ end, duration = 2000, suffix = '', isVisible }) {
   const [count, setCount] = useState(0);
@@ -345,6 +346,14 @@ function Landing() {
               <Link to="/login" className="btn-secondary text-lg px-8 py-4 flex items-center gap-2">
                 {t('landing.hero.alreadyHaveAccount').toUpperCase()}
               </Link>
+            </div>
+
+            {/* Social Proof & Liquid Glass Carousel */}
+            <div className="w-full flex flex-col items-center justify-center mb-24">
+              <p className="text-sm sm:text-base font-bold text-slate/80 tracking-wide uppercase mb-2">
+                Join over 500+ people who are learning with FloraQuiz
+              </p>
+              <LiquidGlassCarousel />
             </div>
 
             {/* Animated quiz demo with premium motion graphics */}
