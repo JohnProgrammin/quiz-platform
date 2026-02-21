@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import SubscriptionManager from './SubscriptionManager';
 import BillingHistory from './BillingHistory';
 import { getProfile, updateProfile } from '../api';
-import { User, Mail, FileText, Loader } from 'lucide-react';
+import { User, Mail, FileText, Loader, Key, MessageSquare, Crown } from 'lucide-react';
+import { useSubscription } from '../contexts/SubscriptionContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function Profile({ user, setUser, onLogout }) {
   const { t } = useTranslation();
@@ -15,6 +17,17 @@ function Profile({ user, setUser, onLogout }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const { isPremium } = useSubscription();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+  };
 
   useEffect(() => {
     loadProfile();
@@ -61,20 +74,21 @@ function Profile({ user, setUser, onLogout }) {
   }
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-8">
-      <div className="mb-8">
+    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="max-w-xl mx-auto px-4 py-8">
+      <motion.div variants={itemVariants} className="mb-8">
         <h1 className="text-2xl font-extrabold text-ink">Profile</h1>
         <p className="text-slate font-semibold mt-1">Manage your account</p>
-      </div>
+      </motion.div>
 
       {/* Avatar */}
-      <div className="flex justify-center mb-8">
-        <div className="w-24 h-24 rounded-full bg-warning flex items-center justify-center">
+      <motion.div variants={itemVariants} className="flex justify-center mb-8">
+        <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-brand-400 to-purple-500 shadow-xl flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
           <span className="text-4xl font-black text-white">{user.username[0].toUpperCase()}</span>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="card">
+      <motion.div variants={itemVariants} className="card relative overflow-hidden">
+        <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-brand-400 to-purple-500" />
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {message && (
             <div
@@ -146,18 +160,52 @@ function Profile({ user, setUser, onLogout }) {
             {saving ? 'SAVING...' : 'SAVE CHANGES'}
           </button>
         </form>
-      </div>
+      </motion.div>
 
-      <div className="mt-8">
+      <motion.div variants={itemVariants} className="mt-12">
         <h2 className="text-xl font-extrabold text-ink mb-4">Subscription</h2>
         <SubscriptionManager />
-      </div>
+      </motion.div>
 
-      <div className="mt-8">
+      <motion.div variants={itemVariants} className="mt-8">
         <h2 className="text-xl font-extrabold text-ink mb-4">Billing History</h2>
         <BillingHistory />
-      </div>
-    </div>
+      </motion.div>
+
+      {
+        isPremium && (
+          <>
+            <motion.div variants={itemVariants} className="mt-8">
+              <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+                <Key className="w-5 h-5 text-brand-500" /> API Keys <Crown className="w-4 h-4 text-gold mb-1" />
+              </h2>
+              <div className="card p-6 border-2 border-brand-200 bg-brand-50/50 hover:bg-white transition-colors">
+                <p className="text-sm font-semibold text-slate mb-4 leading-relaxed">
+                  Generate API keys to programmatically interact with Quizzer via your own applications and scripts.
+                </p>
+                <button className="btn-primary py-2 px-5 text-sm" onClick={() => alert('API Key generation via Profile coming soon! Please email support.')}>
+                  Generate New Key
+                </button>
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="mt-8">
+              <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-purple-500" /> Priority Support <Crown className="w-4 h-4 text-gold mb-1" />
+              </h2>
+              <div className="card p-6 border-2 border-purple-200 bg-purple-50/50 hover:bg-white transition-colors">
+                <p className="text-sm font-semibold text-slate mb-4 leading-relaxed">
+                  As a Premium member, you get absolute priority 24/7 access to our dedicated engineering support team.
+                </p>
+                <button className="btn-accent py-2 px-5 text-sm" onClick={() => alert('Opening priority chat widget...')}>
+                  Contact Support
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )
+      }
+    </motion.div >
   );
 }
 

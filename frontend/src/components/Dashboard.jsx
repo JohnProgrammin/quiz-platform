@@ -13,6 +13,25 @@ import {
   Flame, Zap, Sparkles, Plus, Crown, Clock
 } from 'lucide-react';
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { type: 'spring', stiffness: 300, damping: 24 }
+  }
+};
+
 function Dashboard({ user, onLogout }) {
   const { t } = useTranslation();
   const [stats, setStats] = useState({
@@ -149,14 +168,17 @@ function Dashboard({ user, onLogout }) {
       bg: 'bg-amber-50'
     },
   ];
-
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <motion.div
+      className="max-w-5xl mx-auto px-4 sm:px-6 py-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
 
       {/* ── Hero Greeting ── */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        variants={itemVariants}
         className="mb-8"
       >
         {/* FREE tier: plain white card */}
@@ -375,7 +397,7 @@ function Dashboard({ user, onLogout }) {
           </div>
         )}
       </motion.div>
-    </div >
+    </motion.div>
   );
 }
 

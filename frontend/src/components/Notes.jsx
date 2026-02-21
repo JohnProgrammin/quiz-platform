@@ -31,6 +31,8 @@ function Notes({ user }) {
   const [uploading, setUploading] = useState(false);
   const [generatingQuiz, setGeneratingQuiz] = useState(null);
   const [questionCount, setQuestionCount] = useState(15);
+  const [difficulty, setDifficulty] = useState('standard');
+  const [questionType, setQuestionType] = useState('mixed');
   const [showQuotaModal, setShowQuotaModal] = useState(false);
   const [quotaError, setQuotaError] = useState(null);
   const [dragOver, setDragOver] = useState(false);
@@ -166,7 +168,12 @@ function Notes({ user }) {
   const handleGenerateQuiz = async (noteId) => {
     setGeneratingQuiz(noteId);
     try {
-      const response = await generateQuiz({ noteId, questionCount });
+      const payload = { noteId, questionCount };
+      if (isPremium) {
+        payload.difficulty = difficulty;
+        payload.questionType = questionType;
+      }
+      const response = await generateQuiz(payload);
       if (!response.data?.id) throw new Error('Invalid response from server');
       navigate(`/quiz/${response.data.id}`);
     } catch (error) {
@@ -371,7 +378,33 @@ function Notes({ user }) {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 flex-shrink-0 w-full sm:w-auto justify-end">
+                  <div className="flex flex-col sm:flex-row items-center gap-3 flex-shrink-0 w-full sm:w-auto justify-end">
+
+                    {/* Custom Quiz Settings (Premium Only) */}
+                    {isPremium && (
+                      <div className="hidden lg:flex items-center gap-2 bg-amber-50/50 px-3 py-1.5 rounded-xl border border-gold/30 shadow-sm">
+                        <select
+                          value={difficulty}
+                          onChange={(e) => setDifficulty(e.target.value)}
+                          className="text-xs font-black text-amber-900 bg-transparent outline-none cursor-pointer"
+                        >
+                          <option value="easy">Easy</option>
+                          <option value="standard">Standard</option>
+                          <option value="hard">Hard</option>
+                        </select>
+                        <span className="text-gold/40">|</span>
+                        <select
+                          value={questionType}
+                          onChange={(e) => setQuestionType(e.target.value)}
+                          className="text-xs font-black text-amber-900 bg-transparent outline-none cursor-pointer"
+                        >
+                          <option value="mixed">Mixed Types</option>
+                          <option value="mcq">Multiple Choice</option>
+                          <option value="open">Open Ended</option>
+                        </select>
+                      </div>
+                    )}
+
                     {/* Question count slider (Pro only) */}
                     {isPro && (
                       <div className="hidden md:flex items-center gap-2 bg-surface px-3 py-2 rounded-xl border border-border">
@@ -379,30 +412,32 @@ function Notes({ user }) {
                         <input
                           type="range" min="5" max="30" value={questionCount}
                           onChange={(e) => setQuestionCount(parseInt(e.target.value))}
-                          className="w-20 accent-violet-500"
+                          className="w-20 accent-violet-500 cursor-pointer"
                         />
                         <span className="text-xs text-muted">Qs</span>
                       </div>
                     )}
 
-                    <button
-                      onClick={() => handleGenerateQuiz(note.id)}
-                      disabled={!!generatingQuiz}
-                      className="btn-primary flex items-center gap-2 text-sm py-2 px-4 whitespace-nowrap"
-                    >
-                      {generatingQuiz === note.id
-                        ? <><Loader2 className="w-4 h-4 animate-spin" /> {t('common.loading') || 'Generating…'}</>
-                        : <><Sparkles className="w-4 h-4" /> {t('notes.generateQuiz') || 'Quiz it'}</>
-                      }
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleGenerateQuiz(note.id)}
+                        disabled={!!generatingQuiz}
+                        className="btn-primary flex items-center gap-2 text-sm py-2 px-4 whitespace-nowrap"
+                      >
+                        {generatingQuiz === note.id
+                          ? <><Loader2 className="w-4 h-4 animate-spin" /> {t('common.loading') || 'Generating…'}</>
+                          : <><Sparkles className="w-4 h-4" /> {t('notes.generateQuiz') || 'Quiz it'}</>
+                        }
+                      </button>
 
-                    <button
-                      onClick={() => handleDeleteNote(note.id)}
-                      className="p-2.5 rounded-xl text-muted hover:text-heart hover:bg-red-50 transition-all"
-                      title="Delete note"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                      <button
+                        onClick={() => handleDeleteNote(note.id)}
+                        className="p-2.5 rounded-xl text-muted hover:text-heart hover:bg-red-50 transition-all border-2 border-transparent hover:border-heart/20"
+                        title="Delete note"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               ))}

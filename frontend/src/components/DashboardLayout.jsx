@@ -143,6 +143,14 @@ function DashboardLayout({ user, onLogout, children }) {
 
             {/* ── Main Content ── */}
             <main className={`sidebar-content main-content ${expanded ? 'sidebar-expanded-content' : ''}`}>
+
+                {/* Global Glowing Background Elements */}
+                <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
+                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-400 rounded-full blur-[120px] opacity-[0.08]" />
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-violet-600 rounded-full blur-[150px] opacity-[0.05]" />
+                    <div className="absolute top-[40%] left-[60%] w-[20%] h-[20%] bg-amber-400 rounded-full blur-[100px] opacity-[0.04]" />
+                </div>
+
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={location.pathname}

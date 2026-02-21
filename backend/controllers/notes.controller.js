@@ -14,6 +14,24 @@ exports.uploadNote = async (req, res) => {
     }
 
     const userId = req.user.id;
+    const userTier = req.user?.subscription_tier || 'free';
+
+    // Enforce backend limits for Free tier
+    if (userTier === 'free') {
+      const { count, error: countError } = await supabase
+        .from('notes')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId);
+
+      if (!countError && count >= 3) {
+        return res.status(403).json({ error: 'Free tier limit reached. Please upgrade to Pro for unlimited notes.' });
+      }
+
+      if (req.file.originalname.match(/\.(pptx|ppt)$/i)) {
+        return res.status(403).json({ error: 'PowerPoint upload is a Pro feature.' });
+      }
+    }
+
     const noteId = uuidv4();
     const file = req.file;
 

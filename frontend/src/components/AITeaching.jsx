@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /**
  * Typing Indicator Component
@@ -222,7 +223,7 @@ function AITeaching({ user, onLogout }) {
   if (!isPremium) {
     return (
       <div>
-        
+
         <div className="max-w-5xl mx-auto px-4 py-12">
           <UpgradePrompt feature="ai_teaching" />
         </div>
@@ -234,7 +235,7 @@ function AITeaching({ user, onLogout }) {
   if (loading) {
     return (
       <div>
-        
+
         <div className="flex flex-col items-center justify-center h-96">
           <Loader className="w-8 h-8 text-brand-500 animate-spin" />
           <p className="text-slate font-bold mt-4">Loading your teaching sessions...</p>
@@ -243,258 +244,268 @@ function AITeaching({ user, onLogout }) {
     );
   }
 
+  // Animation Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+  };
+  const sidebarVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { opacity: 1, x: 0, transition: { staggerChildren: 0.1 } }
+  };
+
   return (
-    <div>
-      
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-7xl mx-auto px-4 py-8">
+      <div className="flex gap-6 h-[calc(100vh-8rem)]">
+        {/* Sidebar - Sessions List */}
+        <div className="w-80 card p-4 flex flex-col flex-shrink-0">
+          <button
+            onClick={handleNewSession}
+            className="btn-primary mb-4 w-full flex items-center justify-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            New Chat
+          </button>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex gap-6 h-[calc(100vh-8rem)]">
-          {/* Sidebar - Sessions List */}
-          <div className="w-80 card p-4 flex flex-col flex-shrink-0">
-            <button
-              onClick={handleNewSession}
-              className="btn-primary mb-4 w-full flex items-center justify-center gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              New Chat
-            </button>
-
-            <div className="flex-1 overflow-y-auto space-y-2">
-              {sessions.length === 0 ? (
-                <div className="text-center py-8">
-                  <Sparkles className="w-8 h-8 mx-auto text-brand-500 mb-2" />
-                  <p className="text-slate font-semibold text-sm">No sessions yet</p>
-                  <p className="text-muted text-xs mt-1">Start your first chat to begin</p>
-                </div>
-              ) : (
-                sessions.map((session) => (
-                  <button
-                    key={session.id}
-                    onClick={() => loadSession(session.id)}
-                    className={`w-full text-left p-3 rounded-xl border-2 transition-all ${
-                      activeSession?.id === session.id
-                        ? 'border-brand-400 bg-brand-50'
-                        : 'border-border hover:border-muted hover:bg-surface'
+          <motion.div variants={sidebarVariants} initial="hidden" animate="visible" className="flex-1 overflow-y-auto space-y-2">
+            {sessions.length === 0 ? (
+              <motion.div variants={itemVariants} className="text-center py-8">
+                <Sparkles className="w-8 h-8 mx-auto text-brand-500 mb-2" />
+                <p className="text-slate font-semibold text-sm">No sessions yet</p>
+                <p className="text-muted text-xs mt-1">Start your first chat to begin</p>
+              </motion.div>
+            ) : (
+              sessions.map((session) => (
+                <motion.button
+                  variants={itemVariants}
+                  whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  key={session.id}
+                  onClick={() => loadSession(session.id)}
+                  className={`w-full text-left p-3 rounded-xl border-2 transition-all ${activeSession?.id === session.id
+                    ? 'border-brand-400 bg-brand-50'
+                    : 'border-border hover:border-muted hover:bg-surface'
                     }`}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <MessageSquare className="w-4 h-4 text-brand-500 flex-shrink-0" />
-                      <span className="font-bold text-ink truncate text-sm">{session.topic}</span>
-                    </div>
-                    <span className="text-xs font-semibold text-slate">
-                      {session.message_count || 0} messages
-                    </span>
-                    <span className="text-xs text-muted block mt-1">
-                      {new Date(session.last_message_at).toLocaleDateString()}
-                    </span>
-                  </button>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Main Chat Area */}
-          <div className="flex-1 card flex flex-col">
-            {activeSession ? (
-              <>
-                {/* Header */}
-                <div className="px-6 py-4 border-b-2 border-border flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                      <Sparkles className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-extrabold text-ink">{activeSession.topic}</h2>
-                      <p className="text-sm font-semibold text-slate">Premium AI Teaching</p>
-                    </div>
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <MessageSquare className="w-4 h-4 text-brand-500 flex-shrink-0" />
+                    <span className="font-bold text-ink truncate text-sm">{session.topic}</span>
                   </div>
-                  <button
-                    onClick={handleEndSession}
-                    className="text-xs font-bold px-3 py-2 rounded-lg border-2 border-muted hover:border-danger hover:text-danger transition-colors"
-                  >
-                    End Chat
-                  </button>
+                  <span className="text-xs font-semibold text-slate">
+                    {session.message_count || 0} messages
+                  </span>
+                  <span className="text-xs text-muted block mt-1">
+                    {new Date(session.last_message_at).toLocaleDateString()}
+                  </span>
+                </motion.button>
+              ))
+            )}
+          </motion.div>
+        </div>
+
+        {/* Main Chat Area */}
+        <div className="flex-1 card flex flex-col">
+          {activeSession ? (
+            <>
+              {/* Header */}
+              <div className="px-6 py-4 border-b-2 border-border flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-extrabold text-ink">{activeSession.topic}</h2>
+                    <p className="text-sm font-semibold text-slate">Premium AI Teaching</p>
+                  </div>
                 </div>
+                <button
+                  onClick={handleEndSession}
+                  className="text-xs font-bold px-3 py-2 rounded-lg border-2 border-muted hover:border-danger hover:text-danger transition-colors"
+                >
+                  End Chat
+                </button>
+              </div>
 
-                {/* Error Message */}
-                {error && (
-                  <div className="px-6 py-3 bg-red-50 border-b-2 border-red-200 flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5 text-danger flex-shrink-0" />
-                    <p className="text-sm font-semibold text-danger">{error}</p>
-                  </div>
-                )}
+              {/* Error Message */}
+              {error && (
+                <div className="px-6 py-3 bg-red-50 border-b-2 border-red-200 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-danger flex-shrink-0" />
+                  <p className="text-sm font-semibold text-danger">{error}</p>
+                </div>
+              )}
 
-                {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                  {messages.length === 0 && !sending ? (
-                    <div className="flex flex-col items-center justify-center h-full text-center">
-                      <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                        <Sparkles className="w-8 h-8 text-white" />
-                      </div>
-                      <h3 className="text-lg font-extrabold text-ink mb-2">Start Learning!</h3>
-                      <p className="text-slate font-semibold max-w-xs">
-                        Ask me anything about {activeSession.topic}. I'm here to help you learn!
-                      </p>
+              {/* Messages Area */}
+              <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex-1 overflow-y-auto p-6 space-y-4">
+                {messages.length === 0 && !sending ? (
+                  <motion.div variants={itemVariants} className="flex flex-col items-center justify-center h-full text-center">
+                    <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                      <Sparkles className="w-8 h-8 text-white" />
                     </div>
-                  ) : (
-                    messages.map((msg, idx) => (
+                    <h3 className="text-lg font-extrabold text-ink mb-2">Start Learning!</h3>
+                    <p className="text-slate font-semibold max-w-xs">
+                      Ask me anything about {activeSession.topic}. I'm here to help you learn!
+                    </p>
+                  </motion.div>
+                ) : (
+                  messages.map((msg, idx) => (
+                    <motion.div
+                      variants={itemVariants}
+                      key={idx}
+                      className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                    >
                       <div
-                        key={idx}
-                        className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${msg.role === 'user'
+                          ? 'bg-brand-500'
+                          : 'bg-gray-100'
+                          }`}
+                      >
+                        {msg.role === 'user' ? (
+                          <span className="text-white font-black text-sm">
+                            {user.username?.[0]?.toUpperCase() || 'U'}
+                          </span>
+                        ) : (
+                          <Sparkles className="w-5 h-5 text-white" />
+                        )}
+                      </div>
+                      <div
+                        className={`max-w-[75%] ${msg.role === 'user' ? 'flex flex-col items-end' : 'flex flex-col items-start'
+                          }`}
                       >
                         <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                            msg.role === 'user'
-                              ? 'bg-brand-500'
-                              : 'bg-gray-100'
-                          }`}
+                          className={`p-4 rounded-2xl border-2 ${msg.role === 'user'
+                            ? 'bg-brand-50 border-brand-400'
+                            : 'bg-white border-border'
+                            }`}
                         >
                           {msg.role === 'user' ? (
-                            <span className="text-white font-black text-sm">
-                              {user.username?.[0]?.toUpperCase() || 'U'}
-                            </span>
+                            <p className="text-ink font-semibold leading-relaxed">
+                              {msg.content}
+                            </p>
                           ) : (
-                            <Sparkles className="w-5 h-5 text-white" />
+                            <div className="text-ink font-semibold leading-relaxed prose prose-sm max-w-none">
+                              <ReactMarkdown
+                                rehypePlugins={[rehypeSanitize]}
+                                components={{
+                                  p: ({ node, ...props }) => (
+                                    <p className="mb-2 last:mb-0" {...props} />
+                                  ),
+                                  code: ({ node, inline, ...props }) =>
+                                    inline ? (
+                                      <code
+                                        className="bg-slate-100 px-1.5 py-0.5 rounded text-sm"
+                                        {...props}
+                                      />
+                                    ) : (
+                                      <code
+                                        className="block bg-slate-100 p-2 rounded text-sm overflow-x-auto mb-2"
+                                        {...props}
+                                      />
+                                    ),
+                                  strong: ({ node, ...props }) => (
+                                    <strong className="font-extrabold" {...props} />
+                                  ),
+                                  em: ({ node, ...props }) => (
+                                    <em className="italic" {...props} />
+                                  ),
+                                  ul: ({ node, ...props }) => (
+                                    <ul className="list-disc list-inside mb-2" {...props} />
+                                  ),
+                                  ol: ({ node, ...props }) => (
+                                    <ol className="list-decimal list-inside mb-2" {...props} />
+                                  ),
+                                }}
+                              >
+                                {msg.content}
+                              </ReactMarkdown>
+                            </div>
                           )}
                         </div>
-                        <div
-                          className={`max-w-[75%] ${
-                            msg.role === 'user' ? 'flex flex-col items-end' : 'flex flex-col items-start'
-                          }`}
-                        >
-                          <div
-                            className={`p-4 rounded-2xl border-2 ${
-                              msg.role === 'user'
-                                ? 'bg-brand-50 border-brand-400'
-                                : 'bg-white border-border'
-                            }`}
-                          >
-                            {msg.role === 'user' ? (
-                              <p className="text-ink font-semibold leading-relaxed">
-                                {msg.content}
-                              </p>
-                            ) : (
-                              <div className="text-ink font-semibold leading-relaxed prose prose-sm max-w-none">
-                                <ReactMarkdown
-                                  rehypePlugins={[rehypeSanitize]}
-                                  components={{
-                                    p: ({ node, ...props }) => (
-                                      <p className="mb-2 last:mb-0" {...props} />
-                                    ),
-                                    code: ({ node, inline, ...props }) =>
-                                      inline ? (
-                                        <code
-                                          className="bg-slate-100 px-1.5 py-0.5 rounded text-sm"
-                                          {...props}
-                                        />
-                                      ) : (
-                                        <code
-                                          className="block bg-slate-100 p-2 rounded text-sm overflow-x-auto mb-2"
-                                          {...props}
-                                        />
-                                      ),
-                                    strong: ({ node, ...props }) => (
-                                      <strong className="font-extrabold" {...props} />
-                                    ),
-                                    em: ({ node, ...props }) => (
-                                      <em className="italic" {...props} />
-                                    ),
-                                    ul: ({ node, ...props }) => (
-                                      <ul className="list-disc list-inside mb-2" {...props} />
-                                    ),
-                                    ol: ({ node, ...props }) => (
-                                      <ol className="list-decimal list-inside mb-2" {...props} />
-                                    ),
-                                  }}
-                                >
-                                  {msg.content}
-                                </ReactMarkdown>
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 mt-2">
-                            <span className="text-xs font-semibold text-slate">
-                              {new Date(msg.timestamp).toLocaleTimeString()}
-                            </span>
-                            {msg.role === 'assistant' && (
-                              <CopyButton text={msg.content} />
-                            )}
-                          </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-xs font-semibold text-slate">
+                            {new Date(msg.timestamp).toLocaleTimeString()}
+                          </span>
+                          {msg.role === 'assistant' && (
+                            <CopyButton text={msg.content} />
+                          )}
                         </div>
                       </div>
-                    ))
-                  )}
+                    </motion.div>
+                  ))
+                )}
 
-                  {/* Typing Indicator */}
-                  {sending && (
-                    <div className="flex gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                        <Sparkles className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="p-4 rounded-2xl bg-white border-2 border-border">
-                        <TypingIndicator />
-                      </div>
+                {/* Typing Indicator */}
+                {sending && (
+                  <motion.div variants={itemVariants} initial="hidden" animate="visible" className="flex gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="w-5 h-5 text-white" />
                     </div>
-                  )}
-
-                  <div ref={messagesEndRef} />
-                </div>
-
-                {/* Input Area */}
-                <div className="border-t-2 border-border p-4 bg-white">
-                  <div className="space-y-2">
-                    <div className="flex gap-3">
-                      <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter' && !sending) {
-                            handleSend();
-                          }
-                        }}
-                        disabled={sending}
-                        className="input-field flex-1"
-                        placeholder="Ask a question..."
-                        maxLength={5000}
-                      />
-                      <button
-                        onClick={handleSend}
-                        disabled={sending || !input.trim()}
-                        className="btn-primary px-6 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <Send className="w-5 h-5" />
-                      </button>
+                    <div className="p-4 rounded-2xl bg-white border-2 border-border">
+                      <TypingIndicator />
                     </div>
-                    <p className="text-xs font-semibold text-slate">
-                      {input.length}/5000 characters
-                    </p>
+                  </motion.div>
+                )}
+
+                <div ref={messagesEndRef} />
+              </motion.div>
+
+              {/* Input Area */}
+              <div className="border-t-2 border-border p-4 bg-white">
+                <div className="space-y-2">
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && !sending) {
+                          handleSend();
+                        }
+                      }}
+                      disabled={sending}
+                      className="input-field flex-1"
+                      placeholder="Ask a question..."
+                      maxLength={5000}
+                    />
+                    <button
+                      onClick={handleSend}
+                      disabled={sending || !input.trim()}
+                      className="btn-primary px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Send className="w-5 h-5" />
+                    </button>
                   </div>
-                </div>
-              </>
-            ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="w-10 h-10 text-white" />
-                  </div>
-                  <h3 className="text-xl font-extrabold text-ink mb-2">Start Learning!</h3>
-                  <p className="text-slate font-semibold mb-6">
-                    Create a new chat session to learn with AI
+                  <p className="text-xs font-semibold text-slate">
+                    {input.length}/5000 characters
                   </p>
-                  <button onClick={handleNewSession} className="btn-primary">
-                    <span className="flex items-center gap-2">
-                      <Plus className="w-5 h-5" />
-                      New Chat
-                    </span>
-                  </button>
                 </div>
               </div>
-            )}
-          </div>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-xl font-extrabold text-ink mb-2">Start Learning!</h3>
+                <p className="text-slate font-semibold mb-6">
+                  Create a new chat session to learn with AI
+                </p>
+                <button onClick={handleNewSession} className="btn-primary">
+                  <span className="flex items-center gap-2">
+                    <Plus className="w-5 h-5" />
+                    New Chat
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

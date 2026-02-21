@@ -13,7 +13,7 @@ exports.generateQuiz = async (req, res) => {
     const userId = req.user.id;
     const userTier = req.user?.subscription_tier || 'free';
     const language = req.headers['accept-language'] || 'en';
-    const { noteId, noteIds, questionCount } = req.body;
+    const { noteId, noteIds, questionCount, difficulty, questionType } = req.body;
 
     // Support both single noteId and array of noteIds
     let idsToFetch = [];
@@ -68,11 +68,22 @@ exports.generateQuiz = async (req, res) => {
     const finalQuestionCount = questionCount || (userTier === 'free' ? 10 : 15);
     console.log(`  Calling AI service to generate ${finalQuestionCount} questions...`);
 
+    let finalDifficulty = 'standard';
+    let finalQuestionType = 'mixed';
+
+    // Only Premium users can use custom settings
+    if (userTier === 'premium') {
+      finalDifficulty = difficulty || 'standard';
+      finalQuestionType = questionType || 'mixed';
+    }
+
     const questions = await aiService.generateQuizQuestions(
       combinedContent,
       finalQuestionCount,
       userTier,
-      language
+      language,
+      finalDifficulty,
+      finalQuestionType
     );
 
     console.log(`  ✓ AI generated ${questions?.length || 0} questions`);

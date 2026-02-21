@@ -25,14 +25,27 @@ class AIService {
    * @param {string} tier - Subscription tier (free, pro, premium)
    * @returns {array} - Array of question objects
    */
-  async generateQuizQuestions(noteContent, questionCount = 10, tier = 'free', language = 'en') {
+  async generateQuizQuestions(noteContent, questionCount = 10, tier = 'free', language = 'en', difficulty = 'standard', questionTypePref = 'mixed') {
     try {
-      // Determine question types based on tier
-      const questionTypes = tier === 'free'
-        ? 'only multiple-choice (mcq)'
-        : 'a mix of multiple-choice (mcq) and free-text (text) questions. Decide which type is best for each question.';
+      // Determine question types based on tier and preference
+      let questionTypes = 'only multiple-choice (mcq)';
+
+      if (tier === 'pro' || tier === 'premium') {
+        if (questionTypePref === 'mcq') questionTypes = 'ONLY multiple-choice (mcq) questions';
+        else if (questionTypePref === 'text') questionTypes = 'ONLY free-text (text) open-ended questions';
+        else questionTypes = 'a mix of multiple-choice (mcq) and free-text (text) questions. Decide which type is best for each question.';
+      }
+
+      // Add difficulty modifier for Premium users
+      let difficultyContext = '';
+      if (tier === 'premium') {
+        if (difficulty === 'easy') difficultyContext = 'Make the questions fundamental, straightforward, and easy.';
+        else if (difficulty === 'hard') difficultyContext = 'Make the questions extremely challenging, requiring deep critical thinking and advanced synthesis.';
+        else difficultyContext = 'Make the questions of standard college-level difficulty.';
+      }
 
       const prompt = `You are an expert educator creating ${questionCount} quiz questions from study material.
+${difficultyContext}
 
 Generate exactly ${questionCount} quiz questions based on the following study notes.
 Make questions ${questionTypes}.

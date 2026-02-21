@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 import { SkeletonAnalytics } from './Skeleton';
 import { getQuizHistory, getQuizzes, getProfile } from '../api';
-import { BarChart3, TrendingUp, Target, Zap, Calendar, Award, Clock } from 'lucide-react';
+import { BarChart3, TrendingUp, Target, Zap, Calendar, Award, Clock, Download } from 'lucide-react';
 import { useSubscription } from '../contexts/SubscriptionContext';
-import UpgradeQuotaModal from './UpgradeQuotaModal'; // Fixed import
+import { motion, AnimatePresence } from 'framer-motion';
+import UpgradeQuotaModal from './UpgradeQuotaModal';
 
 function Analytics({ user, onLogout }) {
   const { t } = useTranslation();
@@ -166,21 +167,31 @@ function Analytics({ user, onLogout }) {
 
   const perfLevel = getPerformanceLevel(stats.averageScore);
 
+  const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+  const itemVariants = { hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } } };
+
   return (
-    <div>
-
-
+    <motion.div initial="hidden" animate="visible" variants={containerVariants}>
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-ink">{t('analytics.title')}</h1>
-          <p className="text-slate font-semibold mt-2">{t('analytics.subtitle')}</p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-extrabold text-ink">{t('analytics.title')}</h1>
+            <p className="text-slate font-semibold mt-2">{t('analytics.subtitle')}</p>
+          </div>
+          <button
+            onClick={() => alert(t('analytics.exportComingSoon') || 'PDF Export coming soon!')}
+            className="btn-secondary flex items-center justify-center gap-2 px-5 py-2 shadow-sm text-sm"
+          >
+            <Download className="w-4 h-4 text-brand-500" />
+            {t('analytics.exportPdf') || 'Export PDF'}
+          </button>
         </div>
 
         {/* Key Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {/* Average Score */}
-          <div className={`card p-6 border-2 ${perfLevel.border}`}>
+          <motion.div variants={itemVariants} whileHover={{ y: -5 }} className={`card p-6 border-2 ${perfLevel.border} transition-shadow hover:shadow-lg`}>
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-sm font-semibold text-slate mb-1">{t('analytics.averageScore')}</p>
@@ -191,10 +202,10 @@ function Analytics({ user, onLogout }) {
               </div>
             </div>
             <p className={`text-xs font-bold ${perfLevel.color}`}>{perfLevel.label}</p>
-          </div>
+          </motion.div>
 
           {/* Best Score */}
-          <div className="card p-6 border-2 border-green-500 bg-green-50/30">
+          <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="card p-6 border-2 border-green-500 bg-green-50/30 transition-shadow hover:shadow-lg">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-sm font-semibold text-slate mb-1">{t('analytics.bestScore')}</p>
@@ -205,10 +216,10 @@ function Analytics({ user, onLogout }) {
               </div>
             </div>
             <p className="text-xs font-semibold text-green-600">{t('analytics.bestScore')}</p>
-          </div>
+          </motion.div>
 
           {/* Streak */}
-          <div className="card p-6 border-2 border-orange-500 bg-orange-50/30">
+          <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="card p-6 border-2 border-orange-500 bg-orange-50/30 transition-shadow hover:shadow-lg">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-sm font-semibold text-slate mb-1">{t('analytics.currentStreak')}</p>
@@ -219,10 +230,10 @@ function Analytics({ user, onLogout }) {
               </div>
             </div>
             <p className="text-xs font-semibold text-orange-600">{stats.streakDays === 1 ? t('analytics.day') : t('analytics.days')} in a row</p>
-          </div>
+          </motion.div>
 
           {/* Total Attempts */}
-          <div className="card p-6 border-2 border-brand-500">
+          <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="card p-6 border-2 border-brand-500 transition-shadow hover:shadow-lg">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-sm font-semibold text-slate mb-1">{t('analytics.quizzesTaken')}</p>
@@ -233,10 +244,10 @@ function Analytics({ user, onLogout }) {
               </div>
             </div>
             <p className="text-xs font-semibold text-brand-600">{t('analytics.quizAttempts')}</p>
-          </div>
+          </motion.div>
 
           {/* Total Quizzes */}
-          <div className="card p-6 border-2 border-brand-500">
+          <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="card p-6 border-2 border-brand-500 transition-shadow hover:shadow-lg">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-sm font-semibold text-slate mb-1">{t('analytics.quizzesCreated')}</p>
@@ -247,10 +258,10 @@ function Analytics({ user, onLogout }) {
               </div>
             </div>
             <p className="text-xs font-semibold text-brand-600">{t('analytics.fromNotes')}</p>
-          </div>
+          </motion.div>
 
           {/* Study Time */}
-          <div className="card p-6 border-2 border-purple-500">
+          <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="card p-6 border-2 border-purple-500 transition-shadow hover:shadow-lg">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-sm font-semibold text-slate mb-1">{t('analytics.studyTime')}</p>
@@ -261,22 +272,22 @@ function Analytics({ user, onLogout }) {
               </div>
             </div>
             <p className="text-xs font-semibold text-purple-600">{t('analytics.hours')}</p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Performance Trend */}
-        <div className="card p-8 mb-8">
+        <motion.div variants={itemVariants} className="card p-8 mb-8 relative overflow-hidden">
           <h2 className="text-2xl font-extrabold text-ink mb-6">{t('analytics.last7DaysTrend')}</h2>
           <div className="flex items-end justify-between h-64 gap-2 mb-4">
             {trendData.map((day, i) => (
               <div key={i} className="flex-1 flex flex-col items-center">
                 <div className="w-full bg-slate-200/50 rounded-t-lg overflow-hidden flex-1 min-h-12 relative">
                   {day.score > 0 && (
-                    <div
-                      className="w-full bg-brand-500 transition-all duration-500 ease-out"
-                      style={{
-                        height: `${(day.score / 100) * 100}%`,
-                      }}
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: `${day.score}%` }}
+                      transition={{ type: 'spring', stiffness: 100, damping: 20, delay: i * 0.1 }}
+                      className="w-full bg-gradient-to-t from-brand-600 to-brand-400 absolute bottom-0 left-0 right-0 rounded-t-lg shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all hover:brightness-125"
                       title={`${day.score}% - ${day.attempts} attempt${day.attempts !== 1 ? 's' : ''}`}
                     />
                   )}
@@ -292,10 +303,10 @@ function Analytics({ user, onLogout }) {
             <p className="text-sm font-semibold text-slate">{t('analytics.average')}: {Math.round(trendData.reduce((sum, d) => sum + d.score, 0) / trendData.length)}%</p>
             <p className="text-sm font-semibold text-slate">{t('analytics.total')} this week: {trendData.reduce((sum, d) => sum + d.attempts, 0)} quizzes</p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Recent Attempts */}
-        <div className="card p-8">
+        <motion.div variants={itemVariants} className="card p-8">
           <h2 className="text-2xl font-extrabold text-ink mb-6">{t('analytics.recentQuizAttempts')}</h2>
           {attempts.length > 0 ? (
             <div className="overflow-x-auto">
@@ -334,9 +345,9 @@ function Analytics({ user, onLogout }) {
               <p className="text-slate font-semibold">{t('analytics.noQuizAttemptsYet')}</p>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

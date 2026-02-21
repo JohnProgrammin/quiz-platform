@@ -8,6 +8,11 @@ const { supabase } = require('../config/database.serverless');
  */
 exports.getPreQuizSummary = async (req, res) => {
   try {
+    const userTier = req.user?.subscription_tier || 'free';
+    if (userTier === 'free') {
+      return res.status(403).json({ error: 'Pre-quiz teaching is a Pro feature.' });
+    }
+
     const { noteId } = req.body;
 
     if (!noteId) {
@@ -52,6 +57,11 @@ exports.getPreQuizSummary = async (req, res) => {
 exports.generateWeaknessMasteryQuiz = async (req, res) => {
   try {
     const userId = req.user.id;
+    const userTier = req.user?.subscription_tier || 'free';
+    if (userTier === 'free') {
+      return res.status(403).json({ error: 'Weakness mastery is a Pro feature.' });
+    }
+
     const { attemptId, weakTopics } = req.body;
 
     if (!attemptId || !weakTopics || weakTopics.length === 0) {
@@ -292,12 +302,15 @@ exports.sendMessage = async (req, res) => {
       history = [];
     }
 
-    // Session message limit (100 messages)
-    if (history.length >= 100) {
+    // Session message limit: 100 for free/pro, 2000 for Premium
+    const userTier = req.user?.subscription_tier || 'free';
+    const maxMessages = userTier === 'premium' ? 2000 : 100;
+
+    if (history.length >= maxMessages) {
       return res.status(429).json({
         error: 'Session limit reached',
-        message: 'This session has reached 100 messages. Please start a new session.',
-        limit: 100
+        message: `This session has reached ${maxMessages} messages. Please start a new session.`,
+        limit: maxMessages
       });
     }
 

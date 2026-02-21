@@ -8,6 +8,7 @@ import { getQuiz, getQuizAttempts, getQuizResults, generateWeaknessQuiz } from '
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useTranslation } from 'react-i18next';
 import { RotateCcw, Home, CheckCircle, XCircle, Loader2, Trophy, Target, TrendingUp, Lock, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { soundService } from '../services/sound.service';
 
@@ -159,8 +160,11 @@ function QuizResults({ user, onLogout }) {
     : 0;
 
   return (
-    <div>
-
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="max-w-5xl mx-auto px-4 py-8"
+    >
 
       {gamification && (
         <GamificationDisplay
@@ -171,63 +175,77 @@ function QuizResults({ user, onLogout }) {
         />
       )}
 
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        {/* Score Header */}
-        <div className="card p-8 mb-8 text-center">
-          <div className={`w-24 h-24 rounded-full ${getScoreBg(percentage)} flex items-center justify-center mx-auto mb-4`}>
-            <span className={`text-4xl font-black ${getScoreColor(percentage)}`}>{percentage}%</span>
-          </div>
-          <h1 className={`text-2xl font-extrabold mb-1 ${getScoreColor(percentage)}`}>
-            {getScoreMessage(percentage)}
-          </h1>
-          <p className="text-slate font-bold">
-            {latestAttempt?.score} {t('results.outOf') || 'out of'} {latestAttempt?.totalQuestions} {t('results.correctAnswers') || 'correct'}
-          </p>
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        className="card p-8 sm:p-12 mb-8 text-center relative overflow-hidden group border-2 border-border"
+      >
+        {/* Subtle background glow based on score */}
+        <div className={`absolute inset-0 opacity-10 ${getScoreBg(percentage)} blur-3xl`} />
 
-          {/* Stats row */}
-          <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t-2 border-border">
-            <div>
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Target className="w-4 h-4 text-amber-500" />
-                <span className="text-xl font-extrabold text-ink">{safeAttempts.length}</span>
-              </div>
-              <span className="text-xs font-bold text-slate uppercase">{t('results.attempts')}</span>
-            </div>
-            <div>
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Trophy className="w-4 h-4 text-warning" />
-                <span className="text-xl font-extrabold text-ink">{bestScore}%</span>
-              </div>
-              <span className="text-xs font-bold text-slate uppercase">{t('results.best')}</span>
-            </div>
-            <div>
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <TrendingUp className="w-4 h-4 text-brand-500" />
-                <span className="text-xl font-extrabold text-ink">{avgScore}%</span>
-              </div>
-              <span className="text-xs font-bold text-slate uppercase">{t('results.average')}</span>
-            </div>
-          </div>
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 20, delay: 0.2 }}
+          className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full ${getScoreBg(percentage)} flex items-center justify-center mx-auto mb-6 shadow-inner ring-4 ring-white relative`}
+        >
+          <div className="absolute inset-0 bg-white/20 rounded-full animate-shimmer" style={{ backgroundImage: 'linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent)', backgroundSize: '1rem 1rem' }} />
+          <span className={`text-5xl sm:text-6xl font-black ${getScoreColor(percentage)} tracking-tighter`}>{percentage}%</span>
+        </motion.div>
 
-          {/* Action buttons */}
-          <div className="flex gap-3 justify-center mt-6">
-            <button onClick={() => navigate(`/quiz/${id}`)} className="btn-primary">
-              <span className="flex items-center gap-2">
-                <RotateCcw className="w-4 h-4" />
-                {t('results.retakeQuiz')}
-              </span>
-            </button>
-            <button onClick={() => navigate('/dashboard')} className="btn-secondary">
-              <span className="flex items-center gap-2">
-                <Home className="w-4 h-4" />
-                {t('results.backToDashboard')}
-              </span>
-            </button>
+        <h1 className={`text-2xl font-extrabold mb-1 ${getScoreColor(percentage)}`}>
+          {getScoreMessage(percentage)}
+        </h1>
+        <p className="text-slate font-bold">
+          {latestAttempt?.score} {t('results.outOf') || 'out of'} {latestAttempt?.totalQuestions} {t('results.correctAnswers') || 'correct'}
+        </p>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t-2 border-border">
+          <div>
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Target className="w-4 h-4 text-amber-500" />
+              <span className="text-xl font-extrabold text-ink">{safeAttempts.length}</span>
+            </div>
+            <span className="text-xs font-bold text-slate uppercase">{t('results.attempts')}</span>
+          </div>
+          <div>
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Trophy className="w-4 h-4 text-warning" />
+              <span className="text-xl font-extrabold text-ink">{bestScore}%</span>
+            </div>
+            <span className="text-xs font-bold text-slate uppercase">{t('results.best')}</span>
+          </div>
+          <div>
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <TrendingUp className="w-4 h-4 text-brand-500" />
+              <span className="text-xl font-extrabold text-ink">{avgScore}%</span>
+            </div>
+            <span className="text-xs font-bold text-slate uppercase">{t('results.average')}</span>
           </div>
         </div>
 
-        {/* AI Feedback Section (Pro+ only) */}
-        {tier === 'free' ? (
+        {/* Action buttons */}
+        <div className="flex gap-3 justify-center mt-6">
+          <button onClick={() => navigate(`/quiz/${id}`)} className="btn-primary">
+            <span className="flex items-center gap-2">
+              <RotateCcw className="w-4 h-4" />
+              {t('results.retakeQuiz')}
+            </span>
+          </button>
+          <button onClick={() => navigate('/dashboard')} className="btn-secondary">
+            <span className="flex items-center gap-2">
+              <Home className="w-4 h-4" />
+              {t('results.backToDashboard')}
+            </span>
+          </button>
+        </div>
+      </motion.div>
+
+      {/* AI Feedback Section (Pro+ only) */}
+      {
+        tier === 'free' ? (
           <div className="card p-8 mb-8 bg-amber-50 border-2 border-amber-500 relative overflow-hidden">
             <div className="absolute inset-0 backdrop-blur-sm bg-white/40" />
             <div className="relative z-10">
@@ -274,161 +292,161 @@ function QuizResults({ user, onLogout }) {
               )}
             </div>
           )
-        )}
+        )
+      }
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Question Review */}
-          <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-lg font-extrabold text-ink">{t('results.questionReview')}</h2>
-            {quiz?.questions?.map((question, index) => {
-              const answers = selectedAttempt?.answers || [];
-              const answerEntry = Array.isArray(answers) ? answers[index] : null;
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Question Review */}
+        <div className="lg:col-span-2 space-y-4">
+          <h2 className="text-lg font-extrabold text-ink">{t('results.questionReview')}</h2>
+          {quiz?.questions?.map((question, index) => {
+            const answers = selectedAttempt?.answers || [];
+            const answerEntry = Array.isArray(answers) ? answers[index] : null;
 
-              let userValue, isCorrect, feedback, score;
+            let userValue, isCorrect, feedback, score;
 
-              // Handle both new (object) and legacy (value) answer formats
-              if (typeof answerEntry === 'object' && answerEntry !== null && answerEntry.userAnswer !== undefined) {
-                userValue = answerEntry.userAnswer;
-                isCorrect = answerEntry.isCorrect;
-                feedback = answerEntry.feedback;
-                score = answerEntry.score;
-              } else {
-                userValue = answerEntry;
-                isCorrect = userValue === question.correctAnswer;
-              }
+            // Handle both new (object) and legacy (value) answer formats
+            if (typeof answerEntry === 'object' && answerEntry !== null && answerEntry.userAnswer !== undefined) {
+              userValue = answerEntry.userAnswer;
+              isCorrect = answerEntry.isCorrect;
+              feedback = answerEntry.feedback;
+              score = answerEntry.score;
+            } else {
+              userValue = answerEntry;
+              isCorrect = userValue === question.correctAnswer;
+            }
 
-              const optionLabels = ['A', 'B', 'C', 'D'];
+            const optionLabels = ['A', 'B', 'C', 'D'];
 
-              return (
-                <div key={index} className="card p-6">
-                  <div className="flex items-start gap-3 mb-4">
-                    {isCorrect ? (
-                      <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <CheckCircle className="w-5 h-5 text-brand-500" />
-                      </div>
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <XCircle className="w-5 h-5 text-danger" />
-                      </div>
-                    )}
-                    <div className="flex-1">
-                      <h3 className="font-bold text-ink leading-relaxed">
-                        {index + 1}. {question.question}
-                      </h3>
-                      {/* Show score if available (mostly for partially correct text answers) */}
-                      {score !== undefined && score !== null && score !== 0 && score !== 100 && (
-                        <span className="inline-block mt-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">
-                          {t('results.partialCredit') || 'Partial Credit'}: {score}%
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Render based on question type */}
-                  {question.type === 'text' || question.type === 'free_text' ? (
-                    <div className="ml-11 space-y-4">
-                      <div className={`p-4 rounded-xl border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                        <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{t('results.yourAnswer') || 'Your Answer'}</p>
-                        <p className="font-semibold text-ink">{userValue || (t('results.noAnswerProvided') || '(No answer provided)')}</p>
-                      </div>
-
-                      {!isCorrect && (
-                        <div className="p-4 rounded-xl border-2 bg-slate-50 border-slate-200">
-                          <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{t('results.modelAnswer') || 'Model Answer'}</p>
-                          <p className="font-semibold text-slate">{question.sampleAnswer || question.correctAnswer || (t('results.noModelAnswer') || 'No model answer available')}</p>
-                        </div>
-                      )}
-
-                      {feedback && (
-                        <div className="p-4 rounded-xl border-2 bg-blue-50 border-blue-200 flex gap-3">
-                          <Sparkles className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">{t('results.feedback') || 'AI Feedback'}</p>
-                            <p className="text-blue-900 font-medium">{feedback}</p>
-                          </div>
-                        </div>
-                      )}
+            return (
+              <div key={index} className="card p-6">
+                <div className="flex items-start gap-3 mb-4">
+                  {isCorrect ? (
+                    <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle className="w-5 h-5 text-brand-500" />
                     </div>
                   ) : (
-                    /* MCQ Rendering */
-                    <div className="space-y-2 ml-11">
-                      {question.options.map((option, optIndex) => {
-                        const isUserAnswer = userValue === optIndex;
-                        const isCorrectAnswer = question.correctAnswer === optIndex;
-
-                        let classes = 'p-4 rounded-xl border-2 flex items-center gap-3 text-sm font-bold transition-all ';
-                        if (isCorrectAnswer) {
-                          classes += 'bg-green-50 border-green-500 text-green-700 shadow-sm';
-                        } else if (isUserAnswer && !isCorrect) {
-                          classes += 'bg-red-50 border-red-500 text-red-700 shadow-sm';
-                        } else {
-                          classes += 'bg-white border-gray-200 text-slate opacity-60';
-                        }
-
-                        return (
-                          <div key={optIndex} className={classes}>
-                            <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0 ${isCorrectAnswer ? 'bg-brand-500 text-white' : isUserAnswer && !isCorrect ? 'bg-danger text-white' : 'bg-slate-200 text-slate'
-                              }`}>
-                              {optionLabels[optIndex]}
-                            </span>
-                            <span className="flex-1">{option}</span>
-
-                            {isCorrectAnswer && (
-                              <div className="flex items-center gap-1 text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
-                                <CheckCircle className="w-3.5 h-3.5" />
-                                <span className="hidden sm:inline">{t('results.correctAnswerKey') || 'Correct Answer'}</span>
-                              </div>
-                            )}
-
-                            {isUserAnswer && !isCorrect && (
-                              <div className="flex items-center gap-1 text-xs font-bold text-red-700 bg-red-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
-                                <XCircle className="w-3.5 h-3.5" />
-                                <span className="hidden sm:inline">{t('results.yourAnswer') || 'Your Answer'}</span>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
+                    <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <XCircle className="w-5 h-5 text-danger" />
                     </div>
                   )}
+                  <div className="flex-1">
+                    <h3 className="font-bold text-ink leading-relaxed">
+                      {index + 1}. {question.question}
+                    </h3>
+                    {/* Show score if available (mostly for partially correct text answers) */}
+                    {score !== undefined && score !== null && score !== 0 && score !== 100 && (
+                      <span className="inline-block mt-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">
+                        {t('results.partialCredit') || 'Partial Credit'}: {score}%
+                      </span>
+                    )}
+                  </div>
                 </div>
-              );
-            })}
-          </div>
 
-          {/* Attempt History */}
-          <div className="lg:col-span-1">
-            <h2 className="text-lg font-extrabold text-ink mb-4">{t('results.attemptHistory')}</h2>
-            <div className="card">
-              <div className="p-4 space-y-2">
-                {attempts.map((attempt, index) => (
-                  <button
-                    key={attempt.id}
-                    onClick={() => setSelectedAttempt(attempt)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all ${selectedAttempt?.id === attempt.id
-                      ? 'border-brand-400 bg-brand-50'
-                      : 'border-border hover:border-muted hover:bg-surface'
-                      }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-bold text-slate">
-                        {t('results.attemptNumber', { number: safeAttempts.length - index })}
-                      </span>
-                      <span className={`text-lg font-extrabold ${getScoreColor(attempt.percentage || 0)}`}>
-                        {attempt.percentage || (attempt.score && attempt.total_questions ? Math.round((attempt.score / attempt.total_questions) * 100) : 0)}%
-                      </span>
+                {/* Render based on question type */}
+                {question.type === 'text' || question.type === 'free_text' ? (
+                  <div className="ml-11 space-y-4">
+                    <div className={`p-4 rounded-xl border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                      <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{t('results.yourAnswer') || 'Your Answer'}</p>
+                      <p className="font-semibold text-ink">{userValue || (t('results.noAnswerProvided') || '(No answer provided)')}</p>
                     </div>
-                    <div className="text-xs font-semibold text-muted">
-                      {attempt.completed_at ? new Date(attempt.completed_at).toLocaleString() : new Date(attempt.completedAt || Date.now()).toLocaleString()}
-                    </div>
-                  </button>
-                ))}
+
+                    {!isCorrect && (
+                      <div className="p-4 rounded-xl border-2 bg-slate-50 border-slate-200">
+                        <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{t('results.modelAnswer') || 'Model Answer'}</p>
+                        <p className="font-semibold text-slate">{question.sampleAnswer || question.correctAnswer || (t('results.noModelAnswer') || 'No model answer available')}</p>
+                      </div>
+                    )}
+
+                    {feedback && (
+                      <div className="p-4 rounded-xl border-2 bg-blue-50 border-blue-200 flex gap-3">
+                        <Sparkles className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">{t('results.feedback') || 'AI Feedback'}</p>
+                          <p className="text-blue-900 font-medium">{feedback}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* MCQ Rendering */
+                  <div className="space-y-2 ml-11">
+                    {question.options.map((option, optIndex) => {
+                      const isUserAnswer = userValue === optIndex;
+                      const isCorrectAnswer = question.correctAnswer === optIndex;
+
+                      let classes = 'p-4 rounded-xl border-2 flex items-center gap-3 text-sm font-bold transition-all ';
+                      if (isCorrectAnswer) {
+                        classes += 'bg-green-50 border-green-500 text-green-700 shadow-sm';
+                      } else if (isUserAnswer && !isCorrect) {
+                        classes += 'bg-red-50 border-red-500 text-red-700 shadow-sm';
+                      } else {
+                        classes += 'bg-white border-gray-200 text-slate opacity-60';
+                      }
+
+                      return (
+                        <div key={optIndex} className={classes}>
+                          <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0 ${isCorrectAnswer ? 'bg-brand-500 text-white' : isUserAnswer && !isCorrect ? 'bg-danger text-white' : 'bg-slate-200 text-slate'
+                            }`}>
+                            {optionLabels[optIndex]}
+                          </span>
+                          <span className="flex-1">{option}</span>
+
+                          {isCorrectAnswer && (
+                            <div className="flex items-center gap-1 text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
+                              <CheckCircle className="w-3.5 h-3.5" />
+                              <span className="hidden sm:inline">{t('results.correctAnswerKey') || 'Correct Answer'}</span>
+                            </div>
+                          )}
+
+                          {isUserAnswer && !isCorrect && (
+                            <div className="flex items-center gap-1 text-xs font-bold text-red-700 bg-red-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
+                              <XCircle className="w-3.5 h-3.5" />
+                              <span className="hidden sm:inline">{t('results.yourAnswer') || 'Your Answer'}</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
+            );
+          })}
+        </div>
+
+        {/* Attempt History */}
+        <div className="lg:col-span-1">
+          <h2 className="text-lg font-extrabold text-ink mb-4">{t('results.attemptHistory')}</h2>
+          <div className="card">
+            <div className="p-4 space-y-2">
+              {attempts.map((attempt, index) => (
+                <button
+                  key={attempt.id}
+                  onClick={() => setSelectedAttempt(attempt)}
+                  className={`w-full text-left p-4 rounded-xl border-2 transition-all ${selectedAttempt?.id === attempt.id
+                    ? 'border-brand-400 bg-brand-50'
+                    : 'border-border hover:border-muted hover:bg-surface'
+                    }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-bold text-slate">
+                      {t('results.attemptNumber', { number: safeAttempts.length - index })}
+                    </span>
+                    <span className={`text-lg font-extrabold ${getScoreColor(attempt.percentage || 0)}`}>
+                      {attempt.percentage || (attempt.score && attempt.total_questions ? Math.round((attempt.score / attempt.total_questions) * 100) : 0)}%
+                    </span>
+                  </div>
+                  <div className="text-xs font-semibold text-muted">
+                    {attempt.completed_at ? new Date(attempt.completed_at).toLocaleString() : new Date(attempt.completedAt || Date.now()).toLocaleString()}
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div >
   );
 }
 
