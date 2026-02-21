@@ -112,6 +112,11 @@ export const verifyEmail = (token) => api.post('/v1/auth/verify-email', { token 
 // Profile
 export const getProfile = () => api.get('/v1/users/me');
 export const updateProfile = (data) => api.patch('/v1/users/me', data);
+export const uploadAvatar = (formData) => api.post('/v1/users/me/avatar', formData);
+export const generateApiKey = () => api.post('/v1/users/me/api-keys');
+export const getApiKeys = () => api.get('/v1/users/me/api-keys');
+export const revokeApiKey = (id) => api.delete(`/v1/users/me/api-keys/${id}`);
+export const contactSupport = (data) => api.post('/v1/support/ticket', data);
 
 // Notes
 export const uploadNote = (formData) => api.post('/v1/notes', formData);

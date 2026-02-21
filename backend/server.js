@@ -486,7 +486,7 @@ app.get('/api/v1/users/me', authenticateToken, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('users')
-      .select('id, username, email, full_name, bio, subscription_tier, monthly_quiz_count, monthly_quiz_reset_at, created_at')
+      .select('id, username, email, full_name, bio, avatar_url, subscription_tier, monthly_quiz_count, monthly_quiz_reset_at, created_at')
       .eq('id', req.user.id)
       .single();
 
@@ -500,6 +500,7 @@ app.get('/api/v1/users/me', authenticateToken, async (req, res) => {
       email: data.email,
       fullName: data.full_name,
       bio: data.bio,
+      avatarUrl: data.avatar_url,
       subscriptionTier: data.subscription_tier,
       monthlyQuizCount: data.monthly_quiz_count,
       createdAt: data.created_at,
@@ -841,6 +842,148 @@ app.patch('/api/v1/users/me', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Update profile error:', error);
     res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+/**
+ * Upload Avatar
+ * POST /api/v1/users/me/avatar
+ */
+const multer = require('multer');
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
+app.post('/api/v1/users/me/avatar', authenticateToken, upload.single('avatar'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+
+    // Use storageService to upload
+    const ext = req.file.originalname.split('.').pop();
+    const storageKey = `avatars/${req.user.id}/${Date.now()}.${ext}`;
+
+    // Instead of using the presigned URL flow, we use the direct uploadFile method in storageService
+    const publicUrl = await storageService.uploadFile(req.file, storageKey);
+
+    // Update user profile in database
+    const { data, error } = await supabase
+      .from('users')
+      .update({ avatar_url: publicUrl, updated_at: new Date() })
+      .eq('id', req.user.id)
+      .select('avatar_url')
+      .single();
+
+    if (error) throw error;
+
+    res.json({ avatarUrl: data.avatar_url });
+  } catch (error) {
+    console.error('Avatar upload error:', error);
+    res.status(500).json({ error: 'Failed to upload avatar' });
+  }
+});
+
+const crypto = require('crypto');
+
+/**
+ * Generate API Key
+ * POST /api/v1/users/me/api-keys
+ */
+app.post('/api/v1/users/me/api-keys', authenticateToken, checkSubscriptionTier(['premium']), async (req, res) => {
+  try {
+    // Generate a secure random API key
+    const rawKey = 'qz_live_' + crypto.randomBytes(24).toString('hex');
+    const keyHash = crypto.createHash('sha256').update(rawKey).digest('hex');
+    const keyPrefix = rawKey.substring(0, 12) + '...';
+
+    const { data, error } = await supabase
+      .from('api_keys')
+      .insert([{
+        user_id: req.user.id,
+        key_hash: keyHash,
+        key_prefix: keyPrefix,
+      }])
+      .select('id, key_prefix, created_at')
+      .single();
+
+    if (error) throw error;
+
+    // We only return the rawKey once! It cannot be recovered later.
+    res.json({
+      id: data.id,
+      keyPrefix: data.key_prefix,
+      createdAt: data.created_at,
+      rawKey: rawKey
+    });
+  } catch (error) {
+    console.error('API key generation error:', error);
+    res.status(500).json({ error: 'Failed to generate API key' });
+  }
+});
+
+/**
+ * Get API Keys
+ * GET /api/v1/users/me/api-keys
+ */
+app.get('/api/v1/users/me/api-keys', authenticateToken, checkSubscriptionTier(['premium']), async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('api_keys')
+      .select('id, key_prefix, created_at')
+      .eq('user_id', req.user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    console.error('Get API keys error:', error);
+    res.status(500).json({ error: 'Failed to fetch API keys' });
+  }
+});
+
+/**
+ * Revoke API Key
+ * DELETE /api/v1/users/me/api-keys/:id
+ */
+app.delete('/api/v1/users/me/api-keys/:id', authenticateToken, checkSubscriptionTier(['premium']), async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('api_keys')
+      .delete()
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id);
+
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Delete API key error:', error);
+    res.status(500).json({ error: 'Failed to revoke API key' });
+  }
+});
+
+/**
+ * Submit Priority Support Ticket
+ * POST /api/v1/support/ticket
+ */
+app.post('/api/v1/support/ticket', authenticateToken, checkSubscriptionTier(['pro', 'premium']), async (req, res) => {
+  try {
+    const { message, subject } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ error: 'Message is required' });
+    }
+
+    // In a real application, this would insert into a `support_tickets` table 
+    // or send an email via Resend to the support team.
+    // For this implementation, we will mock the ticket creation logging it to console.
+    console.log(`[PRIORITY SUPPORT TICKET] From User: ${req.user.id} - Subject: ${subject || 'General'} - Message: ${message}`);
+
+    res.json({ success: true, ticketId: 'TKT-' + crypto.randomBytes(4).toString('hex').toUpperCase() });
+  } catch (error) {
+    console.error('Support ticket error:', error);
+    res.status(500).json({ error: 'Failed to submit support ticket' });
   }
 });
 

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import SubscriptionManager from './SubscriptionManager';
 import BillingHistory from './BillingHistory';
-import { getProfile, updateProfile } from '../api';
-import { User, Mail, FileText, Loader, Key, MessageSquare, Crown, Copy, Eye, EyeOff, Save, KeyRound, Camera } from 'lucide-react';
+import { getProfile, updateProfile, uploadAvatar, generateApiKey, getApiKeys, contactSupport } from '../api';
+import { User, Mail, FileText, Loader, Key, MessageSquare, Crown, Copy, Eye, EyeOff, Save, KeyRound, Camera, Plus, Trash2 } from 'lucide-react';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as Tabs from '@radix-ui/react-tabs';
@@ -21,8 +21,20 @@ function Profile({ user, setUser, onLogout }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+
+  // Avatar UI state
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  // API Keys state
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
-  const [mockApiKey, setMockApiKey] = useState('qz_live_593021948x19d9fa02');
+  const [activeRawKey, setActiveRawKey] = useState(null);
+  const [apiKeys, setApiKeys] = useState([]);
+  const [loadingKeys, setLoadingKeys] = useState(false);
+
+  // Support state
+  const [sendingSupport, setSendingSupport] = useState(false);
+
   const { isPremium } = useSubscription();
 
   const {
@@ -57,14 +69,31 @@ function Profile({ user, setUser, onLogout }) {
     try {
       const response = await getProfile();
       if (response.data) {
+        setUser(response.data); // Make sure user object has avatarUrl
         setValue('fullName', response.data.fullName || '');
         setValue('email', response.data.email || '');
         setValue('bio', response.data.bio || '');
+      }
+
+      if (isPremium) {
+        loadApiKeys();
       }
     } catch (error) {
       console.error('Error loading profile:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadApiKeys = async () => {
+    setLoadingKeys(true);
+    try {
+      const response = await getApiKeys();
+      setApiKeys(response.data);
+    } catch (e) {
+      console.error("Failed to load API keys", e);
+    } finally {
+      setLoadingKeys(false);
     }
   };
 
@@ -83,19 +112,57 @@ function Profile({ user, setUser, onLogout }) {
     }
   };
 
-  const generateNewKey = () => {
-    // Generate a secure-looking random key
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    let newKey = 'qz_live_';
-    for (let i = 0; i < 24; i++) {
-      newKey += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    setMockApiKey(newKey);
-    setApiKeyVisible(true);
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(mockApiKey);
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setAvatarUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      const res = await uploadAvatar(formData);
+      setUser({ ...user, avatarUrl: res.data.avatarUrl });
+      setMessage('Avatar updated successfully!');
+    } catch (err) {
+      setMessage('Failed to upload avatar');
+      console.error("Avatar error:", err);
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const handleGenerateKey = async () => {
+    try {
+      const res = await generateApiKey();
+      setActiveRawKey(res.data.rawKey);
+      setApiKeyVisible(true);
+      loadApiKeys();
+    } catch (e) {
+      alert("Failed to generate key. Please try again.");
+    }
+  };
+
+  const handleSupportTicket = async () => {
+    const msg = prompt("Please briefly describe your issue:");
+    if (!msg) return;
+
+    setSendingSupport(true);
+    try {
+      await contactSupport({ message: msg, subject: "Priority Support" });
+      alert("Support ticket created successfully! Our engineering team will email you shortly.");
+    } catch (e) {
+      alert("Failed to create ticket");
+    } finally {
+      setSendingSupport(false);
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
     alert('API Key copied to clipboard!');
   };
 
@@ -124,14 +191,25 @@ function Profile({ user, setUser, onLogout }) {
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             className="absolute inset-0 rounded-full bg-brand-400 blur-md -z-10"
           />
-          <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-brand-400 to-purple-500 shadow-xl flex items-center justify-center transform hover:scale-105 transition-transform duration-300 border-4 border-white dark:border-slate-800 z-10 relative">
-            <span className="text-4xl font-black text-white">{user.username[0].toUpperCase()}</span>
+          <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-brand-400 to-purple-500 shadow-xl flex items-center justify-center transform hover:scale-105 transition-transform duration-300 border-4 border-white dark:border-slate-800 z-10 relative overflow-hidden">
+            {user.avatarUrl ? (
+              <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-4xl font-black text-white">{user.username[0].toUpperCase()}</span>
+            )}
+            {avatarUploading && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <Loader className="w-6 h-6 text-white animate-spin" />
+              </div>
+            )}
           </div>
-          {/* Edit Badge */}
+          {/* Edit Badge hidden input */}
+          <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleAvatarUpload} />
           <button
-            className="absolute bottom-0 right-0 p-2 rounded-full bg-white shadow-md border-2 border-slate-100 hover:bg-slate-50 transition-colors z-20 text-slate hover:text-brand-500 cursor-pointer group"
-            title="Change Avatar (Coming Soon)"
-            onClick={() => alert('Avatar upload coming soon!')}
+            className="absolute bottom-0 right-0 p-2 rounded-full bg-white shadow-md border-2 border-slate-100 hover:bg-slate-50 transition-colors z-20 text-slate hover:text-brand-500 cursor-pointer group disabled:opacity-50"
+            title="Change Avatar"
+            onClick={handleAvatarClick}
+            disabled={avatarUploading}
           >
             <Camera className="w-4 h-4 group-hover:scale-110 transition-transform" />
           </button>
@@ -293,30 +371,55 @@ function Profile({ user, setUser, onLogout }) {
                   Generate secure tokens to authenticate your external requests to the Quizzer Platform APIs. Keep these secret.
                 </p>
 
-                <div className="p-4 bg-white border-2 border-slate-200 rounded-xl mb-6 flex flex-col sm:flex-row gap-4 justify-between items-center shadow-inner">
-                  <div className="flex-1 w-full flex items-center justify-between bg-slate-100 rounded-lg px-4 py-3 font-mono text-sm tracking-wide text-ink overflow-hidden">
-                    <span className={`${!apiKeyVisible ? 'blur-sm select-none' : ''}`}>
-                      {mockApiKey}
-                    </span>
+                {activeRawKey && (
+                  <div className="p-4 bg-white border-2 border-brand-300 rounded-xl mb-6 flex flex-col sm:flex-row gap-4 justify-between items-center shadow-lg transform -translate-y-2">
+                    <div className="flex-1 w-full">
+                      <p className="text-xs font-bold text-brand-500 mb-2 uppercase tracking-wide">New Unencrypted Key Generated</p>
+                      <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 font-mono text-sm tracking-wide text-ink overflow-hidden">
+                        <span className={`${!apiKeyVisible ? 'blur-sm select-none' : ''}`}>
+                          {activeRawKey}
+                        </span>
+                        <button
+                          onClick={() => setApiKeyVisible(!apiKeyVisible)}
+                          className="ml-4 p-1 rounded-md hover:bg-slate-200 transition-colors text-slate-500"
+                          title={apiKeyVisible ? "Hide Key" : "Reveal Key"}
+                        >
+                          {apiKeyVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-2">Make sure to copy your personal API key now. You won't be able to see it again!</p>
+                    </div>
                     <button
-                      onClick={() => setApiKeyVisible(!apiKeyVisible)}
-                      className="ml-4 p-1 rounded-md hover:bg-slate-200 transition-colors text-slate-500"
-                      title={apiKeyVisible ? "Hide Key" : "Reveal Key"}
+                      onClick={() => copyToClipboard(activeRawKey)}
+                      className="btn-accent whitespace-nowrap px-4 py-2 flex items-center gap-2 shrink-0 h-10"
                     >
-                      {apiKeyVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      <Copy className="w-4 h-4" /> Copy Key
                     </button>
                   </div>
-                  <button
-                    onClick={copyToClipboard}
-                    className="btn-secondary whitespace-nowrap px-4 py-2 flex items-center gap-2 shrink-0"
-                  >
-                    <Copy className="w-4 h-4" /> Copy Key
-                  </button>
+                )}
+
+                <div className="mb-6 space-y-3">
+                  <h3 className="text-xs font-bold text-slate uppercase tracking-wider mb-2">Active Keys</h3>
+
+                  {loadingKeys ? (
+                    <div className="flex justify-center p-4"><Loader className="w-5 h-5 text-brand-500 animate-spin" /></div>
+                  ) : apiKeys.length > 0 ? (
+                    apiKeys.map((key) => (
+                      <div key={key.id} className="flex items-center justify-between bg-white border border-slate-200 p-3 rounded-lg">
+                        <div className="font-mono text-sm text-slate-600">{key.keyPrefix}************</div>
+                        <div className="text-xs font-semibold text-slate-400">Created: {new Date(key.createdAt).toLocaleDateString()}</div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-sm font-semibold text-slate-400 bg-white/50 border border-slate-200 p-4 rounded-lg text-center">
+                      You haven't generated any API keys yet.
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-start">
-                  <button onClick={generateNewKey} className="btn-primary py-2 px-5 text-sm flex items-center gap-2">
-                    <Key className="w-4 h-4" /> Generate New Key
+                  <button onClick={handleGenerateKey} className="btn-primary py-2 px-5 text-sm flex items-center gap-2">
+                    <Plus className="w-4 h-4" /> Generate New Key
                   </button>
                 </div>
               </motion.div>
@@ -331,8 +434,13 @@ function Profile({ user, setUser, onLogout }) {
                   Skip the queue. As a Premium member, you get priority engineering and data ingestion support 24x7.
                 </p>
                 <div className="flex justify-start">
-                  <button className="btn-accent py-2 px-5 text-sm" onClick={() => alert('Opening priority chat widget...')}>
-                    Contact Engineering
+                  <button
+                    className="btn-accent py-2 px-5 text-sm flex items-center gap-2"
+                    onClick={handleSupportTicket}
+                    disabled={sendingSupport}
+                  >
+                    {sendingSupport ? <Loader className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
+                    {sendingSupport ? 'Sending...' : 'Contact Engineering'}
                   </button>
                 </div>
               </motion.div>

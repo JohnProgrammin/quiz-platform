@@ -140,6 +140,18 @@ async function createTables() {
     `;
     console.log('✅ Weakness Quizzes table created');
 
+    // Create api_keys table
+    await sql`
+      CREATE TABLE IF NOT EXISTS api_keys (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        key_hash VARCHAR(255) UNIQUE NOT NULL,
+        key_prefix VARCHAR(30) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    console.log('✅ API Keys table created');
+
     // Create subscriptions table
     await sql`
       CREATE TABLE IF NOT EXISTS subscriptions (
@@ -215,6 +227,9 @@ async function createTables() {
     await sql`CREATE INDEX IF NOT EXISTS idx_weakness_quizzes_user_id ON weakness_quizzes(user_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_weakness_quizzes_parent_attempt_id ON weakness_quizzes(parent_attempt_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_weakness_quizzes_created_at ON weakness_quizzes(created_at DESC)`;
+
+    // API Keys indexes
+    await sql`CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id)`;
 
     // Subscriptions indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id)`;
