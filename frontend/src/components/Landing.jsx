@@ -319,45 +319,41 @@ function Landing() {
         </div>
       </nav>
 
-      {/* ── Premium Hero ── */}
-      <section className="relative pt-32 pb-20 sm:pt-48 sm:pb-32 px-4 overflow-hidden min-h-[90vh] flex flex-col justify-center">
-        {/* Animated Mesh Orbs */}
-        <div className="mesh-orb w-[600px] h-[600px] bg-brand-400/30 -top-40 -left-20" />
-        <div className="mesh-orb w-[500px] h-[500px] bg-purple-500/20 top-20 -right-20" style={{ animationDelay: '-5s' }} />
-        <div className="mesh-orb w-[800px] h-[800px] bg-blue-300/20 -bottom-60 left-1/2 -ml-[400px]" style={{ animationDelay: '-10s' }} />
+      {/* ── Playful Gamified Hero ── */}
+      <section className="relative pt-32 pb-20 sm:pt-48 sm:pb-32 px-4 bg-white overflow-hidden min-h-[90vh] flex flex-col justify-center border-b-2 border-slate-100">
 
         <div ref={heroRef} className={`reveal ${heroVisible ? 'visible' : ''}`}>
           <div className="max-w-6xl mx-auto text-center relative z-10 flex flex-col items-center">
 
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-border mb-8 shadow-sm">
-              <span className="flex h-2 w-2 rounded-full bg-brand-500 animate-pulse"></span>
-              <span className="text-xs font-bold tracking-wide text-slate uppercase">FloraQuiz 2.0 is Here</span>
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-brand-50 border-2 border-brand-200 mb-8 font-bold text-brand-600 uppercase tracking-widest text-xs">
+              <span className="flex h-2.5 w-2.5 rounded-full bg-brand-500"></span>
+              FloraQuiz 2.0 is Here
             </div>
 
-            <h1 className="text-display-hero text-ink mb-6">
+            <h1 className="text-5xl sm:text-7xl font-black text-ink mb-6 tracking-tight leading-[1.1]">
               {t('landing.hero.title')}
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-purple-600 to-brand-500">
+              <span className="text-brand-500">
                 {t('landing.hero.titleSpan')}
               </span>
             </h1>
 
-            <p className="text-lg sm:text-2xl text-slate font-medium max-w-3xl mx-auto mb-12 leading-relaxed">
+            <p className="text-lg sm:text-xl text-slate font-bold max-w-2xl mx-auto mb-12 leading-relaxed">
               {t('landing.hero.subtitle')}
               <br />
-              <strong className="text-ink font-bold">{t('landing.hero.subtitleStrong')}</strong> — {t('landing.hero.subtitleCta')}
+              <strong className="text-ink font-extrabold">{t('landing.hero.subtitleStrong')}</strong> — {t('landing.hero.subtitleCta')}
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20 w-full max-w-md mx-auto sm:max-w-none">
-              <Link to="/signup" className="magnetic-wrap group w-full sm:w-auto">
-                <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-purple-600 rounded-[2rem] blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
-                <button className="relative w-full sm:w-auto px-10 py-5 bg-ink text-white font-black text-lg rounded-[2rem] hover:scale-105 transition-transform duration-300 shadow-xl flex items-center justify-center gap-3">
-                  {t('landing.hero.startLearning').toUpperCase()}
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20 w-full max-w-md mx-auto sm:max-w-none">
+              <Link to="/signup" className="w-full sm:w-auto">
+                <button className="relative w-full sm:w-auto px-10 py-5 bg-brand-500 text-white font-extrabold text-lg rounded-2xl shadow-btn-brand border-none hover:bg-brand-400 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-3 uppercase tracking-wide">
+                  {t('landing.hero.startLearning')}
                 </button>
               </Link>
-              <Link to="/login" className="px-10 py-5 text-ink font-bold text-lg rounded-[2rem] hover:bg-slate-100 transition-colors duration-300 w-full sm:w-auto flex justify-center border border-transparent hover:border-border">
-                {t('landing.hero.alreadyHaveAccount').toUpperCase()}
+              <Link to="/login" className="w-full sm:w-auto">
+                <button className="relative w-full sm:w-auto px-10 py-5 bg-white text-brand-500 font-extrabold text-lg rounded-2xl shadow-card border-2 border-slate-200 hover:bg-slate-50 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-3 uppercase tracking-wide">
+                  {t('landing.hero.alreadyHaveAccount')}
+                </button>
               </Link>
             </div>
 
@@ -655,9 +651,9 @@ function Landing() {
               <div
                 key={i}
                 ref={setPricingRef(i)}
-                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} ${tier.highlighted ? 'border-flow rounded-3xl z-10' : 'rounded-3xl z-0'}`}
+                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} ${tier.highlighted ? 'z-10 bg-brand-50 rounded-[2rem] border-4 border-brand-500 shadow-card transform md:-translate-y-4' : 'z-0 bg-white rounded-[2rem] border-2 border-slate-200 border-b-[6px] border-b-slate-300'}`}
               >
-                <div className={`relative p-8 h-full rounded-3xl transition-transform duration-500 bg-white ${tier.highlighted ? 'glass-panel md:scale-105 shadow-2xl m-[2px]' : 'border border-slate-200 hover:shadow-xl'}`}>
+                <div className={`relative p-8 h-full rounded-[2rem] transition-transform duration-300`}>
                   {/* Badge */}
                   {tier.badge && (
                     <div className="absolute -top-4 left-0 right-0 flex justify-center">
@@ -708,7 +704,7 @@ function Landing() {
                   {/* CTA Button */}
                   <Link
                     to={tier.href}
-                    className={`block w-full text-center py-4 rounded-2xl font-black transition-all ${tier.highlighted ? 'bg-ink text-white shadow-xl hover:-translate-y-1' : 'bg-surface text-ink hover:bg-slate-100'}`}
+                    className={`mt-4 block w-full text-center py-4 rounded-2xl font-black transition-all border-none ${tier.highlighted ? 'bg-brand-500 text-white shadow-btn-brand active:shadow-none active:translate-y-1 hover:bg-brand-400' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-b-4 border-slate-300 active:border-b-0 active:translate-y-1'}`}
                   >
                     {tier.cta}
                   </Link>

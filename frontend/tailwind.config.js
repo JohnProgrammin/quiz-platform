@@ -4,18 +4,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ── Primary brand: vibrant violet-indigo (Duolingo-style but unique) ──
+        // ── Primary brand: Gamified Duolingo Green ──
         brand: {
-          50: '#f3f0ff',
-          100: '#e9e3ff',
-          200: '#d6ccff',
-          300: '#b8a9ff',
-          400: '#9b7dff',
-          500: '#7c5bfc',   // primary violet
-          600: '#6b3feb',
-          700: '#5a2ed4',
-          800: '#4822ad',
-          900: '#39198c',
+          50: '#f4fbf0',
+          100: '#e5f6db',
+          200: '#caedb8',
+          300: '#a3df87',
+          400: '#75cb51',
+          500: '#58CC02',   // Primary Duolingo Green
+          600: '#43a501',
+          700: '#348001',
+          800: '#2c6603',
+          900: '#255406',
         },
         // ── Accent: coral-pink for danger/heart ──
         heart: '#ff4b6a',
@@ -85,15 +85,17 @@ export default {
 
       boxShadow: {
         // 3D push-button shadows
+        'btn': '0 4px 0 0 rgba(0, 0, 0, 0.15)',
+        'btn-brand': '0 4px 0 0 #43a501', // Darker green for bottom edge
+        'btn-blue': '0 4px 0 0 #1cb0f6',
+        'btn-red': '0 4px 0 0 #ff4b4b',
         'btn-violet': '0 4px 0 0 #5a2ed4',
         'btn-pink': '0 4px 0 0 #be185d',
         'btn-amber': '0 4px 0 0 #b45309',
-        'btn-teal': '0 4px 0 0 #0e7490',
-        'btn-red': '0 4px 0 0 #b91c1c',
         'sidebar': '2px 0 24px 0 rgba(17,14,42,0.18)',
-        'card': '0 2px 16px 0 rgba(124,91,252,0.08)',
-        'card-hover': '0 6px 32px 0 rgba(124,91,252,0.16)',
-        'glow-violet': '0 0 32px 0 rgba(124,91,252,0.35)',
+        'card': '0 2px 0 0 #e5e5e5', // Flat chunky card shadow
+        'card-hover': '0 4px 0 0 #e5e5e5',
+        'glow-brand': '0 0 32px 0 rgba(88,204,2,0.35)',
       },
 
       keyframes: {
@@ -105,8 +107,8 @@ export default {
         },
         // XP bar fill pulse
         xpPulse: {
-          '0%, 100%': { boxShadow: '0 0 0 0 rgba(124,91,252,0.5)' },
-          '50%': { boxShadow: '0 0 0 8px rgba(124,91,252,0)' },
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(88,204,2,0.5)' },
+          '50%': { boxShadow: '0 0 0 8px rgba(88,204,2,0)' },
         },
         // Pop in for badges
         popIn: {
