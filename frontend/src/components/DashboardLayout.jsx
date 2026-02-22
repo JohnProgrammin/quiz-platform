@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import {
-    Home, FileText, BarChart3, Sparkles,
+    Home, FileText, Sparkles,
     LogOut, Crown, ChevronLeft, ChevronRight, User, Zap, Globe
 } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -20,9 +20,8 @@ function DashboardLayout({ user, onLogout, children }) {
     const navItems = [
         { path: '/dashboard', icon: Home, label: t('navbar.home') },
         { path: '/notes', icon: FileText, label: t('navbar.notes') },
-        { path: '/analytics', icon: BarChart3, label: t('navbar.analytics') },
         ...(isPremium ? [{
-            path: '/teaching',
+            path: '/ai-teaching',
             icon: Sparkles,
             label: t('navbar.aiTeaching'),
             badge: '✨'

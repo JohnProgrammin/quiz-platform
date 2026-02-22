@@ -13,7 +13,6 @@ import Quiz from './pages/Quiz';
 import QuizResults from './components/QuizResults';
 import PricingPage from './components/PricingPage';
 import AITeaching from './components/AITeaching';
-import Analytics from './pages/Analytics';
 import PaymentCallback from './components/PaymentCallback';
 import ErrorBoundary from './components/ErrorBoundary';
 import Loading from './components/Loading';
@@ -140,10 +139,6 @@ function App() {
             <Route
               path="/ai-teaching"
               element={user ? <WithLayout><AITeaching user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
-            />
-            <Route
-              path="/analytics"
-              element={user ? <WithLayout><Analytics user={user} onLogout={handleLogout} /></WithLayout> : <Navigate to="/login" />}
             />
             <Route
               path="/quiz/:id"
