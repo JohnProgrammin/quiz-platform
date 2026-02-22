@@ -91,10 +91,10 @@ export const AnalyticsTab = ({ tier = 'free', recentAttempts = [], quizzes = [],
         {/* Info Card */}
         <motion.div
           variants={itemVariants}
-          className="bg-violet-50 rounded-xl sm:rounded-2xl border-2 border-violet-200 p-6 sm:p-8 text-center"
+          className="bg-brand-50 rounded-xl sm:rounded-2xl border-2 border-brand-200 p-6 sm:p-8 text-center"
         >
-          <h3 className="text-xl sm:text-2xl font-black text-violet-900 mb-3">Analytics Coming Soon</h3>
-          <p className="text-sm sm:text-base text-violet-700 font-bold mb-6">
+          <h3 className="text-xl sm:text-2xl font-black text-brand-900 mb-3">Analytics Coming Soon</h3>
+          <p className="text-sm sm:text-base text-brand-700 font-bold mb-6">
             Unlock detailed performance charts, weak area analysis, and study insights with Pro
           </p>
           <motion.button

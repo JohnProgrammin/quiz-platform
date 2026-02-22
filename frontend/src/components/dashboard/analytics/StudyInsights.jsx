@@ -34,8 +34,8 @@ export const StudyInsights = ({ insights = {} }) => {
       title: 'Most Active Day',
       value: data.mostActiveDay,
       icon: <Calendar className="w-6 h-6" />,
-      gradient: 'from-violet-400 to-violet-300',
-      bgColor: 'bg-violet-50',
+      gradient: 'from-brand-400 to-brand-300',
+      bgColor: 'bg-brand-50',
     },
     {
       title: 'Avg Session Length',

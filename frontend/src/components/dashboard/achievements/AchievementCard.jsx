@@ -24,7 +24,7 @@ export const AchievementCard = ({
       case 'gold':
         return 'from-gold to-flame';
       case 'platinum':
-        return 'from-violet-400 to-indigo-500';
+        return 'from-brand-400 to-brand-500';
       default:
         return 'from-slate-300 to-slate-400';
     }
@@ -39,7 +39,7 @@ export const AchievementCard = ({
       case 'gold':
         return 'text-amber-700';
       case 'platinum':
-        return 'text-violet-700';
+        return 'text-brand-700';
       default:
         return 'text-slate-700';
     }

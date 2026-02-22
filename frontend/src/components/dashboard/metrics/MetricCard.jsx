@@ -8,7 +8,7 @@ export const MetricCard = ({
   label,
   value,
   icon,
-  gradient = 'from-violet-400 to-violet-300',
+  gradient = 'from-brand-400 to-brand-300',
   subtitle,
   progress,
   showProgress = false,
@@ -20,7 +20,7 @@ export const MetricCard = ({
       className="rounded-xl sm:rounded-2xl bg-white border-2 border-border p-4 sm:p-5 md:p-6 relative group overflow-hidden transition-all hover:border-brand-400 hover:shadow-card-hover"
     >
       {/* Animated pulse background on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       {/* Icon */}
       {icon && (

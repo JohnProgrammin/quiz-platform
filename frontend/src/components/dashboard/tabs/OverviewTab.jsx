@@ -56,7 +56,7 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
           label="Level"
           value={gamification?.level || 1}
           icon={<Trophy className="w-7 h-7 fill-white" />}
-          gradient="from-violet-400 to-violet-300"
+          gradient="from-brand-400 to-brand-300"
           subtitle={`${gamification?.totalXP || 0} XP`}
           showProgress={true}
           progress={gamification?.progressToNextLevel || 0}
@@ -136,7 +136,7 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
 
         <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-4 sm:p-5 md:p-6 hover:border-brand-400 transition-all hover:-translate-y-1">
           <div className="flex items-center gap-2 mb-3">
-            <Target className="w-5 h-5 text-purple-500" />
+            <Target className="w-5 h-5 text-brand-500" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-ink">{stats.totalAttempts}</div>
           <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">

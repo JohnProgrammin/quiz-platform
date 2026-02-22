@@ -68,7 +68,7 @@ export const AchievementsTab = ({ achievements = [] }) => {
           </p>
         </div>
         <div className="text-center">
-          <div className="text-3xl sm:text-4xl font-black text-gradient-violet bg-gradient-to-r from-violet-500 to-violet-600 bg-clip-text text-transparent">
+          <div className="text-3xl sm:text-4xl font-black text-gradient-brand bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
             {allAchievements.reduce((sum, a) => sum + (a.unlocked ? a.xpReward : 0), 0)}
           </div>
           <p className="text-xs text-muted font-black uppercase">XP Earned</p>
@@ -85,7 +85,7 @@ export const AchievementsTab = ({ achievements = [] }) => {
             whileTap={{ scale: 0.95 }}
             className={`px-3 sm:px-5 py-2 rounded-lg sm:rounded-xl md:rounded-2xl font-black text-xs sm:text-sm flex items-center gap-2 transition-all flex-shrink-0 ${
               filter === btn.id
-                ? 'bg-violet-600 text-white shadow-btn-violet'
+                ? 'bg-brand-500 text-white shadow-btn'
                 : 'bg-white border-2 border-border text-slate hover:bg-surface hover:border-brand-400'
             }`}
           >
@@ -133,23 +133,23 @@ export const AchievementsTab = ({ achievements = [] }) => {
       {/* Progress Info */}
       <motion.div
         variants={itemVariants}
-        className="bg-violet-50 rounded-xl sm:rounded-2xl border-2 border-violet-200 p-5 sm:p-6"
+        className="bg-brand-50 rounded-xl sm:rounded-2xl border-2 border-brand-200 p-5 sm:p-6"
       >
-        <h3 className="text-base sm:text-lg font-black text-violet-900 mb-4">Achievement Progress</h3>
+        <h3 className="text-base sm:text-lg font-black text-brand-900 mb-4">Achievement Progress</h3>
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="font-bold text-violet-700">Completion</span>
-            <span className="font-black text-violet-900">{Math.round((unlockedCount / totalCount) * 100)}%</span>
+            <span className="font-bold text-brand-700">Completion</span>
+            <span className="font-black text-brand-900">{Math.round((unlockedCount / totalCount) * 100)}%</span>
           </div>
-          <div className="w-full h-3 bg-violet-200 rounded-full overflow-hidden">
+          <div className="w-full h-3 bg-brand-200 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-violet-500 to-indigo-600"
+              className="h-full bg-gradient-to-r from-brand-500 to-brand-600"
               initial={{ width: 0 }}
               animate={{ width: `${(unlockedCount / totalCount) * 100}%` }}
               transition={{ duration: 1, ease: 'easeOut' }}
             />
           </div>
-          <p className="text-sm text-violet-700 font-bold">
+          <p className="text-sm text-brand-700 font-bold">
             {totalCount - unlockedCount} achievement{totalCount - unlockedCount !== 1 ? 's' : ''} remaining
           </p>
         </div>

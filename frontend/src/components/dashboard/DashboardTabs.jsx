@@ -23,13 +23,13 @@ export const DashboardTabs = ({ activeTab, onTabChange }) => {
           onClick={() => handleTabChange(tab.id)}
           className={`px-4 sm:px-6 py-2.5 sm:py-3 font-black rounded-lg sm:rounded-xl md:rounded-2xl transition-all whitespace-nowrap text-xs sm:text-sm md:text-base flex-shrink-0 ${
             activeTab === tab.id
-              ? 'bg-violet-600 text-white shadow-btn-violet'
+              ? 'bg-brand-500 text-white shadow-btn'
               : 'bg-white text-slate border-2 border-border hover:bg-surface hover:border-brand-400'
           }`}
           style={
             activeTab === tab.id
               ? {
-                  boxShadow: '0 4px 0 0 #4c1d95',
+                  boxShadow: '0 4px 0 0 #43a501',
                 }
               : {}
           }

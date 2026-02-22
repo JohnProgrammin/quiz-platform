@@ -13,7 +13,7 @@ export const ProfileHeader = ({ user = {}, level = 1, tier = 'free' }) => {
   const tierLabel = tier.toUpperCase();
   const tierColors = {
     free: 'bg-gray-100 text-gray-700',
-    pro: 'bg-violet-100 text-violet-700',
+    pro: 'bg-brand-100 text-brand-700',
     premium: 'bg-amber-100 text-amber-700',
   };
 
@@ -42,7 +42,7 @@ export const ProfileHeader = ({ user = {}, level = 1, tier = 'free' }) => {
 
         {/* Badges */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-black bg-violet-100 text-violet-700">
+          <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-black bg-brand-100 text-brand-700">
             Level {level}
           </span>
           <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-black ${tierColors[tier]} flex items-center gap-1`}>
