@@ -17,6 +17,9 @@ import Analytics from './pages/Analytics';
 import PaymentCallback from './components/PaymentCallback';
 import ErrorBoundary from './components/ErrorBoundary';
 import Loading from './components/Loading';
+import About from './components/About';
+import Contact from './components/Contact';
+import Privacy from './components/Privacy';
 import { SubscriptionProvider } from './contexts/SubscriptionContext';
 import { getProfile } from './api';
 
@@ -110,6 +113,9 @@ function App() {
               element={!user ? <Signup /> : <Navigate to="/dashboard" />}
             />
             <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Privacy />} />
 
             <Route
               path="/dashboard"

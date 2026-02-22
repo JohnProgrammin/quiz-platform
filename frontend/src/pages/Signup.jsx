@@ -4,7 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Button, PageTransition } from '../components';
 import { SEO } from '../components/SEO';
 import { signup } from '../api';
-import { Mail, Lock, User, AlertCircle, Check } from 'lucide-react';
+import { Email, Lock, Person, Error, CheckCircle } from '@mui/icons-material';
+import AnimatedDots from '../components/AnimatedDots';
 
 /**
  * Signup Page
@@ -85,7 +86,7 @@ export const Signup = () => {
               <div>
                 <label className="block text-sm font-black text-ink mb-2 uppercase tracking-wide">Username</label>
                 <div className="relative">
-                  <User className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
+                  <Person className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
                   <input
                     type="text"
                     name="username"
@@ -102,7 +103,7 @@ export const Signup = () => {
               <div>
                 <label className="block text-sm font-black text-ink mb-2 uppercase tracking-wide">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
+                  <Email className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
                   <input
                     type="email"
                     name="email"
@@ -144,7 +145,7 @@ export const Signup = () => {
                       className={`flex items-center gap-2 text-xs font-bold ${req.check ? 'text-green-500' : 'text-slate-400'}`}
                     >
                       {req.check ? (
-                        <Check className="w-4 h-4" />
+                        <CheckCircle className="w-4 h-4" />
                       ) : (
                         <div className="w-4 h-4 rounded-full border-2 border-slate-300" />
                       )}
@@ -179,7 +180,7 @@ export const Signup = () => {
               {/* Error Message */}
               {error && (
                 <div className="flex gap-2 p-4 rounded-2xl bg-red-50 border-2 border-red-200">
-                  <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                  <Error className="w-5 h-5 text-red-500 flex-shrink-0" />
                   <p className="text-sm font-bold text-red-600">{error}</p>
                 </div>
               )}
@@ -190,7 +191,7 @@ export const Signup = () => {
                 disabled={loading || !isPasswordValid}
                 className="w-full py-4 mt-2 rounded-2xl font-black text-lg bg-brand-500 text-white shadow-btn-brand active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Creating...' : 'Create Account'}
+                {loading ? <AnimatedDots text="Creating" /> : 'Create Account'}
               </button>
             </form>
 
@@ -213,6 +214,12 @@ export const Signup = () => {
               Terms of Service
             </a>
           </p>
+
+          <div className="mt-8 text-center">
+            <Link to="/" className="text-brand-500 font-bold hover:text-brand-400">
+              ← Back to home
+            </Link>
+          </div>
         </motion.div>
       </div>
     </PageTransition>

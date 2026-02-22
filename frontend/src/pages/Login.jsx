@@ -4,7 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Button, PageTransition } from '../components';
 import { SEO } from '../components/SEO';
 import { login } from '../api';
-import { Mail, Lock, AlertCircle } from 'lucide-react';
+import { Email, Lock, Error } from '@mui/icons-material';
+import AnimatedDots from '../components/AnimatedDots';
 
 /**
  * Login Page
@@ -57,7 +58,7 @@ export const Login = () => {
               <div>
                 <label className="block text-sm font-black text-ink mb-2 uppercase tracking-wide">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
+                  <Email className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
                   <input
                     type="email"
                     value={email}
@@ -88,7 +89,7 @@ export const Login = () => {
               {/* Error Message */}
               {error && (
                 <div className="flex gap-2 p-4 rounded-2xl bg-red-50 border-2 border-red-200">
-                  <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                  <Error className="w-5 h-5 text-red-500 flex-shrink-0" />
                   <p className="text-sm font-bold text-red-600">{error}</p>
                 </div>
               )}
@@ -99,7 +100,7 @@ export const Login = () => {
                 disabled={loading}
                 className="w-full py-4 mt-2 rounded-2xl font-black text-lg bg-brand-500 text-white shadow-btn-brand active:shadow-none active:translate-y-1 transition-all disabled:opacity-75 disabled:cursor-not-allowed"
               >
-                {loading ? 'Signing In...' : 'Sign In'}
+                {loading ? <AnimatedDots text="Signing In" /> : 'Sign In'}
               </button>
             </form>
 
@@ -122,6 +123,12 @@ export const Login = () => {
               Terms of Service
             </a>
           </p>
+
+          <div className="mt-8 text-center">
+            <Link to="/" className="text-brand-500 font-bold hover:text-brand-400">
+              ← Back to home
+            </Link>
+          </div>
         </motion.div>
       </div>
     </PageTransition>

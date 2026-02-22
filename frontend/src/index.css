@@ -150,18 +150,20 @@
      BUTTONS — 3-D push style
   ───────────────────────────────────────────── */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-violet-500 text-white font-black rounded-2xl select-none cursor-pointer transition-all duration-100 active:translate-y-1;
-    box-shadow: 0 4px 0 0 #5a2ed4;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-brand-500 text-white font-black rounded-2xl select-none cursor-pointer transition-all duration-100 active:translate-y-1;
+    box-shadow: 0 4px 0 0 #43a501;
+    /* darker brand 600 */
     border: none;
     outline: none;
   }
 
   .btn-primary:hover:not(:disabled) {
-    @apply bg-violet-600;
+    @apply bg-brand-400;
+    /* lighter hover */
   }
 
   .btn-primary:active:not(:disabled) {
-    box-shadow: 0 2px 0 0 #5a2ed4;
+    box-shadow: 0 2px 0 0 #43a501;
   }
 
   .btn-primary:disabled {
