@@ -6,7 +6,7 @@ import Landing from './components/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import DashboardLayout from './components/DashboardLayout';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './components/Dashboard';
 import Profile from './pages/Profile';
 import Notes from './components/Notes';
 import Quiz from './pages/Quiz';
