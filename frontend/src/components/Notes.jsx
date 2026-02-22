@@ -39,6 +39,7 @@ function Notes({ user }) {
 
   const isFree = tier === 'free';
   const isPro = tier === 'pro' || tier === 'premium';
+  const isPremium = tier === 'premium';
   const noteLimit = isFree ? 3 : Infinity;
   const canUploadMore = notes.length < noteLimit;
   const [uploadProgress, setUploadProgress] = useState(0);

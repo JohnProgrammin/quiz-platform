@@ -4,7 +4,6 @@
  */
 
 import * as Sentry from '@sentry/react';
-// Note: Replay import is conditional - only used if available at runtime
 
 /**
  * Initialize Sentry for error tracking
