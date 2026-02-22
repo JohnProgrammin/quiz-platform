@@ -69,12 +69,12 @@ export const DashboardContainer = ({ user }) => {
           }),
         ]);
 
-        // Extract data
-        const quizHistory = quizHistoryRes?.data || [];
-        const quizzesData = quizzesRes?.data || [];
-        const notesData = notesRes?.data || [];
-        const statsData = userStatsRes?.data || {};
-        const achievementsData = achievementsRes?.data || [];
+        // Extract data - handle both { data: [...] } and direct array formats
+        const quizHistory = Array.isArray(quizHistoryRes?.data) ? quizHistoryRes.data : (Array.isArray(quizHistoryRes) ? quizHistoryRes : []);
+        const quizzesData = Array.isArray(quizzesRes?.data) ? quizzesRes.data : (Array.isArray(quizzesRes) ? quizzesRes : []);
+        const notesData = Array.isArray(notesRes?.data) ? notesRes.data : (Array.isArray(notesRes) ? notesRes : []);
+        const statsData = (typeof userStatsRes?.data === 'object' && !Array.isArray(userStatsRes?.data)) ? userStatsRes.data : (typeof userStatsRes === 'object' && !Array.isArray(userStatsRes) ? userStatsRes : {});
+        const achievementsData = Array.isArray(achievementsRes?.data) ? achievementsRes.data : (Array.isArray(achievementsRes) ? achievementsRes : []);
 
         // Calculate stats from real data
         const totalNotes = notesData.length || 0;

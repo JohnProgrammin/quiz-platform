@@ -27,7 +27,7 @@
 
   /* Selection colour */
   ::selection {
-    background: #c3adff;
+    background: #a3df87;
     color: #1a1a2e;
   }
 
@@ -56,12 +56,10 @@
 
   /* ── Sidebar (desktop) ── */
   .sidebar {
-    @apply fixed left-0 top-0 h-full z-40 flex flex-col items-center py-6 px-3;
+    @apply fixed left-0 top-0 h-full z-40 flex flex-col items-center py-6 px-3 bg-white;
     width: 76px;
-    background: #110e2a;
-    /* owl.dark */
-    border-right: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 2px 0 24px 0 rgba(17, 14, 42, 0.28);
+    border-right: 2px solid #e8e8e8;
+    box-shadow: 2px 0 8px 0 rgba(0, 0, 0, 0.05);
     transition: width 0.22s cubic-bezier(0.34, 1.2, 0.64, 1);
   }
 
@@ -84,29 +82,29 @@
 
   /* ── Sidebar nav items ── */
   .sidebar-nav-item {
-    @apply flex items-center justify-center w-14 h-14 rounded-2xl text-white/60 cursor-pointer transition-all duration-200 no-underline mb-1;
+    @apply flex items-center justify-center w-14 h-14 rounded-2xl text-slate cursor-pointer transition-all duration-200 no-underline mb-1;
   }
 
   .sidebar-nav-item:hover {
-    @apply bg-white/10 text-white;
+    @apply bg-brand-50 text-brand-500;
   }
 
   .sidebar-nav-item.active {
-    @apply bg-violet-600 text-white;
-    box-shadow: 0 4px 0 0 #4c1d95;
+    @apply bg-brand-500 text-white;
+    box-shadow: 0 4px 0 0 #43a501;
   }
 
   .sidebar-nav-item-expanded {
-    @apply flex items-center gap-3 px-4 h-12 w-full rounded-2xl text-white/60 font-black cursor-pointer transition-all duration-200 no-underline text-sm mb-1;
+    @apply flex items-center gap-3 px-4 h-12 w-full rounded-2xl text-slate font-black cursor-pointer transition-all duration-200 no-underline text-sm mb-1;
   }
 
   .sidebar-nav-item-expanded:hover {
-    @apply bg-white/10 text-white;
+    @apply bg-brand-50 text-brand-500;
   }
 
   .sidebar-nav-item-expanded.active {
-    @apply bg-violet-600 text-white;
-    box-shadow: 0 4px 0 0 #4c1d95;
+    @apply bg-brand-500 text-white;
+    box-shadow: 0 4px 0 0 #43a501;
   }
 
   /* ── Mobile bottom tab bar ── */
@@ -123,11 +121,11 @@
   }
 
   .mobile-tab-item:hover {
-    @apply text-violet-500;
+    @apply text-brand-500;
   }
 
   .mobile-tab-item.active {
-    @apply text-violet-600;
+    @apply text-brand-500;
   }
 
   .mobile-tab-item.active svg {
@@ -171,12 +169,12 @@
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-violet-600 font-black rounded-2xl border-2 border-violet-300 select-none cursor-pointer transition-all duration-100 active:translate-y-1;
-    box-shadow: 0 4px 0 0 #c3adff;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-brand-500 font-black rounded-2xl border-2 border-brand-200 select-none cursor-pointer transition-all duration-100 active:translate-y-1;
+    box-shadow: 0 4px 0 0 #a3df87;
   }
 
   .btn-secondary:hover:not(:disabled) {
-    @apply bg-violet-50 border-violet-400;
+    @apply bg-brand-50 border-brand-400;
   }
 
   .btn-secondary:active:not(:disabled) {
