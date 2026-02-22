@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Lock } from 'lucide-react';
+import { Lock, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PerformanceChart from '../analytics/PerformanceChart';
 import WeakTopicsCard from '../analytics/WeakTopicsCard';
@@ -10,6 +10,7 @@ import useSound from '../../../hooks/useSound';
  * Analytics Tab - Performance charts and insights
  * Shows trends, weak areas, and study patterns
  * Pro+ feature (gated for Free users)
+ * USES REAL DATA ONLY
  */
 export const AnalyticsTab = ({ tier = 'free', recentAttempts = [], quizzes = [], notes = [] }) => {
   const navigate = useNavigate();
@@ -32,27 +33,22 @@ export const AnalyticsTab = ({ tier = 'free', recentAttempts = [], quizzes = [],
     },
   };
 
-  // Generate performance data from recent attempts
+  // Generate performance data from REAL quiz attempts
   const performanceData = recentAttempts.length > 0
     ? recentAttempts.slice(0, 7).reverse().map(attempt => ({
-        date: new Date(attempt.completedAt || attempt.completed_at).toLocaleDateString(),
+        date: new Date(attempt.completedAt || attempt.completed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         score: attempt.percentage || 0
       }))
-    : [
-        { date: '2026-02-15', score: 75 },
-        { date: '2026-02-16', score: 82 },
-        { date: '2026-02-17', score: 78 },
-        { date: '2026-02-18', score: 90 },
-        { date: '2026-02-19', score: 85 },
-        { date: '2026-02-20', score: 88 },
-        { date: '2026-02-21', score: 92 },
-      ];
+    : [];
 
-  const weakTopics = [
-    { topic: 'Algebra', strength: 45, quizzesTaken: 8 },
-    { topic: 'Calculus', strength: 72, quizzesTaken: 5 },
-    { topic: 'Geometry', strength: 88, quizzesTaken: 3 },
-  ];
+  // Calculate real stats from quiz history
+  const avgScore = recentAttempts.length > 0
+    ? Math.round(recentAttempts.reduce((sum, a) => sum + (a.percentage || 0), 0) / recentAttempts.length)
+    : 0;
+
+  const totalStudyTime = recentAttempts.length > 0
+    ? Math.round(recentAttempts.reduce((sum, a) => sum + (a.timeSpent || 0), 0) / 60)
+    : 0;
 
   const handleUpgrade = () => {
     playClickSound();
@@ -72,14 +68,19 @@ export const AnalyticsTab = ({ tier = 'free', recentAttempts = [], quizzes = [],
         {/* Blurred Preview */}
         <motion.div variants={itemVariants} className="relative">
           <div className="blur-sm pointer-events-none opacity-50">
-            <PerformanceChart data={performanceData} />
+            {performanceData.length > 0 && <PerformanceChart data={performanceData} />}
+            {performanceData.length === 0 && (
+              <div className="h-80 bg-white rounded-xl border-2 border-border flex items-center justify-center">
+                <p className="text-slate">No quiz data yet</p>
+              </div>
+            )}
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleUpgrade}
-              className="btn-primary flex items-center gap-2"
+              className="px-6 py-3 bg-gradient-to-r from-brand-400 to-brand-500 text-white font-black rounded-xl hover:from-brand-500 hover:to-brand-600 transition-all flex items-center gap-2"
             >
               <Lock className="w-5 h-5" />
               Upgrade to Pro for Analytics
@@ -100,7 +101,7 @@ export const AnalyticsTab = ({ tier = 'free', recentAttempts = [], quizzes = [],
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleUpgrade}
-            className="btn-primary"
+            className="px-6 py-3 bg-gradient-to-r from-brand-400 to-brand-500 text-white font-black rounded-xl hover:from-brand-500 hover:to-brand-600 transition-all"
           >
             See Pro Features
           </motion.button>
@@ -109,68 +110,54 @@ export const AnalyticsTab = ({ tier = 'free', recentAttempts = [], quizzes = [],
     );
   }
 
-  // Pro/Premium view with full analytics
+  // Pro/Premium view with REAL data
   return (
     <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-8"
+      className="space-y-6 sm:space-y-8"
     >
-      {/* Performance Chart */}
-      <motion.div variants={itemVariants}>
-        <PerformanceChart data={performanceData} />
-      </motion.div>
+      {/* Performance Chart - only show if has data */}
+      {performanceData.length > 0 && (
+        <motion.div variants={itemVariants}>
+          <PerformanceChart data={performanceData} />
+        </motion.div>
+      )}
 
-      {/* Study Insights Grid */}
-      <motion.div variants={itemVariants}>
-        <h2 className="text-2xl font-black text-ink mb-4">Study Insights</h2>
-        <StudyInsights />
-      </motion.div>
+      {/* No Data State */}
+      {performanceData.length === 0 && (
+        <motion.div variants={itemVariants} className="text-center py-12">
+          <TrendingUp className="w-12 h-12 text-muted mx-auto mb-4" />
+          <h3 className="text-xl font-black text-ink mb-2">No Quiz Data Yet</h3>
+          <p className="text-slate font-bold">Complete some quizzes to see your performance analytics</p>
+        </motion.div>
+      )}
 
-      {/* Weak Topics */}
-      <motion.div variants={itemVariants}>
-        <WeakTopicsCard topics={weakTopics} />
-      </motion.div>
-
-      {/* Additional Stats */}
-      <motion.div
-        variants={itemVariants}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"
-      >
-        {/* Consistency Stats */}
-        <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-5 sm:p-6">
-          <h3 className="text-base sm:text-lg font-black text-ink mb-4">Learning Consistency</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="font-bold text-slate">This Week</span>
-              <span className="font-black text-brand-500">5/7 days</span>
-            </div>
-            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-brand-400 to-brand-500"
-                initial={{ width: 0 }}
-                animate={{ width: '71%' }}
-                transition={{ duration: 1, ease: 'easeOut' }}
-              />
-            </div>
-            <p className="text-xs text-slate font-bold">Keep it up! 🔥</p>
+      {/* Study Stats */}
+      {recentAttempts.length > 0 && (
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-5 sm:p-6">
+            <h3 className="text-base sm:text-lg font-black text-ink mb-4">Average Score</h3>
+            <div className="text-4xl font-black text-brand-500 mb-2">{avgScore}%</div>
+            <p className="text-sm text-slate font-bold">From {recentAttempts.length} quizzes</p>
           </div>
-        </div>
 
-        {/* Time Investment */}
-        <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-5 sm:p-6">
-          <h3 className="text-base sm:text-lg font-black text-ink mb-4">Time Investment</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="font-bold text-slate">This Month</span>
-              <span className="font-black text-gold">23h 45m</span>
-            </div>
-            <div className="text-4xl font-black text-gold mb-2">📈</div>
-            <p className="text-xs text-slate font-bold">+18% from last month</p>
+          <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-5 sm:p-6">
+            <h3 className="text-base sm:text-lg font-black text-ink mb-4">Total Study Time</h3>
+            <div className="text-4xl font-black text-gold mb-2">{totalStudyTime}m</div>
+            <p className="text-sm text-slate font-bold">Across all quizzes</p>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
+
+      {/* Study Insights */}
+      {recentAttempts.length > 0 && (
+        <motion.div variants={itemVariants}>
+          <h2 className="text-xl sm:text-2xl font-black text-ink mb-4">Study Insights</h2>
+          <StudyInsights />
+        </motion.div>
+      )}
     </motion.div>
   );
 };

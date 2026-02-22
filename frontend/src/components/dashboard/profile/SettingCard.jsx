@@ -14,9 +14,7 @@ export const SettingCard = ({ title, icon: Icon, children }) => {
       {/* Header */}
       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
         {Icon && (
-          <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-violet-400 to-violet-300 flex items-center justify-center text-white flex-shrink-0">
-            <Icon className="w-4 sm:w-5 h-4 sm:h-5" />
-          </div>
+          <Icon className="w-5 sm:w-6 h-5 sm:h-6 text-violet-600 flex-shrink-0" />
         )}
         <h3 className="text-base sm:text-lg font-black text-ink">{title}</h3>
       </div>

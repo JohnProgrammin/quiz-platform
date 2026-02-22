@@ -115,8 +115,8 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
       {/* Quick Stats Grid */}
       <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
         <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-4 sm:p-5 md:p-6 hover:border-brand-400 transition-all hover:-translate-y-1">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-ice flex items-center justify-center mb-3 text-white">
-            <FileText className="w-5 h-5" />
+          <div className="flex items-center gap-2 mb-3">
+            <FileText className="w-5 h-5 text-blue-500" />
           </div>
           <div className="text-2xl font-black text-ink">{stats.totalNotes}</div>
           <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">
@@ -125,8 +125,8 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
         </div>
 
         <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-4 sm:p-5 md:p-6 hover:border-brand-400 transition-all hover:-translate-y-1">
-          <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-brand-400 to-brand-300 flex items-center justify-center mb-2 sm:mb-3 text-white">
-            <BookOpen className="w-4 sm:w-5 h-4 sm:h-5" />
+          <div className="flex items-center gap-2 mb-3">
+            <BookOpen className="w-5 h-5 text-brand-500" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-ink">{stats.totalQuizzes}</div>
           <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">
@@ -135,8 +135,8 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
         </div>
 
         <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-4 sm:p-5 md:p-6 hover:border-brand-400 transition-all hover:-translate-y-1">
-          <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-purple to-purple/70 flex items-center justify-center mb-2 sm:mb-3 text-white">
-            <Target className="w-4 sm:w-5 h-4 sm:h-5" />
+          <div className="flex items-center gap-2 mb-3">
+            <Target className="w-5 h-5 text-purple-500" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-ink">{stats.totalAttempts}</div>
           <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">
@@ -145,8 +145,8 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
         </div>
 
         <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-4 sm:p-5 md:p-6 hover:border-brand-400 transition-all hover:-translate-y-1">
-          <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-gold to-flame flex items-center justify-center mb-2 sm:mb-3 text-white">
-            <TrendingUp className="w-4 sm:w-5 h-4 sm:h-5" />
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="w-5 h-5 text-amber-500" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-ink">{stats.averageScore}%</div>
           <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">
@@ -159,9 +159,7 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
       <motion.div variants={itemVariants} className="bg-white rounded-xl sm:rounded-2xl border-2 border-border overflow-hidden">
         <div className="px-4 sm:px-6 py-4 sm:py-5 border-b-2 border-border flex items-center justify-between">
           <h2 className="text-lg sm:text-xl font-black text-ink flex items-center gap-2 sm:gap-3">
-            <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-lg sm:rounded-xl bg-gradient-to-br from-flame to-gold flex items-center justify-center flex-shrink-0">
-              <Flame className="w-4 sm:w-5 h-4 sm:h-5 text-white" />
-            </div>
+            <Flame className="w-5 sm:w-6 h-5 sm:h-6 text-flame" />
             Recent Activity
           </h2>
         </div>

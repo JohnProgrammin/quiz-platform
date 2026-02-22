@@ -22,18 +22,18 @@ export const MetricCard = ({
       {/* Animated pulse background on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      {/* Icon Container */}
-      <div
-        className={`w-11 sm:w-12 md:w-14 h-11 sm:h-12 md:h-14 rounded-lg sm:rounded-xl md:rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-3 sm:mb-4 text-white group-hover:scale-110 transition-transform duration-200 relative z-10 flex-shrink-0 ${
+      {/* Icon */}
+      {icon && (
+        <div className={`mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-200 relative z-10 flex-shrink-0 w-fit ${
           animated ? 'animate-pulse' : ''
-        }`}
-      >
-        {icon && typeof icon === 'string' ? (
-          <span className="text-4xl sm:text-5xl">{icon}</span>
-        ) : (
-          icon
-        )}
-      </div>
+        }`}>
+          {typeof icon === 'string' ? (
+            <span className="text-4xl sm:text-5xl">{icon}</span>
+          ) : (
+            icon
+          )}
+        </div>
+      )}
 
       {/* Label */}
       <p className="text-xs font-black text-muted uppercase tracking-widest mb-2 relative z-10">

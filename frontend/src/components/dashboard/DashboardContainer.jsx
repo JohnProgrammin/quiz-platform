@@ -7,20 +7,20 @@ import AnalyticsTab from './tabs/AnalyticsTab';
 import AchievementsTab from './tabs/AchievementsTab';
 import ProfileTab from './tabs/ProfileTab';
 import { SkeletonDashboard } from '../Skeleton';
-import { getQuizHistory, getQuizzes, getNotes, getUserStats } from '../../api';
-import { useTranslation } from 'react-i18next';
+import { getQuizHistory, getQuizzes, getNotes, getUserStats, getAchievements } from '../../api';
 
 /**
  * Dashboard Container - Main orchestrator for the dashboard
- * Handles: tab navigation, data fetching, state management
+ * Fetches REAL DATA ONLY from backend APIs
  */
 export const DashboardContainer = ({ user }) => {
-  const { t } = useTranslation();
   const { isFree, isPro, isPremium, tier } = useSubscription();
 
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Real data from API
   const [stats, setStats] = useState({
     totalNotes: 0,
     totalQuizzes: 0,
@@ -46,22 +46,41 @@ export const DashboardContainer = ({ user }) => {
         setLoading(true);
         setError(null);
 
-        const [quizHistoryRes, quizzesRes, notesRes, userStatsRes] = await Promise.all([
-          getQuizHistory().catch(() => ({ data: [] })),
-          getQuizzes().catch(() => ({ data: [] })),
-          getNotes().catch(() => ({ data: [] })),
-          getUserStats().catch(() => ({ data: {} })),
+        // Fetch all data in parallel
+        const [quizHistoryRes, quizzesRes, notesRes, userStatsRes, achievementsRes] = await Promise.all([
+          getQuizHistory().catch(e => {
+            console.error('Quiz history error:', e);
+            return { data: [] };
+          }),
+          getQuizzes().catch(e => {
+            console.error('Quizzes error:', e);
+            return { data: [] };
+          }),
+          getNotes().catch(e => {
+            console.error('Notes error:', e);
+            return { data: [] };
+          }),
+          getUserStats().catch(e => {
+            console.error('User stats error:', e);
+            return { data: {} };
+          }),
+          getAchievements().catch(e => {
+            console.error('Achievements error:', e);
+            return { data: [] };
+          }),
         ]);
 
+        // Extract data
         const quizHistory = quizHistoryRes?.data || [];
         const quizzesData = quizzesRes?.data || [];
         const notesData = notesRes?.data || [];
         const statsData = userStatsRes?.data || {};
+        const achievementsData = achievementsRes?.data || [];
 
-        // Calculate stats
-        const totalNotes = notesData.length;
-        const totalQuizzes = quizzesData.length;
-        const totalAttempts = quizHistory.length;
+        // Calculate stats from real data
+        const totalNotes = notesData.length || 0;
+        const totalQuizzes = quizzesData.length || 0;
+        const totalAttempts = quizHistory.length || 0;
 
         let averageScore = 0;
         if (totalAttempts > 0) {
@@ -80,26 +99,27 @@ export const DashboardContainer = ({ user }) => {
         setQuizzes(quizzesData);
         setNotes(notesData);
 
-        // Set gamification data with fallbacks
-        if (statsData) {
+        // Set gamification from API response
+        if (statsData && Object.keys(statsData).length > 0) {
           setGamification({
             level: statsData.level || 1,
-            totalXP: statsData.total_xp || statsData.totalXP || 0,
-            currentStreak: statsData.current_streak || statsData.currentStreak || 0,
-            longestStreak: statsData.longest_streak || statsData.longestStreak || 0,
-            progressToNextLevel: statsData.progress_to_next_level || statsData.progressToNextLevel || 0,
-            nextLevelXP: statsData.next_level_xp || statsData.nextLevelXP || 1000,
+            totalXP: statsData.totalXP || statsData.total_xp || 0,
+            currentStreak: statsData.currentStreak || statsData.current_streak || 0,
+            longestStreak: statsData.longestStreak || statsData.longest_streak || 0,
+            progressToNextLevel: statsData.progressToNextLevel || statsData.progress_to_next_level || 0,
+            nextLevelXP: statsData.nextLevelXP || statsData.next_level_xp || 1000,
           });
+        }
 
-          if (statsData.achievements) {
-            setAchievements(Array.isArray(statsData.achievements) ? statsData.achievements : []);
-          }
+        // Set achievements from API
+        if (Array.isArray(achievementsData)) {
+          setAchievements(achievementsData);
         }
 
         setLoading(false);
       } catch (err) {
-        console.error('Dashboard data fetch error:', err);
-        setError('Failed to load dashboard data');
+        console.error('Dashboard error:', err);
+        setError('Failed to load dashboard');
         setLoading(false);
       }
     };
