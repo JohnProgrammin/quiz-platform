@@ -17,19 +17,19 @@ export const MetricCard = ({
   return (
     <motion.div
       whileHover={{ scale: 1.02, y: -2 }}
-      className="bento-card p-6 relative group overflow-hidden"
+      className="rounded-xl sm:rounded-2xl bg-white border-2 border-border p-4 sm:p-5 md:p-6 relative group overflow-hidden transition-all hover:border-brand-400 hover:shadow-card-hover"
     >
       {/* Animated pulse background on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       {/* Icon Container */}
       <div
-        className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform duration-200 relative z-10 ${
+        className={`w-11 sm:w-12 md:w-14 h-11 sm:h-12 md:h-14 rounded-lg sm:rounded-xl md:rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-3 sm:mb-4 text-white group-hover:scale-110 transition-transform duration-200 relative z-10 flex-shrink-0 ${
           animated ? 'animate-pulse' : ''
         }`}
       >
         {icon && typeof icon === 'string' ? (
-          <span className="text-5xl">{icon}</span>
+          <span className="text-4xl sm:text-5xl">{icon}</span>
         ) : (
           icon
         )}
@@ -41,19 +41,19 @@ export const MetricCard = ({
       </p>
 
       {/* Value */}
-      <p className="text-3xl font-black text-ink mb-2 relative z-10 truncate">
+      <p className="text-xl sm:text-2xl md:text-3xl font-black text-ink mb-2 relative z-10 truncate">
         {value}
       </p>
 
       {/* Optional Subtitle */}
       {subtitle && (
-        <p className="text-sm font-bold text-slate relative z-10">{subtitle}</p>
+        <p className="text-xs sm:text-sm font-bold text-slate relative z-10 line-clamp-2">{subtitle}</p>
       )}
 
       {/* Optional Progress Ring (top-right) */}
       {showProgress && progress !== undefined && (
-        <div className="absolute top-4 right-4 z-20">
-          <CircularProgress percentage={progress} size={60} />
+        <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-20">
+          <CircularProgress percentage={progress} size={50} />
         </div>
       )}
     </motion.div>

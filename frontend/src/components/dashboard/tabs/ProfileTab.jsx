@@ -52,7 +52,7 @@ export const ProfileTab = ({ user = {}, tier = 'free', level = 1 }) => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-8"
+      className="space-y-6 sm:space-y-8 md:space-y-10"
     >
       {/* Profile Header */}
       <motion.div variants={itemVariants}>
@@ -62,7 +62,7 @@ export const ProfileTab = ({ user = {}, tier = 'free', level = 1 }) => {
       {/* Settings Grid */}
       <motion.div
         variants={itemVariants}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6"
       >
         {/* Account Settings */}
         <SettingCard title="Account" icon={User}>
@@ -182,12 +182,12 @@ export const ProfileTab = ({ user = {}, tier = 'free', level = 1 }) => {
 
       {/* Danger Zone */}
       <motion.div variants={itemVariants}>
-        <div className="bg-red-50 rounded-[2rem] border-2 border-red-200 p-6">
-          <h3 className="text-lg font-black text-red-900 mb-2 flex items-center gap-2">
-            <Trash2 className="w-5 h-5" />
+        <div className="bg-red-50 rounded-xl sm:rounded-2xl border-2 border-red-200 p-5 sm:p-6">
+          <h3 className="text-base sm:text-lg font-black text-red-900 mb-2 flex items-center gap-2">
+            <Trash2 className="w-4 sm:w-5 h-4 sm:h-5" />
             Danger Zone
           </h3>
-          <p className="text-sm text-red-700 font-bold mb-6">
+          <p className="text-xs sm:text-sm text-red-700 font-bold mb-6">
             Actions here are irreversible. Please proceed with caution.
           </p>
 
@@ -195,9 +195,9 @@ export const ProfileTab = ({ user = {}, tier = 'free', level = 1 }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleDeleteAccount}
-            className="w-full py-3 rounded-xl bg-red-600 text-white font-black hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+            className="w-full py-2 sm:py-3 rounded-lg sm:rounded-xl bg-red-600 text-white font-black hover:bg-red-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
           >
-            <Trash2 className="w-5 h-5" />
+            <Trash2 className="w-4 sm:w-5 h-4 sm:h-5" />
             Delete Account
           </motion.button>
 
@@ -210,13 +210,13 @@ export const ProfileTab = ({ user = {}, tier = 'free', level = 1 }) => {
       {/* Security Info */}
       <motion.div
         variants={itemVariants}
-        className="bg-blue-50 rounded-[2rem] border-2 border-blue-200 p-6"
+        className="bg-blue-50 rounded-xl sm:rounded-2xl border-2 border-blue-200 p-5 sm:p-6"
       >
-        <div className="flex items-start gap-3">
-          <Lock className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+        <div className="flex items-start gap-2 sm:gap-3">
+          <Lock className="w-5 sm:w-6 h-5 sm:h-6 text-blue-600 flex-shrink-0 mt-0.5 sm:mt-1" />
           <div>
-            <h3 className="text-lg font-black text-blue-900 mb-1">Your Data is Secure</h3>
-            <p className="text-sm text-blue-700 font-bold">
+            <h3 className="text-base sm:text-lg font-black text-blue-900 mb-1">Your Data is Secure</h3>
+            <p className="text-xs sm:text-sm text-blue-700 font-bold">
               We use industry-standard encryption to protect your account. Never share your password
               with anyone.
             </p>

@@ -52,7 +52,7 @@ export const AchievementCard = ({
   return (
     <motion.div
       whileHover={unlocked ? { scale: 1.05, y: -4 } : { scale: 1.02 }}
-      className={`relative rounded-[2rem] border-2 p-6 transition-all ${
+      className={`relative rounded-lg sm:rounded-xl md:rounded-2xl border-2 p-4 sm:p-5 md:p-6 transition-all ${
         unlocked
           ? 'bg-white border-border shadow-card hover:shadow-card-hover'
           : 'bg-surface border-border/50'
@@ -60,28 +60,28 @@ export const AchievementCard = ({
     >
       {/* Tier Badge - Top Right */}
       <div
-        className={`absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br ${getTierGradient(
+        className={`absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 w-7 sm:w-8 h-7 sm:h-8 rounded-full flex items-center justify-center bg-gradient-to-br ${getTierGradient(
           tier
-        )} shadow-md`}
+        )} shadow-md flex-shrink-0`}
       >
-        <Crown className="w-4 h-4 text-white" />
+        <Crown className="w-3 sm:w-4 h-3 sm:h-4 text-white" />
       </div>
 
       {/* Icon */}
-      <div className="text-5xl mb-3 select-none">{icon}</div>
+      <div className="text-4xl sm:text-5xl mb-2 sm:mb-3 select-none">{icon}</div>
 
       {/* Name */}
-      <h3 className={`text-lg font-black text-ink mb-1 ${unlocked ? '' : ''}`}>{name}</h3>
+      <h3 className="text-sm sm:text-base md:text-lg font-black text-ink mb-1 line-clamp-2">{name}</h3>
 
       {/* Description */}
-      <p className={`text-sm font-bold mb-3 ${unlocked ? 'text-slate' : 'text-slate/50'}`}>
+      <p className={`text-xs sm:text-sm font-bold mb-3 line-clamp-2 ${unlocked ? 'text-slate' : 'text-slate/50'}`}>
         {description}
       </p>
 
       {/* XP Reward */}
-      <div className="flex items-center gap-2 text-gold">
-        <Zap className="w-4 h-4 fill-current" />
-        <span className="font-black text-sm">+{xpReward} XP</span>
+      <div className="flex items-center gap-1 sm:gap-2 text-gold">
+        <Zap className="w-3 sm:w-4 h-3 sm:h-4 fill-current flex-shrink-0" />
+        <span className="font-black text-xs sm:text-sm">+{xpReward} XP</span>
       </div>
 
       {/* Unlock Date */}
@@ -93,13 +93,13 @@ export const AchievementCard = ({
 
       {/* Lock Overlay */}
       {!unlocked && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-[2rem] group">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl group">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             className="text-center"
           >
-            <Lock className="w-12 h-12 text-muted mx-auto mb-2" />
+            <Lock className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 text-muted mx-auto mb-1 sm:mb-2" />
             <p className="text-xs font-black text-slate">Locked</p>
           </motion.div>
         </div>

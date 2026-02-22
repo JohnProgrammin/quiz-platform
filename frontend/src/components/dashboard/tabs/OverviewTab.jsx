@@ -48,10 +48,10 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-8"
+      className="space-y-6 sm:space-y-8 md:space-y-10"
     >
       {/* Learning Metrics Grid - 4 cards */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
         <MetricCard
           label="Level"
           value={gamification?.level || 1}
@@ -113,8 +113,8 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
       )}
 
       {/* Quick Stats Grid */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border-2 border-border p-5 hover:border-brand-400 transition-all hover:-translate-y-1">
+      <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+        <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-4 sm:p-5 md:p-6 hover:border-brand-400 transition-all hover:-translate-y-1">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-ice flex items-center justify-center mb-3 text-white">
             <FileText className="w-5 h-5" />
           </div>
@@ -124,31 +124,31 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border-2 border-border p-5 hover:border-brand-400 transition-all hover:-translate-y-1">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-300 flex items-center justify-center mb-3 text-white">
-            <BookOpen className="w-5 h-5" />
+        <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-4 sm:p-5 md:p-6 hover:border-brand-400 transition-all hover:-translate-y-1">
+          <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-brand-400 to-brand-300 flex items-center justify-center mb-2 sm:mb-3 text-white">
+            <BookOpen className="w-4 sm:w-5 h-4 sm:h-5" />
           </div>
-          <div className="text-2xl font-black text-ink">{stats.totalQuizzes}</div>
+          <div className="text-xl sm:text-2xl font-black text-ink">{stats.totalQuizzes}</div>
           <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">
             Quizzes
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border-2 border-border p-5 hover:border-brand-400 transition-all hover:-translate-y-1">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple to-purple/70 flex items-center justify-center mb-3 text-white">
-            <Target className="w-5 h-5" />
+        <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-4 sm:p-5 md:p-6 hover:border-brand-400 transition-all hover:-translate-y-1">
+          <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-purple to-purple/70 flex items-center justify-center mb-2 sm:mb-3 text-white">
+            <Target className="w-4 sm:w-5 h-4 sm:h-5" />
           </div>
-          <div className="text-2xl font-black text-ink">{stats.totalAttempts}</div>
+          <div className="text-xl sm:text-2xl font-black text-ink">{stats.totalAttempts}</div>
           <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">
             Attempts
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border-2 border-border p-5 hover:border-brand-400 transition-all hover:-translate-y-1">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold to-flame flex items-center justify-center mb-3 text-white">
-            <TrendingUp className="w-5 h-5" />
+        <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-4 sm:p-5 md:p-6 hover:border-brand-400 transition-all hover:-translate-y-1">
+          <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-gold to-flame flex items-center justify-center mb-2 sm:mb-3 text-white">
+            <TrendingUp className="w-4 sm:w-5 h-4 sm:h-5" />
           </div>
-          <div className="text-2xl font-black text-ink">{stats.averageScore}%</div>
+          <div className="text-xl sm:text-2xl font-black text-ink">{stats.averageScore}%</div>
           <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">
             Avg Score
           </div>
@@ -156,18 +156,18 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
       </motion.div>
 
       {/* Recent Activity */}
-      <motion.div variants={itemVariants} className="bg-white rounded-2xl border-2 border-border overflow-hidden">
-        <div className="px-6 py-5 border-b-2 border-border flex items-center justify-between">
-          <h2 className="text-xl font-black text-ink flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-flame to-gold flex items-center justify-center">
-              <Flame className="w-5 h-5 text-white" />
+      <motion.div variants={itemVariants} className="bg-white rounded-xl sm:rounded-2xl border-2 border-border overflow-hidden">
+        <div className="px-4 sm:px-6 py-4 sm:py-5 border-b-2 border-border flex items-center justify-between">
+          <h2 className="text-lg sm:text-xl font-black text-ink flex items-center gap-2 sm:gap-3">
+            <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-lg sm:rounded-xl bg-gradient-to-br from-flame to-gold flex items-center justify-center flex-shrink-0">
+              <Flame className="w-4 sm:w-5 h-4 sm:h-5 text-white" />
             </div>
             Recent Activity
           </h2>
         </div>
 
         {recentAttempts.length === 0 ? (
-          <div className="p-12 text-center">
+          <div className="p-8 sm:p-12 text-center">
             <div className="w-20 h-20 rounded-full bg-surface flex items-center justify-center mx-auto mb-5 border-2 border-border">
               <BookOpen className="w-10 h-10 text-muted" />
             </div>
@@ -190,21 +190,21 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.05 * index }}
-                className="px-6 py-5 hover:bg-brand-50/50 cursor-pointer transition-all duration-200 flex items-center justify-between group"
+                className="px-3 sm:px-6 py-4 sm:py-5 hover:bg-brand-50/50 cursor-pointer transition-all duration-200 flex items-center justify-between group gap-3"
                 onClick={() => navigate(`/quiz/${attempt.quizId}/results`)}
               >
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-black text-ink text-lg group-hover:text-brand-500 transition-colors truncate">
+                  <h3 className="font-black text-ink text-sm sm:text-lg group-hover:text-brand-500 transition-colors line-clamp-2">
                     {attempt.quizTitle}
                   </h3>
-                  <p className="text-sm font-bold text-slate mt-1">
+                  <p className="text-xs sm:text-sm font-bold text-slate mt-1">
                     {new Date(attempt.completedAt || attempt.completed_at).toLocaleDateString()} &middot;{' '}
-                    {attempt.score}/{attempt.totalQuestions} correct
+                    {attempt.score}/{attempt.totalQuestions}
                   </p>
                 </div>
-                <div className="flex items-center gap-3 ml-4 flex-shrink-0">
+                <div className="flex items-center gap-2 sm:gap-3 ml-2 sm:ml-4 flex-shrink-0">
                   <div
-                    className={`text-lg font-black px-3 py-1.5 rounded-xl border-2 ${getScoreBg(
+                    className={`text-sm sm:text-lg font-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border-2 ${getScoreBg(
                       attempt.percentage
                     )} ${getScoreColor(attempt.percentage)}`}
                   >

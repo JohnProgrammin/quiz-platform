@@ -140,18 +140,18 @@ export const AchievementsTab = ({ achievements = [] }) => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-8"
+      className="space-y-6 sm:space-y-8 md:space-y-10"
     >
       {/* Header Stats */}
-      <motion.div variants={itemVariants} className="flex items-center justify-between gap-6">
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
         <div>
-          <h2 className="text-3xl font-black text-ink mb-2">Achievements</h2>
-          <p className="text-slate font-bold">
+          <h2 className="text-2xl sm:text-3xl font-black text-ink mb-2">Achievements</h2>
+          <p className="text-xs sm:text-sm text-slate font-bold">
             {unlockedCount}/{totalCount} unlocked ({Math.round((unlockedCount / totalCount) * 100)}%)
           </p>
         </div>
         <div className="text-center">
-          <div className="text-4xl font-black text-gradient-violet bg-gradient-to-r from-violet-500 to-violet-600 bg-clip-text text-transparent">
+          <div className="text-3xl sm:text-4xl font-black text-gradient-violet bg-gradient-to-r from-violet-500 to-violet-600 bg-clip-text text-transparent">
             {allAchievements.reduce((sum, a) => sum + (a.unlocked ? a.xpReward : 0), 0)}
           </div>
           <p className="text-xs text-muted font-black uppercase">XP Earned</p>
@@ -166,10 +166,10 @@ export const AchievementsTab = ({ achievements = [] }) => {
             onClick={() => handleFilterClick(btn.id)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className={`px-5 py-2 rounded-2xl font-black text-sm flex items-center gap-2 transition-all ${
+            className={`px-3 sm:px-5 py-2 rounded-lg sm:rounded-xl md:rounded-2xl font-black text-xs sm:text-sm flex items-center gap-2 transition-all flex-shrink-0 ${
               filter === btn.id
-                ? 'bg-violet-600 text-white shadow-btn-brand'
-                : 'bg-white border-2 border-border text-slate hover:bg-surface'
+                ? 'bg-violet-600 text-white shadow-btn-violet'
+                : 'bg-white border-2 border-border text-slate hover:bg-surface hover:border-brand-400'
             }`}
           >
             {btn.icon}
@@ -181,7 +181,7 @@ export const AchievementsTab = ({ achievements = [] }) => {
       {/* Achievement Grid */}
       <motion.div
         variants={itemVariants}
-        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5"
       >
         {filteredAchievements.map((achievement, idx) => (
           <motion.div
@@ -216,9 +216,9 @@ export const AchievementsTab = ({ achievements = [] }) => {
       {/* Progress Info */}
       <motion.div
         variants={itemVariants}
-        className="bg-violet-50 rounded-[2rem] border-2 border-violet-200 p-6"
+        className="bg-violet-50 rounded-xl sm:rounded-2xl border-2 border-violet-200 p-5 sm:p-6"
       >
-        <h3 className="text-lg font-black text-violet-900 mb-4">Achievement Progress</h3>
+        <h3 className="text-base sm:text-lg font-black text-violet-900 mb-4">Achievement Progress</h3>
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <span className="font-bold text-violet-700">Completion</span>

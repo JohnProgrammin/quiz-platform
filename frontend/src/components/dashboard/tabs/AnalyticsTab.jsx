@@ -11,7 +11,7 @@ import useSound from '../../../hooks/useSound';
  * Shows trends, weak areas, and study patterns
  * Pro+ feature (gated for Free users)
  */
-export const AnalyticsTab = ({ isFree }) => {
+export const AnalyticsTab = ({ tier = 'free', recentAttempts = [], quizzes = [], notes = [] }) => {
   const navigate = useNavigate();
   const { playClickSound } = useSound();
 
@@ -32,16 +32,21 @@ export const AnalyticsTab = ({ isFree }) => {
     },
   };
 
-  // Mock performance data
-  const performanceData = [
-    { date: '2026-02-15', score: 75 },
-    { date: '2026-02-16', score: 82 },
-    { date: '2026-02-17', score: 78 },
-    { date: '2026-02-18', score: 90 },
-    { date: '2026-02-19', score: 85 },
-    { date: '2026-02-20', score: 88 },
-    { date: '2026-02-21', score: 92 },
-  ];
+  // Generate performance data from recent attempts
+  const performanceData = recentAttempts.length > 0
+    ? recentAttempts.slice(0, 7).reverse().map(attempt => ({
+        date: new Date(attempt.completedAt || attempt.completed_at).toLocaleDateString(),
+        score: attempt.percentage || 0
+      }))
+    : [
+        { date: '2026-02-15', score: 75 },
+        { date: '2026-02-16', score: 82 },
+        { date: '2026-02-17', score: 78 },
+        { date: '2026-02-18', score: 90 },
+        { date: '2026-02-19', score: 85 },
+        { date: '2026-02-20', score: 88 },
+        { date: '2026-02-21', score: 92 },
+      ];
 
   const weakTopics = [
     { topic: 'Algebra', strength: 45, quizzesTaken: 8 },
@@ -53,6 +58,8 @@ export const AnalyticsTab = ({ isFree }) => {
     playClickSound();
     navigate('/pricing');
   };
+
+  const isFree = tier === 'free';
 
   if (isFree) {
     return (
@@ -83,10 +90,10 @@ export const AnalyticsTab = ({ isFree }) => {
         {/* Info Card */}
         <motion.div
           variants={itemVariants}
-          className="bg-violet-50 rounded-[2rem] border-2 border-violet-200 p-8 text-center"
+          className="bg-violet-50 rounded-xl sm:rounded-2xl border-2 border-violet-200 p-6 sm:p-8 text-center"
         >
-          <h3 className="text-2xl font-black text-violet-900 mb-3">Analytics Coming Soon</h3>
-          <p className="text-violet-700 font-bold mb-6">
+          <h3 className="text-xl sm:text-2xl font-black text-violet-900 mb-3">Analytics Coming Soon</h3>
+          <p className="text-sm sm:text-base text-violet-700 font-bold mb-6">
             Unlock detailed performance charts, weak area analysis, and study insights with Pro
           </p>
           <motion.button
@@ -129,11 +136,11 @@ export const AnalyticsTab = ({ isFree }) => {
       {/* Additional Stats */}
       <motion.div
         variants={itemVariants}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"
       >
         {/* Consistency Stats */}
-        <div className="bg-white rounded-[2rem] border-2 border-border p-6">
-          <h3 className="text-lg font-black text-ink mb-4">Learning Consistency</h3>
+        <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-5 sm:p-6">
+          <h3 className="text-base sm:text-lg font-black text-ink mb-4">Learning Consistency</h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="font-bold text-slate">This Week</span>
@@ -152,8 +159,8 @@ export const AnalyticsTab = ({ isFree }) => {
         </div>
 
         {/* Time Investment */}
-        <div className="bg-white rounded-[2rem] border-2 border-border p-6">
-          <h3 className="text-lg font-black text-ink mb-4">Time Investment</h3>
+        <div className="bg-white rounded-xl sm:rounded-2xl border-2 border-border p-5 sm:p-6">
+          <h3 className="text-base sm:text-lg font-black text-ink mb-4">Time Investment</h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="font-bold text-slate">This Month</span>

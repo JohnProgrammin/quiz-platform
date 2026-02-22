@@ -17,15 +17,15 @@ export const DashboardTabs = ({ activeTab, onTabChange }) => {
   };
 
   return (
-    <div className="flex gap-2 mb-8 overflow-x-auto scrollbar-hide">
+    <div className="flex gap-2 sm:gap-3 mb-6 sm:mb-8 overflow-x-auto scrollbar-hide">
       {tabs.map((tab) => (
         <motion.button
           key={tab.id}
           onClick={() => handleTabChange(tab.id)}
-          className={`px-6 py-3 font-black rounded-2xl transition-all whitespace-nowrap text-sm sm:text-base ${
+          className={`px-4 sm:px-6 py-2.5 sm:py-3 font-black rounded-lg sm:rounded-xl md:rounded-2xl transition-all whitespace-nowrap text-xs sm:text-sm md:text-base flex-shrink-0 ${
             activeTab === tab.id
-              ? 'bg-violet-600 text-white'
-              : 'bg-white text-slate border-2 border-border hover:bg-surface'
+              ? 'bg-violet-600 text-white shadow-btn-violet'
+              : 'bg-white text-slate border-2 border-border hover:bg-surface hover:border-brand-400'
           }`}
           style={
             activeTab === tab.id
