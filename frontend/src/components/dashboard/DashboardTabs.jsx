@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
+import useSound from '../../hooks/useSound';
 
 export const DashboardTabs = ({ activeTab, onTabChange }) => {
+  const { playClickSound } = useSound();
+
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'analytics', label: 'Analytics' },
@@ -8,12 +11,17 @@ export const DashboardTabs = ({ activeTab, onTabChange }) => {
     { id: 'profile', label: 'Profile' },
   ];
 
+  const handleTabChange = (tabId) => {
+    playClickSound();
+    onTabChange(tabId);
+  };
+
   return (
     <div className="flex gap-2 mb-8 overflow-x-auto scrollbar-hide">
       {tabs.map((tab) => (
         <motion.button
           key={tab.id}
-          onClick={() => onTabChange(tab.id)}
+          onClick={() => handleTabChange(tab.id)}
           className={`px-6 py-3 font-black rounded-2xl transition-all whitespace-nowrap text-sm sm:text-base ${
             activeTab === tab.id
               ? 'bg-violet-600 text-white'
