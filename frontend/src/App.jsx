@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
+import ScrollToTop from './components/ScrollToTop';
 import Landing from './components/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -66,6 +67,7 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
+        <ScrollToTop />
         <SubscriptionProvider user={user}>
           {/* Sonner toast provider */}
           <Toaster

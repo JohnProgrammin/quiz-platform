@@ -392,11 +392,11 @@
     "hero": {
       "title": "Stop Wasting Time.",
       "titleSpan": "Start Winning.",
-      "subtitle": "Traditional studying is broken. You are capable of scoring in the top 1%, but your methods are holding you back.",
-      "subtitleStrong": "Upload any lecture, PDF, or raw note.",
-      "subtitleCta": "Our AI instantly engineers it into an addictive, high-speed mastery path designed to permanently wire your brain for A+ results.",
-      "startLearning": "START YOUR ASCENT FOR FREE",
-      "alreadyHaveAccount": "I ALREADY HAVE AN ACCOUNT"
+      "subtitle": "Traditional studying is broken—but we can fix it.",
+      "subtitleStrong": "Upload notes & PDFs.",
+      "subtitleCta": "Our AI transforms them into an irresistible mastery path built to wire your brain for success.",
+      "startLearning": "START FREE",
+      "alreadyHaveAccount": "SIGN IN"
     },
     "features": {
       "why": "Your Unfair Advantage",
