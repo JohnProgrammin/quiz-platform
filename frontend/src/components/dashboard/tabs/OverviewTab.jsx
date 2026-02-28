@@ -3,6 +3,7 @@ import { Trophy, Zap, Flame, Target, FileText, BookOpen, TrendingUp } from 'luci
 import { MetricCard } from '../metrics/MetricCard';
 import XPBar from '../../XPBar';
 import StreakIndicator from '../../StreakIndicator';
+import { DailyChallengeWidget } from '../DailyChallengeWidget';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -109,6 +110,14 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
           subtitle={`${dailyGoal.progress}% complete`}
           showProgress={true}
           progress={dailyGoal.progress}
+        />
+      </motion.div>
+
+      {/* Daily Challenge Widget */}
+      <motion.div variants={itemVariants}>
+        <DailyChallengeWidget
+          recentAttempts={recentAttempts}
+          gamification={gamification}
         />
       </motion.div>
 
