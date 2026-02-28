@@ -43,13 +43,31 @@ function Quiz({ user, gamificationStats }) {
 
   // Load Quiz
   useEffect(() => {
+    // CRITICAL: Reset ALL state when quiz ID changes to prevent stale state
+    setQuiz(null);
+    setCurrentQuestion(0);
+    setAnswers({});
+    setSelectedOption(null);
+    setShowFeedback(false);
+    setXpPopups([]);
+    setTodayXP(0);
+    setError('');
+    setLoading(true);
+
     loadQuiz();
   }, [id]);
 
   const loadQuiz = async () => {
     try {
+      setLoading(true);
       const response = await getQuiz(id);
       const quizData = response.data.data || response.data;
+
+      // Verify quiz data is valid
+      if (!quizData || !quizData.questions || quizData.questions.length === 0) {
+        throw new Error('Invalid quiz data - no questions found');
+      }
+
       setQuiz(quizData);
       setError('');
     } catch (error) {

@@ -37,17 +37,20 @@ function QuizResults({ user, gamificationStats }) {
 
   useEffect(() => {
     loadResults();
-  }, [id]);
+  }, [id, location]);
 
   const loadResults = async () => {
     try {
+      setLoading(true);
       // Get quiz data
       const response = await getQuiz(id);
       const quizData = response.data.data || response.data;
       setQuiz(quizData);
 
-      // Get results from location state (passed from Quiz component)
-      if (location.state?.gamification) {
+      // CRITICAL FIX: Only use location.state if:
+      // 1. fromQuiz flag is set (meaning we just came from Quiz.jsx submission)
+      // 2. gamification data exists
+      if (location.state?.fromQuiz && location.state?.gamification) {
         setAttempt({
           ...location.state.gamification,
           data: location.state.data || {},
@@ -60,9 +63,11 @@ function QuizResults({ user, gamificationStats }) {
 
         // Trigger confetti
         setTimeout(() => triggerConfetti(), 300);
+        setError('');
+      } else {
+        // If no valid location state, this is an error - user shouldn't be here
+        setError('Invalid access. Please start the quiz first.');
       }
-
-      setError('');
     } catch (err) {
       console.error('Error loading results:', err);
       setError('Failed to load quiz results');
