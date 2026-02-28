@@ -14,6 +14,7 @@ export const AchievementCard = ({
   xpReward = 0,
   unlocked = false,
   unlockedAt = null,
+  progressHint = null,
 }) => {
   const getTierGradient = (tier) => {
     switch (tier) {
@@ -93,14 +94,19 @@ export const AchievementCard = ({
 
       {/* Lock Overlay */}
       {!unlocked && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl group">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl group p-3">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="text-center"
+            className="text-center space-y-1"
           >
             <Lock className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 text-muted mx-auto mb-1 sm:mb-2" />
             <p className="text-xs font-black text-slate">Locked</p>
+            {progressHint && (
+              <p className="text-xs font-bold text-slate/70 mt-2">
+                {progressHint}
+              </p>
+            )}
           </motion.div>
         </div>
       )}

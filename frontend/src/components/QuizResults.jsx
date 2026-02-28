@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
 
 import UpgradePrompt from './UpgradePrompt';
 import GamificationDisplay from './GamificationDisplay';
 import { getQuiz, getQuizAttempts, getQuizResults, generateWeaknessQuiz } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useTranslation } from 'react-i18next';
-import { RotateCcw, Home, CheckCircle, XCircle, Loader2, Trophy, Target, TrendingUp, Lock, Sparkles } from 'lucide-react';
+import { RotateCcw, Home, CheckCircle, XCircle, Loader2, Trophy, Target, TrendingUp, Lock, Sparkles, Crown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { soundService } from '../services/sound.service';
@@ -57,6 +58,25 @@ function QuizResults({ user, onLogout }) {
       }
     }
   }, [loading, selectedAttempt]);
+
+  // Show achievement unlock notifications
+  useEffect(() => {
+    if (gamification?.newAchievements && gamification.newAchievements.length > 0) {
+      gamification.newAchievements.forEach((achievement, index) => {
+        setTimeout(() => {
+          toast.success(
+            <div className="flex items-center gap-2">
+              <Crown className="w-5 h-5 text-amber-500 fill-current" />
+              <div>
+                <p className="font-black">Achievement Unlocked!</p>
+                <p className="text-sm font-bold">{achievement.name}</p>
+              </div>
+            </div>
+          );
+        }, 1000 + index * 300);
+      });
+    }
+  }, [gamification?.newAchievements]);
 
   // ... further down
 

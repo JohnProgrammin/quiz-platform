@@ -12,8 +12,30 @@ export const AchievementsTab = ({ achievements = [] }) => {
   const { playClickSound } = useSound();
   const [filter, setFilter] = useState('all');
 
-  // Use only real achievements from API
-  const allAchievements = achievements;
+  // Function to generate progress hints for locked achievements
+  const getProgressHint = (achievement) => {
+    if (achievement.unlocked) return null;
+
+    const key = achievement.key || achievement.id;
+    const hints = {
+      'first_quiz': 'Take your first quiz',
+      'quiz_10': 'Complete 10 quizzes',
+      'quiz_50': 'Complete 50 quizzes',
+      'quiz_100': 'Complete 100 quizzes',
+      'perfect_score': 'Score 100% on a quiz',
+      'streak_7': 'Build a 7-day streak',
+      'streak_30': 'Build a 30-day streak',
+      'master_topic': 'Reach 100% on a topic',
+    };
+
+    return hints[key] || 'Keep learning to unlock';
+  };
+
+  // Use only real achievements from API with progress hints
+  const allAchievements = achievements.map((ach) => ({
+    ...ach,
+    progressHint: getProgressHint(ach),
+  }));
 
   const unlockedCount = allAchievements.filter((a) => a.unlocked).length;
   const totalCount = allAchievements.length;

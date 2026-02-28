@@ -19,6 +19,7 @@ function Quiz({ user }) {
   const [error, setError] = useState('');
   const [showTeaching, setShowTeaching] = useState(true);
   const [teaching, setTeaching] = useState(null);
+  const [startTime] = useState(Date.now());
 
   useEffect(() => {
     loadQuiz();
@@ -81,8 +82,9 @@ function Quiz({ user }) {
     setSubmitting(true);
     try {
       const answersArray = quiz.questions.map((_, index) => answers[index] ?? -1);
-      console.log('Submitting quiz with answers:', answersArray);
-      const response = await submitQuiz(id, answersArray);
+      const timeSpentSeconds = Math.floor((Date.now() - startTime) / 1000);
+      console.log('Submitting quiz with answers:', answersArray, 'Time spent:', timeSpentSeconds, 'seconds');
+      const response = await submitQuiz(id, answersArray, timeSpentSeconds);
       console.log('Submit response:', response);
 
       if (response && response.data) {

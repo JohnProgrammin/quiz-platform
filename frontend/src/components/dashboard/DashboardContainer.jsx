@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSubscription } from '../../contexts/SubscriptionContext';
 import DashboardTabs from './DashboardTabs';
 import OverviewTab from './tabs/OverviewTab';
+import AnalyticsTab from './tabs/AnalyticsTab';
 import AchievementsTab from './tabs/AchievementsTab';
 import ProfileTab from './tabs/ProfileTab';
 import { SkeletonDashboard } from '../Skeleton';
@@ -166,6 +167,15 @@ export const DashboardContainer = ({ user }) => {
                 recentAttempts={recentAttempts}
                 user={user}
                 tier={tier}
+              />
+            )}
+
+            {activeTab === 'analytics' && (
+              <AnalyticsTab
+                tier={tier}
+                recentAttempts={recentAttempts}
+                quizzes={quizzes}
+                notes={notes}
               />
             )}
 

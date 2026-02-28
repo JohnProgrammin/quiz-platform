@@ -49,4 +49,12 @@ router.get('/:id/attempts', authenticateToken, quizController.getAttempts);
 // Get quiz history
 router.get('/history/all', authenticateToken, quizController.getHistory);
 
+// Generate mastery quiz from weak topics (Pro+ only)
+router.post(
+  '/:attemptId/mastery',
+  authenticateToken,
+  checkFeatureAccess('mastery_quizzes'),
+  quizController.generateMasteryQuiz
+);
+
 module.exports = router;

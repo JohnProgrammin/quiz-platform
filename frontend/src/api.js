@@ -128,7 +128,7 @@ export const deleteNote = (id) => api.delete(`/v1/notes/${id}`);
 export const generateQuiz = (data) => api.post('/v1/quiz/generate', data);
 export const getQuizzes = () => api.get('/v1/quiz');
 export const getQuiz = (id) => api.get(`/v1/quiz/${id}`);
-export const submitQuiz = (id, answers) => api.post(`/v1/quiz/${id}/submit`, { answers });
+export const submitQuiz = (id, answers, timeSpentSeconds) => api.post(`/v1/quiz/${id}/submit`, { answers, timeSpentSeconds });
 export const getQuizResults = (quizId, attemptId) => api.get(`/v1/quiz/${quizId}/results/${attemptId}`);
 export const getQuizHistory = () => api.get('/v1/quiz/history/all');
 export const getAllAttempts = () => api.get('/v1/quiz/attempts/all');

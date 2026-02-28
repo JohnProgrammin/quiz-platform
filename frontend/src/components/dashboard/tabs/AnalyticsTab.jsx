@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import PerformanceChart from '../analytics/PerformanceChart';
 import WeakTopicsCard from '../analytics/WeakTopicsCard';
 import StudyInsights from '../analytics/StudyInsights';
+import LearningHeatmap from '../analytics/LearningHeatmap';
 import useSound from '../../../hooks/useSound';
 
 /**
@@ -156,6 +157,13 @@ export const AnalyticsTab = ({ tier = 'free', recentAttempts = [], quizzes = [],
         <motion.div variants={itemVariants}>
           <h2 className="text-xl sm:text-2xl font-black text-ink mb-4">Study Insights</h2>
           <StudyInsights />
+        </motion.div>
+      )}
+
+      {/* Learning Heatmap */}
+      {recentAttempts.length > 0 && (
+        <motion.div variants={itemVariants}>
+          <LearningHeatmap recentAttempts={recentAttempts} />
         </motion.div>
       )}
     </motion.div>

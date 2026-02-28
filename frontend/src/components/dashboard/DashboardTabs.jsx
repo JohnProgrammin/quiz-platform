@@ -6,6 +6,7 @@ export const DashboardTabs = ({ activeTab, onTabChange }) => {
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
+    { id: 'analytics', label: 'Analytics' },
     { id: 'achievements', label: 'Achievements' },
     { id: 'profile', label: 'Profile' },
   ];

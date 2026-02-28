@@ -43,6 +43,28 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
     return 'bg-red-50 border-heart';
   };
 
+  // Calculate daily goal from REAL data
+  const calculateDailyGoal = () => {
+    const today = new Date().toDateString();
+    const todayAttempts = recentAttempts.filter((attempt) => {
+      const attemptDate = new Date(attempt.completedAt || attempt.completed_at).toDateString();
+      return attemptDate === today;
+    });
+
+    const dailyGoalTarget = 3; // User's daily goal
+    const todayCount = todayAttempts.length;
+    const progress = Math.round((todayCount / dailyGoalTarget) * 100);
+
+    return {
+      count: todayCount,
+      target: dailyGoalTarget,
+      progress: Math.min(progress, 100),
+      display: `${todayCount}/${dailyGoalTarget} quizzes`
+    };
+  };
+
+  const dailyGoal = calculateDailyGoal();
+
   return (
     <motion.div
       variants={containerVariants}
@@ -81,12 +103,12 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
 
         <MetricCard
           label="Daily Goal"
-          value="2/3 quizzes"
+          value={dailyGoal.display}
           icon={<Target className="w-7 h-7" />}
           gradient="from-teal to-cyan-400"
-          subtitle="67% complete"
+          subtitle={`${dailyGoal.progress}% complete`}
           showProgress={true}
-          progress={67}
+          progress={dailyGoal.progress}
         />
       </motion.div>
 
@@ -151,6 +173,24 @@ export const OverviewTab = ({ stats, gamification, recentAttempts, user, tier })
           <div className="text-xl sm:text-2xl font-black text-ink">{stats.averageScore}%</div>
           <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">
             Avg Score
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Next Level Goal Card */}
+      <motion.div variants={itemVariants} className="bg-gradient-to-br from-brand-50 to-slate-50 rounded-xl sm:rounded-2xl border-2 border-brand-200 p-5 sm:p-6 md:p-7">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-brand-400 to-brand-500 flex items-center justify-center flex-shrink-0">
+            <Zap className="w-6 h-6 sm:w-7 sm:h-7 text-white fill-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base sm:text-lg font-black text-ink mb-1">Next Level Goal</h3>
+            <p className="text-sm sm:text-base text-slate font-bold mb-3">
+              {gamification?.nextLevelXP - gamification?.totalXP} XP needed to reach Level {(gamification?.level || 1) + 1}
+            </p>
+            <p className="text-xs sm:text-sm text-brand-600 font-bold">
+              💡 Tip: Complete more quizzes and aim for perfect scores to earn bonus XP!
+            </p>
           </div>
         </div>
       </motion.div>
