@@ -20,6 +20,7 @@ import Loading from './components/Loading';
 import About from './components/About';
 import Contact from './components/Contact';
 import Privacy from './components/Privacy';
+import Terms from './components/Terms';
 import { SubscriptionProvider } from './contexts/SubscriptionContext';
 import { getProfile } from './api';
 
@@ -117,6 +118,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
 
             <Route
               path="/dashboard"

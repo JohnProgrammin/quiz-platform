@@ -22,8 +22,13 @@ const PublicHeader = () => {
     const scrollToPricing = (e) => {
         e.preventDefault();
         const pricingElement = document.getElementById('pricing');
+
+        // If pricing section exists on current page, scroll to it
         if (pricingElement) {
             pricingElement.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            // Otherwise navigate to home and scroll to pricing
+            window.location.href = '/#pricing';
         }
     };
 

@@ -131,9 +131,9 @@ export const Login = () => {
           {/* Footer */}
           <p className="text-center text-sm font-bold text-slate mt-8">
             By signing in, you agree to our{' '}
-            <a href="#" className="text-brand-500 hover:text-brand-600">
+            <Link to="/terms" className="text-brand-500 hover:text-brand-600">
               Terms of Service
-            </a>
+            </Link>
           </p>
 
           <div className="mt-8 text-center">
