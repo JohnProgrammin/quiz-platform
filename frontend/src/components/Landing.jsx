@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useScrollReveal, useStaggerReveal } from '../hooks/useScrollReveal';
-import LanguageSwitcher from './LanguageSwitcher';
 import { SEO } from './SEO';
 import PublicHeader from './PublicHeader';
 import { useSound } from '../hooks/useSound';
@@ -15,7 +14,6 @@ import {
   EmojiEvents,
   CheckCircle,
   Star,
-  TrendingUp,
 } from '@mui/icons-material';
 
 function AnimatedCounter({ end, duration = 2000, suffix = '', isVisible }) {
@@ -53,7 +51,6 @@ function Landing() {
   const [statsRef, statsVisible] = useScrollReveal();
   const [testimonialRef, testimonialVisible] = useScrollReveal();
   const [setTestimonialRef, visibleTestimonials] = useStaggerReveal(3, { staggerDelay: 150 });
-  const [ctaRef, ctaVisible] = useScrollReveal();
   const [demoPhase, setDemoPhase] = useState(0);
   const [questionText, setQuestionText] = useState('');
   const [visibleOptions, setVisibleOptions] = useState(new Set());
@@ -584,13 +581,13 @@ function Landing() {
               <div
                 key={i}
                 ref={setPricingRef(i)}
-                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} ${tier.highlighted ? 'z-10 bg-brand-900 rounded-[2rem] border-4 border-brand-800 border-b-[8px] transform md:-translate-y-4' : 'z-0 bg-white rounded-[2rem] border-2 border-slate-200 border-b-[6px]'} transition-transform duration-300 hover:-translate-y-2`}
+                className={`reveal-scale ${visiblePricing.has(i) ? 'visible' : ''} ${tier.highlighted ? 'z-10 bg-white rounded-[2rem] border-3 border-brand-500 ring-4 ring-brand-500/10 transform md:-translate-y-4' : 'z-0 bg-white rounded-[2rem] border-2 border-slate-200 border-b-[6px]'} transition-transform duration-300 hover:-translate-y-2`}
               >
-                <div className={`relative p-8 h-full rounded-[2rem] ${tier.highlighted ? 'text-white' : ''}`}>
+                <div className={`relative p-8 h-full rounded-[2rem]`}>
                   {/* Badge */}
                   {tier.badge && (
                     <div className="absolute -top-4 left-0 right-0 flex justify-center">
-                      <div className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black border-2 border-b-4 ${tier.highlighted ? 'bg-amber-400 text-amber-900 border-amber-500' : 'bg-brand-500 text-white border-brand-600'}`}>
+                      <div className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black border-2 border-b-4 ${tier.highlighted ? 'bg-brand-500 text-white border-brand-600' : 'bg-brand-500 text-white border-brand-600'}`}>
                         <AutoAwesome className="w-3.5 h-3.5" />
                         {tier.badge}
                       </div>
@@ -598,38 +595,38 @@ function Landing() {
                   )}
 
                   {/* Icon */}
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border-2 border-b-4 ${tier.highlighted ? 'bg-brand-800 border-brand-700 text-amber-400' : `${tier.bg} border-slate-200 text-brand-600`}`}>
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border-2 border-b-4 ${tier.highlighted ? 'bg-brand-50 border-brand-200 text-brand-600' : `${tier.bg} border-slate-200 text-brand-600`}`}>
                     {tier.icon}
                   </div>
 
                   {/* Tier name */}
-                  <h3 className={`text-2xl font-black mb-2 ${tier.highlighted ? 'text-white' : 'text-ink'}`}>{tier.name}</h3>
-                  <p className={`font-medium text-sm mb-6 h-10 ${tier.highlighted ? 'text-white/90' : 'text-slate'}`}>{tier.description}</p>
+                  <h3 className="text-2xl font-black mb-2 text-ink">{tier.name}</h3>
+                  <p className="font-medium text-sm mb-6 h-10 text-slate">{tier.description}</p>
 
                   {/* Price */}
                   <div className="mb-8">
-                    <div className={`text-5xl font-black tracking-tight flex items-baseline ${tier.highlighted ? 'text-white' : 'text-ink'}`}>
+                    <div className="text-5xl font-black tracking-tight flex items-baseline text-ink">
                       {tier.price}
-                      {tier.period && <span className={`text-lg font-bold ml-1 tracking-normal ${tier.highlighted ? 'text-white/80' : 'text-slate'}`}>{tier.period}</span>}
+                      {tier.period && <span className="text-lg font-bold ml-1 tracking-normal text-slate">{tier.period}</span>}
                     </div>
                     {tier.nairaPrice && (
                       <div className="mt-3">
-                        <span className={`inline-flex items-center gap-1.5 border px-4 py-1.5 rounded-full text-sm font-black border-b-[3px] ${tier.highlighted ? 'bg-white/20 border-white/30 text-white' : 'bg-green-50 border-green-200 text-green-700'}`}>
+                        <span className="inline-flex items-center gap-1.5 border px-4 py-1.5 rounded-full text-sm font-black border-b-[3px] bg-green-50 border-green-200 text-green-700">
                           🇳🇬 {tier.nairaPrice}/mo
                         </span>
-                        <p className={`text-xs mt-2 font-medium ${tier.highlighted ? 'text-white/80' : 'text-slate'}`}>{t('pricing.payInNairaInfo') || 'Pay in Naira · Billed monthly'}</p>
+                        <p className="text-xs mt-2 font-medium text-slate">{t('pricing.payInNairaInfo') || 'Pay in Naira · Billed monthly'}</p>
                       </div>
                     )}
                   </div>
 
-                  <div className={`w-full h-px mb-8 ${tier.highlighted ? 'bg-white/20' : 'bg-slate-100'}`} />
+                  <div className="w-full h-px mb-8 bg-slate-100" />
 
                   {/* Features */}
                   <ul className="space-y-4 mb-10">
                     {tier.features.map((feature, j) => (
                       <li key={j} className="flex items-start gap-3">
-                        <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${tier.highlighted ? 'text-white' : 'text-brand-500'}`} />
-                        <span className={`font-medium text-sm ${tier.highlighted ? 'text-white' : 'text-ink'}`}>{feature}</span>
+                        <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-brand-500" />
+                        <span className="font-medium text-sm text-ink">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -638,7 +635,7 @@ function Landing() {
                   <Link
                     to={tier.href}
                     onClick={playClickSound}
-                    className={`mt-4 block w-full text-center py-4 rounded-2xl font-black transition-all border-none ${tier.highlighted ? 'bg-brand-500 text-white border-b-4 border-brand-600 hover:bg-brand-400 active:border-b-0 active:translate-y-1' : 'bg-brand-500 text-white border-b-4 border-brand-600 hover:bg-brand-400 active:border-b-0 active:translate-y-1'}`}
+                    className="mt-4 block w-full text-center py-4 rounded-2xl font-black transition-all border-none bg-brand-500 text-white border-b-4 border-brand-600 hover:bg-brand-400 active:border-b-0 active:translate-y-1"
                   >
                     {tier.cta}
                   </Link>
