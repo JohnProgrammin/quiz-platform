@@ -135,11 +135,6 @@ export const getAllAttempts = () => api.get('/v1/quiz/attempts/all');
 export const getQuizAttempts = (quizId) => api.get(`/v1/quiz/${quizId}/attempts`);
 export const getDailyReview = () => api.get('/v1/quiz/daily-review');
 
-// Teaching (Pre-Quiz & Weakness Quizzes)
-export const getPreQuizSummary = (noteId) => api.post('/v1/teaching/pre-quiz-summary', { noteId });
-export const generateWeaknessQuiz = (attemptId, weakTopics) =>
-  api.post('/v1/teaching/weakness-quiz', { attemptId, weakTopics });
-
 // AI Teaching Chat (Premium only)
 export const createTeachingSession = (topic, noteId = null) =>
   api.post('/v1/teaching/sessions', { topic, noteId });

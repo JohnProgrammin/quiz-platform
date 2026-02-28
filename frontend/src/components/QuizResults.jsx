@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 import UpgradePrompt from './UpgradePrompt';
 import GamificationDisplay from './GamificationDisplay';
-import { getQuiz, getQuizAttempts, getQuizResults, generateWeaknessQuiz } from '../api';
+import { getQuiz, getQuizAttempts, getQuizResults } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useTranslation } from 'react-i18next';
 import { RotateCcw, Home, CheckCircle, XCircle, Loader2, Trophy, Target, TrendingUp, Lock, Sparkles, Crown } from 'lucide-react';
