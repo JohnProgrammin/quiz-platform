@@ -35,14 +35,30 @@ exports.uploadNote = async (req, res) => {
     const noteId = uuidv4();
     const file = req.file;
 
-    // Extract text from file
+    // Extract text from file - CRITICAL for quiz generation
     let contentText = '';
     try {
-      // Use storage service to extract text based on file type
       contentText = await storageService.extractTextFromFile(file);
+
+      // CRITICAL: Validate extracted content is not empty/fallback
+      if (!contentText || contentText.startsWith('[') || contentText.length < 10) {
+        console.error(`❌ Text extraction returned invalid content for file: ${file.originalname}`);
+        console.error(`Content preview: "${contentText.substring(0, 100)}"`);
+        console.error(`File type: ${file.mimetype}, Size: ${file.size} bytes`);
+
+        return res.status(400).json({
+          error: `Failed to extract text from ${file.originalname}. Supported formats: PDF, DOCX, TXT, MD (and PPTX for Pro users). Please ensure your file contains readable text.`,
+          details: 'Text extraction failed. This usually means the file is empty, corrupted, or in an unsupported format.'
+        });
+      }
+
+      console.log(`✅ Text extraction successful: ${contentText.length} characters extracted from ${file.originalname}`);
     } catch (error) {
-      console.warn('Text extraction failed:', error);
-      contentText = `[File: ${file.originalname}]`;
+      console.error('❌ Text extraction exception:', error);
+      return res.status(400).json({
+        error: `Failed to extract text from ${file.originalname}. Please try another file.`,
+        details: error.message
+      });
     }
 
     // Upload to R2

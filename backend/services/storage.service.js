@@ -224,20 +224,29 @@ class StorageService {
         case 'txt':
         case 'md':
           try {
-            return buffer.toString('utf-8');
+            const text = buffer.toString('utf-8');
+            if (!text || text.length < 10) {
+              console.error(`⚠️ Text file is empty or too short (${text?.length || 0} chars): ${file.originalname}`);
+              throw new Error('File is empty or contains very little text.');
+            }
+            return text;
           } catch (error) {
-            console.warn('UTF-8 decoding failed for text file:', error);
-            return `[Text File: ${file.originalname}]`;
+            console.error(`❌ Text file parsing failed for ${file.originalname}:`, error.message);
+            throw new Error(`Cannot read text file: ${error.message}`);
           }
 
         case 'pdf':
           try {
             const pdfParse = require('pdf-parse');
             const data = await pdfParse(buffer);
+            if (!data.text || data.text.length < 10) {
+              console.error(`⚠️ PDF has no readable text (${data.text?.length || 0} chars): ${file.originalname}`);
+              throw new Error('PDF contains no readable text. Make sure it\'s not a scanned image.');
+            }
             return data.text;
           } catch (error) {
-            console.warn('PDF parsing failed:', error);
-            return `[PDF Document: ${file.originalname}]`;
+            console.error(`❌ PDF parsing failed for ${file.originalname}:`, error.message);
+            throw new Error(`Cannot read PDF: ${error.message}. Make sure it's a text-based PDF, not a scanned image.`);
           }
 
         case 'docx':
@@ -245,10 +254,14 @@ class StorageService {
           try {
             const mammoth = require('mammoth');
             const result = await mammoth.extractRawText({ buffer });
+            if (!result.value || result.value.length < 10) {
+              console.error(`⚠️ DOCX has no readable text (${result.value?.length || 0} chars): ${file.originalname}`);
+              throw new Error('Document contains no readable text.');
+            }
             return result.value;
           } catch (error) {
-            console.warn('DOCX parsing failed:', error);
-            return `[Document: ${file.originalname}]`;
+            console.error(`❌ DOCX parsing failed for ${file.originalname}:`, error.message);
+            throw new Error(`Cannot read document: ${error.message}`);
           }
 
         case 'pptx':
@@ -262,10 +275,14 @@ class StorageService {
                 resolve(data);
               }, { outputErrorToConsole: false });
             });
-            return text || `[Presentation: ${file.originalname}]`;
+            if (!text || text.length < 10) {
+              console.error(`⚠️ Presentation has no readable text (${text?.length || 0} chars): ${file.originalname}`);
+              throw new Error('Presentation contains no readable text.');
+            }
+            return text;
           } catch (error) {
-            console.warn('PPTX parsing failed:', error);
-            return `[Presentation: ${file.originalname}]`;
+            console.error(`❌ Presentation parsing failed for ${file.originalname}:`, error.message);
+            throw new Error(`Cannot read presentation: ${error.message}`);
           }
 
         default:

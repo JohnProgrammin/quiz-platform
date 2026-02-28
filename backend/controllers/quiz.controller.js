@@ -60,10 +60,20 @@ exports.generateQuiz = async (req, res) => {
       quizTitle = `Compound Quiz from ${notes.length} notes`;
     }
 
+    // CRITICAL VALIDATION: Ensure content exists and isn't a fallback message
+    if (!combinedContent || combinedContent.length < 50) {
+      console.error('❌ CRITICAL: Note content is empty or too short!');
+      console.error(`  Content: "${combinedContent}"`);
+      console.error(`  This would generate generic placeholder questions!`);
+      return res.status(400).json({
+        error: 'Note content is empty or too short. Please upload a note with actual readable text content.'
+      });
+    }
+
     // Generate questions using AI
     console.log('  ✓ Notes retrieved');
     const contentLength = combinedContent.length || 0;
-    console.log(`  Note content length: ${contentLength} characters`);
+    console.log(`  ✅ Note content validated: ${contentLength} characters to base quiz on`);
 
     const finalQuestionCount = questionCount || (userTier === 'free' ? 10 : 15);
     console.log(`  Calling AI service to generate ${finalQuestionCount} questions...`);
