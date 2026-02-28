@@ -1,472 +1,433 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import confetti from 'canvas-confetti';
-import { toast } from 'sonner';
-
-import UpgradePrompt from './UpgradePrompt';
-import GamificationDisplay from './GamificationDisplay';
-import { getQuiz, getQuizAttempts, getQuizResults } from '../api';
+import { motion, AnimatePresence } from 'framer-motion';
+import { getQuiz } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useTranslation } from 'react-i18next';
-import { RotateCcw, Home, CheckCircle, XCircle, Loader2, Trophy, Target, TrendingUp, Lock, Sparkles, Crown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Trophy, TrendingUp, Target, ArrowRight, Home, RotateCcw,
+  Flame, Zap, CheckCircle2, XCircle, Loader2, BookOpen, AlertCircle, Award
+} from 'lucide-react';
 
-import { soundService } from '../services/sound.service';
-
-function QuizResults({ user, onLogout }) {
-  const { t } = useTranslation();
+/**
+ * Quiz Results Component - Celebratory & Guiding Learning Experience
+ * Features:
+ * - Celebratory score display with confetti
+ * - Performance breakdown stats
+ * - Learning path recommendations
+ * - Wrong answer reviews
+ * - Level-up modal
+ * - Next action buttons
+ */
+function QuizResults({ user, gamificationStats }) {
   const { id } = useParams();
-  const { attemptId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const { tier } = useSubscription();
-  const [quiz, setQuiz] = useState(null);
-  const [attempts, setAttempts] = useState([]);
-  const [selectedAttempt, setSelectedAttempt] = useState(null);
-  const [aiFeedback, setAiFeedback] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [generatingWeakness, setGeneratingWeakness] = useState(false);
-  const [gamification, setGamification] = useState(null);
 
-  // Get gamification data from navigation state if available
-  useEffect(() => {
-    if (location?.state?.gamification) {
-      setGamification(location.state.gamification);
-    }
-  }, [location]);
+  // State
+  const [quiz, setQuiz] = useState(null);
+  const [attempt, setAttempt] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [selectedWrongQuestion, setSelectedWrongQuestion] = useState(null);
 
   useEffect(() => {
     loadResults();
   }, [id]);
 
-  // Trigger celebration animation for good scores
-  useEffect(() => {
-    if (!loading && selectedAttempt) {
-      if (selectedAttempt.percentage >= 70) {
-        soundService.playComplete();
-        // Confetti animation for good score
-        setTimeout(() => {
-          confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 }
-          });
-        }, 500);
-      } else {
-        // Encouraging but lower key sound for lower scores
-        soundService.playError();
-      }
-    }
-  }, [loading, selectedAttempt]);
-
-  // Show achievement unlock notifications
-  useEffect(() => {
-    if (gamification?.newAchievements && gamification.newAchievements.length > 0) {
-      gamification.newAchievements.forEach((achievement, index) => {
-        setTimeout(() => {
-          toast.success(
-            <div className="flex items-center gap-2">
-              <Crown className="w-5 h-5 text-amber-500 fill-current" />
-              <div>
-                <p className="font-black">Achievement Unlocked!</p>
-                <p className="text-sm font-bold">{achievement.name}</p>
-              </div>
-            </div>
-          );
-        }, 1000 + index * 300);
-      });
-    }
-  }, [gamification?.newAchievements]);
-
-  // ... further down
-
-
   const loadResults = async () => {
     try {
-      const [quizRes, attemptsRes] = await Promise.all([
-        getQuiz(id),
-        getQuizAttempts(id),
-      ]);
+      // Get quiz data
+      const response = await getQuiz(id);
+      const quizData = response.data.data || response.data;
+      setQuiz(quizData);
 
-      setQuiz(quizRes.data?.data || quizRes.data);
-      const rawData = attemptsRes.data;
-      const attemptsList = Array.isArray(rawData) ? rawData : (Array.isArray(rawData?.data) ? rawData.data : []);
-      const attemptsData = attemptsList.filter(a => a && typeof a === 'object');
-      setAttempts(attemptsData);
-      if (attemptsData.length > 0) {
-        setSelectedAttempt(attemptsData[0]);
+      // Get results from location state (passed from Quiz component)
+      if (location.state?.gamification) {
+        setAttempt({
+          ...location.state.gamification,
+          data: location.state.data || {},
+        });
+
+        // Show level-up modal if applicable
+        if (location.state.gamification?.leveledUp) {
+          setTimeout(() => setShowLevelUp(true), 1500);
+        }
+
+        // Trigger confetti
+        setTimeout(() => triggerConfetti(), 300);
       }
-    } catch (error) {
-      console.error('Error loading results:', error);
+
+      setError('');
+    } catch (err) {
+      console.error('Error loading results:', err);
+      setError('Failed to load quiz results');
     } finally {
       setLoading(false);
     }
   };
 
-  const getScoreColor = (percentage) => {
-    if (percentage >= 80) return 'text-brand-500';
-    if (percentage >= 60) return 'text-amber-500';
-    return 'text-danger';
-  };
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#58CC02', '#4ade80', '#22c55e', '#16a34a', '#fbbf24', '#f59e0b'],
+      zIndex: 999,
+    });
 
-  const getScoreBg = (percentage) => {
-    if (percentage >= 80) return 'bg-green-50';
-    if (percentage >= 60) return 'bg-amber-50';
-    return 'bg-red-50';
-  };
-
-  const getScoreMessage = (percentage) => {
-    if (percentage === 100) return t('results.perfectScore');
-    if (percentage >= 80) return t('results.great');
-    if (percentage >= 60) return t('results.good');
-    if (percentage >= 40) return t('results.keepPracticing');
-    return t('results.tryAgain');
-  };
-
-  const handleMasterWeakTopic = async (weakTopic) => {
-    if (!selectedAttempt) return;
-
-    setGeneratingWeakness(true);
-    try {
-      const response = await generateWeaknessQuiz(selectedAttempt.id, [weakTopic]);
-      navigate(`/quiz/${response.data.id}`);
-    } catch (error) {
-      console.error('Error generating weakness quiz:', error);
-      alert('Failed to generate weakness quiz');
-    } finally {
-      setGeneratingWeakness(false);
-    }
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.5 },
+        colors: ['#58CC02', '#fbbf24'],
+      });
+      confetti({
+        particleCount: 50,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.5 },
+        colors: ['#58CC02', '#fbbf24'],
+      });
+    }, 200);
   };
 
   if (loading) {
     return (
-      <div>
-
-        <div className="flex flex-col items-center justify-center h-96">
-          <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-          <p className="text-slate font-bold mt-4">{t('results.loadingResults')}</p>
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-brand-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate font-bold">{t('common.loading') || 'Loading results...'}</p>
         </div>
       </div>
     );
   }
 
-  if (!quiz || attempts.length === 0) {
+  if (error || !quiz || !attempt) {
     return (
-      <div>
-
-        <div className="flex flex-col items-center justify-center h-96">
-          <p className="text-ink font-bold text-lg mb-4">{t('results.noResults')}</p>
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-50 flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-black text-ink mb-2">Oops!</h2>
+          <p className="text-slate font-bold mb-6">{error || 'Results not found'}</p>
           <button onClick={() => navigate('/dashboard')} className="btn-primary">
-            {t('results.backToDashboard')}
+            Back to Dashboard
           </button>
         </div>
       </div>
     );
   }
 
-  const latestAttempt = selectedAttempt || attempts[0];
+  const percentage = attempt.data?.percentage || 0;
+  const score = attempt.data?.score || 0;
+  const total = attempt.data?.total || quiz.questions?.length || 0;
+  const xpAwarded = attempt.xpAwarded || 0;
+  const newLevel = attempt.newLevel || gamificationStats?.level || 1;
+  const leveledUp = attempt.leveledUp || false;
+  const answers = attempt.data?.gradedAnswers || [];
+  const wrongAnswers = answers.filter((ans) => !ans.isCorrect);
 
-  // Safely calculate percentage - handle missing or undefined values
-  const percentage = latestAttempt?.percentage ?? (latestAttempt?.score && latestAttempt?.total_questions
-    ? Math.round((latestAttempt.score / latestAttempt.total_questions) * 100)
-    : 0);
+  // Score messaging
+  const getScoreMessage = () => {
+    if (percentage === 100) return { emoji: '👑', message: "Perfect! You're a master!", color: 'text-amber-600' };
+    if (percentage >= 90) return { emoji: '💪', message: 'Excellent! You crushed it!', color: 'text-green-600' };
+    if (percentage >= 80) return { emoji: '⭐', message: 'Great job! Keep it up!', color: 'text-blue-600' };
+    if (percentage >= 70) return { emoji: '📚', message: 'Good effort! Practice makes perfect!', color: 'text-purple-600' };
+    return { emoji: '🔥', message: "Don't worry, you're improving!", color: 'text-orange-600' };
+  };
 
-  // Filter out attempts without valid percentages
-  const safeAttempts = Array.isArray(attempts) ? attempts : [];
-  const validAttempts = safeAttempts.filter(a => a.percentage !== undefined && a.percentage !== null);
-  const bestScore = validAttempts.length > 0 ? Math.max(...validAttempts.map(a => a.percentage)) : 0;
-  const avgScore = validAttempts.length > 0
-    ? Math.round(validAttempts.reduce((sum, a) => sum + a.percentage, 0) / validAttempts.length)
-    : 0;
+  const scoreMsg = getScoreMessage();
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="max-w-5xl mx-auto px-4 py-8"
-    >
-
-      {gamification && (
-        <GamificationDisplay
-          xpAwarded={gamification.xpAwarded}
-          leveledUp={gamification.leveledUp}
-          newLevel={gamification.newLevel}
-          currentStreak={gamification.currentStreak}
-        />
-      )}
-
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className="card p-8 sm:p-12 mb-8 text-center relative overflow-hidden group border-2 border-border"
-      >
-        {/* Subtle background glow based on score */}
-        <div className={`absolute inset-0 opacity-10 ${getScoreBg(percentage)} blur-3xl`} />
-
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 20, delay: 0.2 }}
-          className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full ${getScoreBg(percentage)} flex items-center justify-center mx-auto mb-6 shadow-inner ring-4 ring-white relative`}
-        >
-          <div className="absolute inset-0 bg-white/20 rounded-full animate-shimmer" style={{ backgroundImage: 'linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent)', backgroundSize: '1rem 1rem' }} />
-          <span className={`text-5xl sm:text-6xl font-black ${getScoreColor(percentage)} tracking-tighter`}>{percentage}%</span>
-        </motion.div>
-
-        <h1 className={`text-2xl font-extrabold mb-1 ${getScoreColor(percentage)}`}>
-          {getScoreMessage(percentage)}
-        </h1>
-        <p className="text-slate font-bold">
-          {latestAttempt?.score} {t('results.outOf') || 'out of'} {latestAttempt?.totalQuestions} {t('results.correctAnswers') || 'correct'}
-        </p>
-
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t-2 border-border">
-          <div>
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <Target className="w-4 h-4 text-amber-500" />
-              <span className="text-xl font-extrabold text-ink">{safeAttempts.length}</span>
-            </div>
-            <span className="text-xs font-bold text-slate uppercase">{t('results.attempts')}</span>
-          </div>
-          <div>
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <Trophy className="w-4 h-4 text-warning" />
-              <span className="text-xl font-extrabold text-ink">{bestScore}%</span>
-            </div>
-            <span className="text-xs font-bold text-slate uppercase">{t('results.best')}</span>
-          </div>
-          <div>
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <TrendingUp className="w-4 h-4 text-brand-500" />
-              <span className="text-xl font-extrabold text-ink">{avgScore}%</span>
-            </div>
-            <span className="text-xs font-bold text-slate uppercase">{t('results.average')}</span>
-          </div>
-        </div>
-
-        {/* Action buttons */}
-        <div className="flex gap-3 justify-center mt-6">
-          <button onClick={() => navigate(`/quiz/${id}`)} className="btn-primary">
-            <span className="flex items-center gap-2">
-              <RotateCcw className="w-4 h-4" />
-              {t('results.retakeQuiz')}
-            </span>
-          </button>
-          <button onClick={() => navigate('/dashboard')} className="btn-secondary">
-            <span className="flex items-center gap-2">
-              <Home className="w-4 h-4" />
-              {t('results.backToDashboard')}
-            </span>
-          </button>
-        </div>
-      </motion.div>
-
-      {/* AI Feedback Section (Pro+ only) */}
-      {
-        tier === 'free' ? (
-          <div className="card p-8 mb-8 bg-amber-50 border-2 border-amber-500 relative overflow-hidden">
-            <div className="absolute inset-0 backdrop-blur-sm bg-white/40" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-4">
-                <Lock className="w-5 h-5 text-amber-600" />
-                <h2 className="text-lg font-extrabold text-amber-900">{t('results.aiFeatureUpgrade')}</h2>
-              </div>
-              <p className="text-amber-800 font-semibold mb-4">
-                {t('results.aiFeatureDescription')}
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-50 py-8 px-4 sm:px-6">
+      {/* LEVEL-UP MODAL */}
+      <AnimatePresence>
+        {showLevelUp && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+              className="bg-white rounded-3xl p-8 max-w-sm text-center"
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="mb-6"
+              >
+                <Trophy className="w-20 h-20 text-amber-500 mx-auto" />
+              </motion.div>
+              <h2 className="text-4xl font-black text-ink mb-2">LEVEL UP!</h2>
+              <p className="text-3xl font-black text-brand-500 mb-6">
+                Level {newLevel}
+              </p>
+              <p className="text-slate font-bold mb-8">
+                You've unlocked new achievements and rewards!
               </p>
               <button
-                onClick={() => navigate('/pricing')}
-                className="btn-primary"
+                onClick={() => setShowLevelUp(false)}
+                className="btn-primary w-full"
               >
-                {t('results.upgradeToProBtn')}
+                Continue
               </button>
-            </div>
-          </div>
-        ) : (
-          aiFeedback && (
-            <div className="card p-8 mb-8 bg-blue-50 border-2 border-blue-500">
-              <div className="flex items-center gap-3 mb-4">
-                <Sparkles className="w-5 h-5 text-blue-500" />
-                <h2 className="text-lg font-extrabold text-ink">{t('results.feedback')}</h2>
-              </div>
-              <p className="text-slate font-semibold mb-6">{aiFeedback.feedback}</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-              {aiFeedback.weakTopics && aiFeedback.weakTopics.length > 0 && (
-                <div>
-                  <h3 className="font-bold text-ink mb-3">{t('results.areasToMaster')}:</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {aiFeedback.weakTopics.map((topic, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => handleMasterWeakTopic(topic)}
-                        disabled={generatingWeakness}
-                        className="px-4 py-2 rounded-xl bg-blue-100 text-blue-600 font-bold hover:bg-blue-200 transition-all disabled:opacity-50"
-                      >
-                        {t('results.masterWeakness', { topic })}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+      <div className="max-w-2xl mx-auto">
+        {/* CELEBRATORY SCORE CARD */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white rounded-3xl border-2 border-border p-8 sm:p-10 mb-8 shadow-lg"
+        >
+          {/* Score Circle */}
+          <div className="text-center mb-8">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+              className="w-48 h-48 mx-auto rounded-full bg-gradient-to-br from-brand-100 to-brand-50 border-4 border-brand-500 flex items-center justify-center mb-6 relative"
+            >
+              <div className="text-center">
+                <p className="text-7xl font-black text-brand-600">{percentage}%</p>
+                <p className="text-lg font-bold text-brand-500 mt-2">
+                  {score}/{total} Correct
+                </p>
+              </div>
+
+              {/* Floating XP Badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.8 }}
+                className="absolute -top-4 -right-4 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-full p-3 shadow-lg flex items-center gap-1"
+              >
+                <Zap className="w-5 h-5 fill-white" />
+                <span className="font-black text-sm">+{xpAwarded}</span>
+              </motion.div>
+            </motion.div>
+
+            {/* Message */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="text-center"
+            >
+              <p className="text-5xl mb-3">{scoreMsg.emoji}</p>
+              <h2 className={`text-3xl font-black ${scoreMsg.color} mb-2`}>
+                {scoreMsg.message}
+              </h2>
+              {leveledUp && (
+                <p className="text-lg font-bold text-amber-600 flex items-center justify-center gap-2 mt-3">
+                  <Trophy className="w-5 h-5" />
+                  Level {newLevel}
+                </p>
+              )}
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* PERFORMANCE BREAKDOWN */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="grid grid-cols-3 gap-4 mb-8"
+        >
+          {/* Correct */}
+          <div className="bg-white rounded-2xl border-2 border-border p-4 text-center">
+            <CheckCircle2 className="w-6 h-6 text-green-500 mx-auto mb-2" />
+            <p className="text-2xl font-black text-ink">{score}</p>
+            <p className="text-xs font-bold text-muted uppercase">Correct</p>
+          </div>
+
+          {/* Incorrect */}
+          <div className="bg-white rounded-2xl border-2 border-border p-4 text-center">
+            <XCircle className="w-6 h-6 text-red-500 mx-auto mb-2" />
+            <p className="text-2xl font-black text-ink">{total - score}</p>
+            <p className="text-xs font-bold text-muted uppercase">Incorrect</p>
+          </div>
+
+          {/* Accuracy % */}
+          <div className="bg-white rounded-2xl border-2 border-border p-4 text-center">
+            <Target className="w-6 h-6 text-brand-500 mx-auto mb-2" />
+            <p className="text-2xl font-black text-brand-600">{percentage}%</p>
+            <p className="text-xs font-bold text-muted uppercase">Accuracy</p>
+          </div>
+        </motion.div>
+
+        {/* LEARNING PATH */}
+        {wrongAnswers.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-gradient-to-br from-blue-50 to-blue-50/50 rounded-2xl border-2 border-blue-200 p-6 mb-8"
+          >
+            <div className="flex items-start gap-3 mb-4">
+              <BookOpen className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="font-black text-ink text-lg">📚 What to Study Next</h3>
+                <p className="text-sm font-bold text-slate mt-1">
+                  Review your {wrongAnswers.length} incorrect answer{wrongAnswers.length !== 1 ? 's' : ''} below to improve faster
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {wrongAnswers.slice(0, 3).map((ans, idx) => (
+                <motion.button
+                  key={idx}
+                  onClick={() => setSelectedWrongQuestion(idx)}
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full p-3 bg-white rounded-lg border-2 border-blue-200 text-left hover:border-blue-400 transition-all"
+                >
+                  <p className="font-bold text-sm text-ink">
+                    Question {answers.indexOf(ans) + 1}
+                  </p>
+                  <p className="text-xs text-slate font-bold mt-1 line-clamp-2">
+                    {ans.questionText}
+                  </p>
+                </motion.button>
+              ))}
+              {wrongAnswers.length > 3 && (
+                <p className="text-xs font-bold text-blue-600 text-center">
+                  +{wrongAnswers.length - 3} more to review
+                </p>
               )}
             </div>
-          )
-        )
-      }
+          </motion.div>
+        )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Question Review */}
-        <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-lg font-extrabold text-ink">{t('results.questionReview')}</h2>
-          {quiz?.questions?.map((question, index) => {
-            const answers = selectedAttempt?.answers || [];
-            const answerEntry = Array.isArray(answers) ? answers[index] : null;
+        {/* WRONG ANSWER DETAIL VIEW */}
+        <AnimatePresence>
+          {selectedWrongQuestion !== null && wrongAnswers[selectedWrongQuestion] && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-2xl border-2 border-red-200 p-6 mb-8"
+            >
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <h4 className="font-black text-ink">Question Review</h4>
+                <button
+                  onClick={() => setSelectedWrongQuestion(null)}
+                  className="text-muted hover:text-ink transition-colors text-xl"
+                >
+                  ✕
+                </button>
+              </div>
 
-            let userValue, isCorrect, feedback, score;
-
-            // Handle both new (object) and legacy (value) answer formats
-            if (typeof answerEntry === 'object' && answerEntry !== null && answerEntry.userAnswer !== undefined) {
-              userValue = answerEntry.userAnswer;
-              isCorrect = answerEntry.isCorrect;
-              feedback = answerEntry.feedback;
-              score = answerEntry.score;
-            } else {
-              userValue = answerEntry;
-              isCorrect = userValue === question.correctAnswer;
-            }
-
-            const optionLabels = ['A', 'B', 'C', 'D'];
-
-            return (
-              <div key={index} className="card p-6">
-                <div className="flex items-start gap-3 mb-4">
-                  {isCorrect ? (
-                    <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle className="w-5 h-5 text-brand-500" />
-                    </div>
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <XCircle className="w-5 h-5 text-danger" />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <h3 className="font-bold text-ink leading-relaxed">
-                      {index + 1}. {question.question}
-                    </h3>
-                    {/* Show score if available (mostly for partially correct text answers) */}
-                    {score !== undefined && score !== null && score !== 0 && score !== 100 && (
-                      <span className="inline-block mt-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">
-                        {t('results.partialCredit') || 'Partial Credit'}: {score}%
-                      </span>
-                    )}
-                  </div>
+              <div className="space-y-4">
+                {/* Question */}
+                <div>
+                  <p className="text-sm font-bold text-muted mb-2">Your Question</p>
+                  <p className="font-black text-ink">
+                    {wrongAnswers[selectedWrongQuestion].questionText}
+                  </p>
                 </div>
 
-                {/* Render based on question type */}
-                {question.type === 'text' || question.type === 'free_text' ? (
-                  <div className="ml-11 space-y-4">
-                    <div className={`p-4 rounded-xl border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                      <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{t('results.yourAnswer') || 'Your Answer'}</p>
-                      <p className="font-semibold text-ink">{userValue || (t('results.noAnswerProvided') || '(No answer provided)')}</p>
-                    </div>
+                {/* Your Answer */}
+                <div>
+                  <p className="text-sm font-bold text-red-600 mb-1">❌ Your Answer</p>
+                  <p className="text-sm font-bold text-ink bg-red-50 p-3 rounded-lg">
+                    {wrongAnswers[selectedWrongQuestion].userAnswer !== undefined
+                      ? quiz.questions?.[0]?.options?.[wrongAnswers[selectedWrongQuestion].userAnswer] || 'Not answered'
+                      : 'Not answered'}
+                  </p>
+                </div>
 
-                    {!isCorrect && (
-                      <div className="p-4 rounded-xl border-2 bg-slate-50 border-slate-200">
-                        <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{t('results.modelAnswer') || 'Model Answer'}</p>
-                        <p className="font-semibold text-slate">{question.sampleAnswer || question.correctAnswer || (t('results.noModelAnswer') || 'No model answer available')}</p>
-                      </div>
-                    )}
+                {/* Correct Answer */}
+                <div>
+                  <p className="text-sm font-bold text-green-600 mb-1">✓ Correct Answer</p>
+                  <p className="text-sm font-bold text-ink bg-green-50 p-3 rounded-lg">
+                    {quiz.questions?.[0]?.options?.[wrongAnswers[selectedWrongQuestion].correctAnswer] || 'Not found'}
+                  </p>
+                </div>
 
-                    {feedback && (
-                      <div className="p-4 rounded-xl border-2 bg-blue-50 border-blue-200 flex gap-3">
-                        <Sparkles className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">{t('results.feedback') || 'AI Feedback'}</p>
-                          <p className="text-blue-900 font-medium">{feedback}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  /* MCQ Rendering */
-                  <div className="space-y-2 ml-11">
-                    {question.options.map((option, optIndex) => {
-                      const isUserAnswer = userValue === optIndex;
-                      const isCorrectAnswer = question.correctAnswer === optIndex;
-
-                      let classes = 'p-4 rounded-xl border-2 flex items-center gap-3 text-sm font-bold transition-all ';
-                      if (isCorrectAnswer) {
-                        classes += 'bg-green-50 border-green-500 text-green-700 shadow-sm';
-                      } else if (isUserAnswer && !isCorrect) {
-                        classes += 'bg-red-50 border-red-500 text-red-700 shadow-sm';
-                      } else {
-                        classes += 'bg-white border-gray-200 text-slate opacity-60';
-                      }
-
-                      return (
-                        <div key={optIndex} className={classes}>
-                          <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0 ${isCorrectAnswer ? 'bg-brand-500 text-white' : isUserAnswer && !isCorrect ? 'bg-danger text-white' : 'bg-slate-200 text-slate'
-                            }`}>
-                            {optionLabels[optIndex]}
-                          </span>
-                          <span className="flex-1">{option}</span>
-
-                          {isCorrectAnswer && (
-                            <div className="flex items-center gap-1 text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
-                              <CheckCircle className="w-3.5 h-3.5" />
-                              <span className="hidden sm:inline">{t('results.correctAnswerKey') || 'Correct Answer'}</span>
-                            </div>
-                          )}
-
-                          {isUserAnswer && !isCorrect && (
-                            <div className="flex items-center gap-1 text-xs font-bold text-red-700 bg-red-100 px-2 py-1 rounded-lg ml-auto flex-shrink-0">
-                              <XCircle className="w-3.5 h-3.5" />
-                              <span className="hidden sm:inline">{t('results.yourAnswer') || 'Your Answer'}</span>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                {/* Explanation */}
+                <div>
+                  <p className="text-sm font-bold text-slate mb-2">💡 Keep Learning!</p>
+                  <p className="text-sm text-slate leading-relaxed">
+                    Review your notes on this topic and take another quiz to master it. Every mistake is a learning opportunity!
+                  </p>
+                </div>
               </div>
-            );
-          })}
-        </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Attempt History */}
-        <div className="lg:col-span-1">
-          <h2 className="text-lg font-extrabold text-ink mb-4">{t('results.attemptHistory')}</h2>
-          <div className="card">
-            <div className="p-4 space-y-2">
-              {attempts.map((attempt, index) => (
-                <button
-                  key={attempt.id}
-                  onClick={() => setSelectedAttempt(attempt)}
-                  className={`w-full text-left p-4 rounded-xl border-2 transition-all ${selectedAttempt?.id === attempt.id
-                    ? 'border-brand-400 bg-brand-50'
-                    : 'border-border hover:border-muted hover:bg-surface'
-                    }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-bold text-slate">
-                      {t('results.attemptNumber', { number: safeAttempts.length - index })}
-                    </span>
-                    <span className={`text-lg font-extrabold ${getScoreColor(attempt.percentage || 0)}`}>
-                      {attempt.percentage || (attempt.score && attempt.total_questions ? Math.round((attempt.score / attempt.total_questions) * 100) : 0)}%
-                    </span>
-                  </div>
-                  <div className="text-xs font-semibold text-muted">
-                    {attempt.completed_at ? new Date(attempt.completed_at).toLocaleString() : new Date(attempt.completedAt || Date.now()).toLocaleString()}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        {/* ACTION BUTTONS */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6"
+        >
+          {/* Dashboard */}
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-border rounded-xl font-black text-sm hover:border-brand-400 hover:bg-brand-50 transition-all"
+          >
+            <Home className="w-5 h-5" />
+            Dashboard
+          </button>
+
+          {/* Retake Quiz */}
+          <motion.button
+            onClick={() => navigate(`/quiz/${id}`)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl font-black text-sm shadow-md hover:shadow-lg transition-all"
+          >
+            <RotateCcw className="w-5 h-5" />
+            Retake Quiz
+          </motion.button>
+
+          {/* New Quiz */}
+          <button
+            onClick={() => navigate('/notes')}
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-border rounded-xl font-black text-sm hover:border-brand-400 hover:bg-brand-50 transition-all"
+          >
+            <ArrowRight className="w-5 h-5" />
+            New Quiz
+          </button>
+        </motion.div>
+
+        {/* STREAK REMINDER */}
+        {gamificationStats?.currentStreak > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1 }}
+            className="p-4 bg-gradient-to-r from-flame/10 to-gold/10 border-2 border-flame/30 rounded-xl text-center"
+          >
+            <p className="font-black text-ink">
+              🔥 Keep your {gamificationStats.currentStreak}-day streak alive!
+            </p>
+            <p className="text-sm font-bold text-slate mt-1">
+              Come back tomorrow for another quiz
+            </p>
+          </motion.div>
+        )}
       </div>
-    </motion.div >
+    </div>
   );
 }
 
