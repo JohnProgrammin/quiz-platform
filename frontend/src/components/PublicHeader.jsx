@@ -11,8 +11,8 @@ const PublicHeader = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            // Trigger header when scrolled past hero CTAs
-            setScrolled(window.scrollY > 400);
+            // Trigger header faster - show white bg at 100px scroll
+            setScrolled(window.scrollY > 100);
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -45,9 +45,9 @@ const PublicHeader = () => {
 
                     {/* Desktop Right */}
                     <div className="hidden md:flex items-center gap-4 lg:gap-8">
-                        {/* Always visible Pricing link */}
-                        <div className="flex items-center gap-6 font-bold text-sm tracking-wide">
-                            <a href="#pricing" onClick={scrollToPricing} className={`hover:text-brand-500 transition-colors cursor-pointer ${scrolled ? 'text-slate-600' : 'text-slate-500'}`}>
+                        {/* Pricing link - hide when scrolled (when login buttons appear) */}
+                        <div className={`flex items-center gap-6 font-bold text-sm tracking-wide transition-all duration-300 ${scrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                            <a href="#pricing" onClick={scrollToPricing} className="hover:text-brand-500 transition-colors cursor-pointer text-slate-500">
                                 Pricing
                             </a>
                         </div>

@@ -714,7 +714,7 @@ function Landing() {
       <footer className="bg-slate-900 text-slate-300 py-12 px-6">
         <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
           <Link to="/" className="flex items-center gap-2 mb-6">
-            <span className="text-3xl font-black text-white tracking-tight">floraquiz<span className="text-brand-500">.</span></span>
+            <span className="text-4xl sm:text-5xl font-black text-white tracking-tight">floraquiz<span className="text-brand-300">.</span></span>
           </Link>
 
           <p className="max-w-md mx-auto mb-8 font-medium">

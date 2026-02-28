@@ -58,7 +58,19 @@ export const Signup = () => {
       }
       window.location.href = '/dashboard';
     } catch (err) {
-      setError(err.message || 'Signup failed. Please try again.');
+      let errorMessage = 'Signup failed. Please try again.';
+
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        errorMessage = 'Connection timeout. Please check your internet connection and try again.';
+      } else if (err.response?.status === 400) {
+        errorMessage = err.response.data?.message || 'Invalid information provided. Please check and try again.';
+      } else if (err.response?.status === 409) {
+        errorMessage = 'Email or username already exists. Please try another.';
+      } else if (err.message?.includes('Network')) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -195,13 +207,10 @@ export const Signup = () => {
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="my-8 h-1 w-full bg-slate-100 rounded-full" />
-
             {/* Login Link */}
             <Link
               to="/login"
-              className="w-full py-4 rounded-2xl bg-slate-100 border-2 border-slate-200 text-slate-700 font-black hover:bg-slate-200 transition-colors text-center block shadow-card active:shadow-none active:translate-y-[2px]"
+              className="w-full py-4 rounded-b-2xl border-t-0 -mt-2 bg-slate-100 border-2 border-slate-200 text-slate-700 font-black hover:bg-slate-200 transition-colors text-center block shadow-card active:shadow-none active:translate-y-[2px]"
             >
               Sign In Instead
             </Link>

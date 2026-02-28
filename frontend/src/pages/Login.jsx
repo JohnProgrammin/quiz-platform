@@ -30,7 +30,22 @@ export const Login = () => {
       }
       window.location.href = '/dashboard';
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      // Provide user-friendly error messages
+      let errorMessage = 'Login failed. Please try again.';
+
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        errorMessage = 'Connection timeout. Please check your internet connection and try again.';
+      } else if (err.response?.status === 401) {
+        errorMessage = 'Invalid email or password.';
+      } else if (err.response?.status === 404) {
+        errorMessage = 'Account not found. Please sign up first.';
+      } else if (err.message?.includes('Network')) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -104,13 +119,10 @@ export const Login = () => {
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="my-8 h-1 w-full bg-slate-100 rounded-full" />
-
             {/* Sign Up Link */}
             <Link
               to="/signup"
-              className="w-full py-4 rounded-2xl bg-slate-100 border-2 border-slate-200 text-slate-700 font-black hover:bg-slate-200 transition-colors text-center block shadow-card active:shadow-none active:translate-y-[2px]"
+              className="w-full py-4 rounded-b-2xl bg-slate-100 border-2 border-t-0 border-slate-200 text-slate-700 font-black hover:bg-slate-200 transition-colors text-center block active:shadow-none active:translate-y-[2px] -mt-2"
             >
               Create an Account
             </Link>
