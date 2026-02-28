@@ -6,9 +6,10 @@ import { toast } from 'sonner';
 import UpgradeQuotaModal from './UpgradeQuotaModal';
 import { uploadNote, getNotes, deleteNote, generateQuiz } from '../api';
 import { useSubscription } from '../contexts/SubscriptionContext';
+import { useSound } from '../hooks/useSound';
 import {
   Upload, FileText, Trash2, Sparkles, Loader2,
-  Crown, CheckCircle2, ArrowRight
+  Crown, CheckCircle2, ArrowRight, Zap
 } from 'lucide-react';
 
 // File type icons
@@ -24,6 +25,7 @@ function Notes({ user }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { tier } = useSubscription();
+  const { playClickSound } = useSound();
   const fileInputRef = useRef(null);
 
   const [notes, setNotes] = useState([]);
@@ -114,6 +116,7 @@ function Notes({ user }) {
       clearInterval(interval);
       setUploadProgress(100);
       setUploadStage('success');
+      playClickSound();
       setTimeout(() => { setUploadStage('idle'); setUploadProgress(0); }, 2200);
       toast.success('Note uploaded successfully! 🎉');
       loadNotes();
@@ -212,12 +215,12 @@ function Notes({ user }) {
             {isFree ? (
               <>
                 <span className="text-2xl font-black text-ink">{notes.length}<span className="text-muted">/3</span></span>
-                <button onClick={() => navigate('/pricing')} className="btn-primary text-xs py-1.5 px-3 ml-2">{t('subscription.upgrade') || 'Upgrade'}</button>
+                <button onClick={() => { playClickSound(); navigate('/pricing'); }} className="btn-primary text-xs py-1.5 px-3 ml-2">{t('subscription.upgrade') || 'Upgrade'}</button>
               </>
             ) : (
               <>
-                <span className="text-2xl font-black text-violet-500">∞</span>
-                <span className="text-xs font-black text-violet-500 ml-1">{t('subscription.unlimited') || 'Unlimited'}</span>
+                <span className="text-2xl font-black text-brand-500">∞</span>
+                <span className="text-xs font-black text-brand-500 ml-1">{t('subscription.unlimited') || 'Unlimited'}</span>
               </>
             )}
           </div>
@@ -229,7 +232,7 @@ function Notes({ user }) {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'spring', stiffness: 260, damping: 24 }}
           className={`relative bg-white rounded-3xl border-2 border-dashed mb-8 transition-all duration-200 overflow-hidden
-            ${dragOver ? 'border-violet-500 bg-violet-50/60 scale-[1.01]' : 'border-border hover:border-violet-400'}`}
+            ${dragOver ? 'border-brand-500 bg-brand-50/60 scale-[1.01]' : 'border-border hover:border-brand-400'}`}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
@@ -245,16 +248,16 @@ function Notes({ user }) {
                   <motion.div
                     animate={dragOver ? { scale: 1.1, rotate: -6 } : { scale: 1, rotate: 0 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                    className={`w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 ${dragOver ? 'bg-violet-100' : 'bg-violet-50'}`}
+                    className={`w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 ${dragOver ? 'bg-brand-100' : 'bg-brand-50'}`}
                   >
-                    <Upload className={`w-9 h-9 ${dragOver ? 'text-violet-600' : 'text-violet-400'}`} />
+                    <Upload className={`w-9 h-9 ${dragOver ? 'text-brand-600' : 'text-brand-400'}`} />
                   </motion.div>
                   <p className="text-xl font-black text-ink mb-1">
                     {dragOver ? '🎯 ' + (t('notes.dropIt') || 'Drop it!') : (t('notes.clickOrDrag') || 'Click or drag a file here')}
                   </p>
                   <p className="text-sm font-bold text-muted">
                     PDF, TXT, MD, DOCX
-                    {isPro && <span className="ml-2 inline-flex items-center gap-1 text-violet-500"><Crown className="w-3.5 h-3.5" /> PPTX</span>}
+                    {isPro && <span className="ml-2 inline-flex items-center gap-1 text-brand-500"><Crown className="w-3.5 h-3.5" /> PPTX</span>}
                     {!isPro && <span className="ml-2 text-muted/60">— PPTX on Pro</span>}
                   </p>
                 </motion.div>
@@ -266,15 +269,15 @@ function Notes({ user }) {
                   {/* Animated file icon */}
                   <div className="relative w-20 h-20 mx-auto mb-5">
                     <motion.div
-                      className="w-20 h-20 rounded-3xl bg-violet-100 flex items-center justify-center"
-                      animate={{ boxShadow: ['0 0 0 0px rgba(124,91,252,0.3)', '0 0 0 12px rgba(124,91,252,0)', '0 0 0 0px rgba(124,91,252,0)'] }}
+                      className="w-20 h-20 rounded-3xl bg-brand-100 flex items-center justify-center"
+                      animate={{ boxShadow: ['0 0 0 0px rgba(88,204,2,0.3)', '0 0 0 12px rgba(88,204,2,0)', '0 0 0 0px rgba(88,204,2,0)'] }}
                       transition={{ repeat: Infinity, duration: 1.6, ease: 'easeOut' }}
                     >
-                      <FileText className="w-9 h-9 text-violet-500" />
+                      <FileText className="w-9 h-9 text-brand-500" />
                     </motion.div>
                     {/* Orbiting dot */}
                     <motion.div
-                      className="absolute top-0 right-0 w-5 h-5 rounded-full bg-violet-500 border-2 border-white flex items-center justify-center"
+                      className="absolute top-0 right-0 w-5 h-5 rounded-full bg-brand-500 border-2 border-white flex items-center justify-center"
                       animate={{ rotate: 360 }}
                       transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
                       style={{ transformOrigin: '-8px 28px' }}
@@ -287,15 +290,15 @@ function Notes({ user }) {
                   <p className="text-xs font-bold text-muted mb-5 truncate max-w-[200px] mx-auto">{uploadedFileName}</p>
 
                   {/* Progress bar */}
-                  <div className="w-full max-w-[280px] mx-auto bg-violet-100 rounded-full h-2.5 overflow-hidden">
+                  <div className="w-full max-w-[280px] mx-auto bg-brand-100 rounded-full h-2.5 overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-violet-400 to-slate-500 rounded-full"
+                      className="h-full bg-gradient-to-r from-brand-400 to-brand-500 rounded-full"
                       initial={{ width: '0%' }}
                       animate={{ width: `${uploadProgress}%` }}
                       transition={{ ease: 'easeOut', duration: 0.3 }}
                     />
                   </div>
-                  <p className="text-xs font-black text-violet-500 mt-2">{uploadProgress}%</p>
+                  <p className="text-xs font-black text-brand-500 mt-2">{uploadProgress}%</p>
                 </motion.div>
               )}
 
@@ -323,8 +326,8 @@ function Notes({ user }) {
 
           {/* Pro PPTX badge */}
           {!isPro && (
-            <div className="absolute top-3 right-3 flex items-center gap-1 bg-gradient-to-r from-violet-500 to-slate-500 text-white text-xs font-black px-3 py-1.5 rounded-full cursor-pointer"
-              onClick={() => navigate('/pricing')}>
+            <div className="absolute top-3 right-3 flex items-center gap-1 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-xs font-black px-3 py-1.5 rounded-full cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => { playClickSound(); navigate('/pricing'); }}>
               <Crown className="w-3 h-3" /> Unlock PPTX
             </div>
           )}
@@ -334,20 +337,20 @@ function Notes({ user }) {
         <div className="bg-white rounded-3xl border-2 border-border overflow-hidden">
           <div className="px-6 py-5 border-b-2 border-border flex items-center justify-between">
             <h2 className="text-xl font-black text-ink flex items-center gap-2">
-              <FileText className="w-5 h-5 text-violet-500" />
+              <FileText className="w-5 h-5 text-brand-500" />
               {t('notes.myNotes')} ({notes.length})
             </h2>
           </div>
 
           {loading ? (
             <div className="p-16 text-center">
-              <Loader2 className="w-10 h-10 text-violet-400 animate-spin mx-auto" />
+              <Loader2 className="w-10 h-10 text-brand-400 animate-spin mx-auto" />
               <p className="text-slate font-bold mt-4">{t('common.loading')}</p>
             </div>
           ) : notes.length === 0 ? (
             <div className="p-16 text-center">
-              <div className="w-20 h-20 rounded-full bg-violet-50 border-2 border-border flex items-center justify-center mx-auto mb-5">
-                <FileText className="w-10 h-10 text-violet-300" />
+              <div className="w-20 h-20 rounded-full bg-brand-50 border-2 border-border flex items-center justify-center mx-auto mb-5">
+                <FileText className="w-10 h-10 text-brand-300" />
               </div>
               <h3 className="text-xl font-black text-ink mb-2">{t('notes.noNotes')}</h3>
               <p className="text-slate font-bold">{t('notes.createNote')}</p>
@@ -363,14 +366,14 @@ function Notes({ user }) {
                 <motion.div
                   key={note.id}
                   variants={itemVariants}
-                  className="p-4 sm:px-6 sm:py-5 hover:bg-violet-50/40 transition-all duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group"
+                  className="p-4 sm:px-6 sm:py-5 hover:bg-brand-50/40 transition-all duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group"
                 >
                   <div className="flex items-center gap-4 flex-1 min-w-0 w-full sm:w-auto">
-                    <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-2xl bg-brand-100 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform">
                       {getFileIcon(note.filename || note.title)}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-black text-ink truncate group-hover:text-violet-600 transition-colors">
+                      <h3 className="font-black text-ink truncate group-hover:text-brand-600 transition-colors">
                         {note.title}
                       </h3>
                       <p className="text-sm font-bold text-muted mt-0.5">
@@ -408,15 +411,29 @@ function Notes({ user }) {
 
                     {/* Question count slider (Pro only) */}
                     {isPro && (
-                      <div className="hidden md:flex items-center gap-2 bg-surface px-3 py-2 rounded-xl border border-border">
-                        <span className="text-xs font-black text-ink w-6 text-right">{questionCount}</span>
-                        <input
-                          type="range" min="5" max="30" value={questionCount}
-                          onChange={(e) => setQuestionCount(parseInt(e.target.value))}
-                          className="w-20 accent-violet-500 cursor-pointer"
-                        />
-                        <span className="text-xs text-muted">Qs</span>
-                      </div>
+                      <motion.div
+                        className="flex flex-col sm:flex-row items-center gap-3 sm:gap-2 bg-gradient-to-r from-brand-50 to-brand-50/50 px-4 sm:px-3 py-3 sm:py-2 rounded-xl border-2 border-brand-200 hover:border-brand-300 transition-all w-full sm:w-auto"
+                        whileHover={{ scale: 1.02 }}
+                      >
+                        <div className="flex items-center gap-2 flex-1 sm:flex-none">
+                          <Zap className="w-4 h-4 text-brand-500" />
+                          <span className="text-xs font-black text-ink">Questions:</span>
+                        </div>
+                        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+                          <input
+                            type="range"
+                            min="5"
+                            max="30"
+                            value={questionCount}
+                            onChange={(e) => { playClickSound(); setQuestionCount(parseInt(e.target.value)); }}
+                            className="flex-1 sm:w-24 h-2 bg-brand-200 rounded-full cursor-pointer appearance-none"
+                            style={{
+                              background: `linear-gradient(to right, #58CC02 0%, #58CC02 ${((questionCount - 5) / 25) * 100}%, #E4E4F0 ${((questionCount - 5) / 25) * 100}%, #E4E4F0 100%)`
+                            }}
+                          />
+                          <span className="text-sm font-black text-brand-600 min-w-[2.5rem] text-right">{questionCount}</span>
+                        </div>
+                      </motion.div>
                     )}
 
                     <div className="flex gap-2">
