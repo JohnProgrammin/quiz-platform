@@ -28,24 +28,6 @@ const sessionRateLimiter = rateLimit({
   keyGenerator: (req) => req.user?.id || req.ip,
 });
 
-// ==================== Pre-existing routes (Pro+) ====================
-
-// Get pre-quiz teaching summary (Pro+)
-router.post(
-  '/pre-quiz-summary',
-  authenticateToken,
-  checkFeatureAccess('pre_quiz_teaching'),
-  teachingController.getPreQuizSummary
-);
-
-// Generate weakness mastery quiz (Pro+)
-router.post(
-  '/weakness-quiz',
-  authenticateToken,
-  checkFeatureAccess('weakness_quizzes'),
-  teachingController.generateWeaknessMasteryQuiz
-);
-
 // ==================== AI Teaching Chat routes (Premium only) ====================
 
 // Create new teaching session (Premium)
