@@ -219,8 +219,8 @@ function Notes({ user }) {
               </>
             ) : (
               <>
-                <span className="text-2xl font-black text-brand-500">∞</span>
-                <span className="text-xs font-black text-brand-500 ml-1">{t('subscription.unlimited') || 'Unlimited'}</span>
+                <span className="text-2xl font-black text-brand-600">∞</span>
+                <span className="text-xs font-black text-brand-700 ml-1">{t('subscription.unlimited') || 'Unlimited'}</span>
               </>
             )}
           </div>
@@ -298,7 +298,7 @@ function Notes({ user }) {
                       transition={{ ease: 'easeOut', duration: 0.3 }}
                     />
                   </div>
-                  <p className="text-xs font-black text-brand-500 mt-2">{uploadProgress}%</p>
+                  <p className="text-xs font-black text-brand-700 mt-2">{uploadProgress}%</p>
                 </motion.div>
               )}
 
@@ -306,14 +306,14 @@ function Notes({ user }) {
               {uploadStage === 'success' && (
                 <motion.div key="success" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ type: 'spring', stiffness: 400, damping: 20 }} className="py-2">
                   <motion.div
-                    className="w-20 h-20 rounded-3xl bg-green-100 flex items-center justify-center mx-auto mb-4"
+                    className="w-20 h-20 rounded-3xl bg-brand-100 flex items-center justify-center mx-auto mb-4"
                     initial={{ scale: 0 }}
                     animate={{ scale: [0, 1.2, 1] }}
                     transition={{ duration: 0.4, times: [0, 0.6, 1] }}
                   >
-                    <CheckCircle2 className="w-10 h-10 text-green-500" />
+                    <CheckCircle2 className="w-10 h-10 text-brand-600" />
                   </motion.div>
-                  <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-xl font-black text-green-600">
+                  <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-xl font-black text-brand-600">
                     {t('notes.uploadSuccess') || 'Note uploaded! 🎉'}
                   </motion.p>
                   <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }} className="text-sm font-bold text-muted mt-1">
@@ -349,8 +349,8 @@ function Notes({ user }) {
             </div>
           ) : notes.length === 0 ? (
             <div className="p-16 text-center">
-              <div className="w-20 h-20 rounded-full bg-brand-50 border-2 border-border flex items-center justify-center mx-auto mb-5">
-                <FileText className="w-10 h-10 text-brand-300" />
+              <div className="w-20 h-20 rounded-full bg-brand-100 border-2 border-brand-300 flex items-center justify-center mx-auto mb-5">
+                <FileText className="w-10 h-10 text-brand-600" />
               </div>
               <h3 className="text-xl font-black text-ink mb-2">{t('notes.noNotes')}</h3>
               <p className="text-slate font-bold">{t('notes.createNote')}</p>
@@ -369,14 +369,14 @@ function Notes({ user }) {
                   className="p-4 sm:px-6 sm:py-5 hover:bg-brand-50/40 transition-all duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group"
                 >
                   <div className="flex items-center gap-4 flex-1 min-w-0 w-full sm:w-auto">
-                    <div className="w-12 h-12 rounded-2xl bg-brand-100 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-2xl bg-brand-100 flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform group-hover:bg-brand-200">
                       {getFileIcon(note.filename || note.title)}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-black text-ink truncate group-hover:text-brand-600 transition-colors">
+                      <h3 className="font-black text-ink truncate group-hover:text-brand-700 transition-colors">
                         {note.title}
                       </h3>
-                      <p className="text-sm font-bold text-muted mt-0.5">
+                      <p className="text-sm font-bold text-slate mt-0.5">
                         {new Date(note.created_at).toLocaleDateString()}
                       </p>
                     </div>
