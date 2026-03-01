@@ -122,50 +122,72 @@ exports.generateQuiz = async (req, res) => {
       keywords: q.keywords,
     }));
 
-    // ── DB Insert - Store quiz metadata and questions as JSON ────────────────
-    const insertPayload = {
-      id: quizId,
-      user_id: userId,
-      note_id: idsToFetch.length === 1 ? idsToFetch[0] : null,
-      title: quizTitle,
-      question_count: questions.length,
-      created_at: new Date().toISOString(),
-      questions: JSON.stringify(formattedQuestions), // Store as JSON string for compatibility
-      ai_generation_metadata: JSON.stringify({ noteIds: idsToFetch })
-    };
-
+    // ── DB Insert - Store quiz metadata + individual questions ────────────────
     try {
-      console.log('📝 Inserting quiz to database...');
-      const { error: quizError, data: quizData } = await supabase
+      console.log('📝 Inserting quiz metadata to database...');
+
+      // 1. Insert quiz metadata into quizzes table
+      const { error: quizError } = await supabase
         .from('quizzes')
-        .insert([insertPayload])
-        .select('id');
+        .insert([{
+          id: quizId,
+          note_id: idsToFetch.length === 1 ? idsToFetch[0] : null,
+          user_id: userId,
+          title: quizTitle,
+          question_count: questions.length,
+          ai_generation_metadata: { noteIds: idsToFetch },
+          created_at: new Date().toISOString()
+        }]);
 
       if (quizError) {
-        console.error('❌ Quiz INSERT failed:', quizError.message);
-        // Even if DB insert fails, return the questions so user can take quiz
-        console.warn('⚠️ Database insert failed, but returning questions to frontend');
+        console.error('❌ Quiz metadata INSERT failed:', quizError.message);
+        // Return questions immediately even if DB fails
         return res.status(201).json({
           id: quizId,
           questionCount: questions.length,
           questions: formattedQuestions,
-          warning: 'Quiz generated but may not persist. Please try again if issues continue.'
+          warning: 'Quiz generated but database save failed'
         });
       }
 
-      console.log(`✅ Quiz saved to database: ${quizId}`);
+      console.log(`✅ Quiz metadata saved: ${quizId}`);
+
+      // 2. Insert individual questions into quiz_questions table
+      const questionsToInsert = formattedQuestions.map((q, index) => ({
+        quiz_id: quizId,
+        question_text: q.text || q.question,
+        question_type: q.type || 'mcq',
+        correct_answer: q.correctAnswer?.toString() || '0',
+        options: q.options ? { options: q.options } : null,
+        explanation: q.explanation || null,
+        order_index: index
+      }));
+
+      const { error: questionsError, data: questionsData } = await supabase
+        .from('quiz_questions')
+        .insert(questionsToInsert);
+
+      if (questionsError) {
+        console.warn('⚠️ Questions INSERT had issues:', questionsError.message);
+        // Quiz exists but questions might not be fully stored - that's OK
+        // We still have them in memory and return them to frontend
+      } else {
+        console.log(`✅ ${questions.length} questions stored in quiz_questions table`);
+      }
+
     } catch (insertErr) {
-      console.error('❌ Quiz INSERT exception:', insertErr.message);
-      // Return questions even if DB fails
+      console.error('❌ Database operation exception:', insertErr.message);
+      // Even if database fails, return the questions so user can take quiz immediately
       return res.status(201).json({
         id: quizId,
         questionCount: questions.length,
         questions: formattedQuestions,
-        warning: 'Quiz generated but database save failed'
+        warning: 'Quiz generated but database persistence failed. Will work for this session.'
       });
     }
 
-    // SUCCESS: Return questions immediately
+    // ✅ SUCCESS: Return questions immediately to frontend
+    console.log(`✅ Returning ${formattedQuestions.length} questions to frontend`);
     res.status(201).json({
       id: quizId,
       questionCount: questions.length,
@@ -233,28 +255,35 @@ exports.getQuiz = async (req, res) => {
 
     if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
 
-    // Handle both JSON string and already-parsed objects
-    let questions = quiz.questions;
-    if (typeof questions === 'string') {
-      questions = JSON.parse(questions);
-    } else if (!Array.isArray(questions)) {
-      questions = [];
+    // Fetch questions from quiz_questions table (normalized schema)
+    const { data: questionsData, error: questionsError } = await supabase
+      .from('quiz_questions')
+      .select('*')
+      .eq('quiz_id', id)
+      .order('order_index', { ascending: true });
+
+    let questions = [];
+    if (!questionsError && questionsData && questionsData.length > 0) {
+      // Questions exist in normalized table
+      questions = questionsData.map((q) => ({
+        id: q.id,
+        text: q.question_text,
+        question: q.question_text,
+        type: q.question_type || 'mcq',
+        options: q.options?.options || [],
+        correctAnswer: isNaN(parseInt(q.correct_answer)) ? 0 : parseInt(q.correct_answer),
+        explanation: q.explanation || '',
+      }));
+    } else if (questionsError) {
+      console.warn(`⚠️ Could not fetch questions from quiz_questions table:`, questionsError.message);
+      // Fallback: Quiz might have been created with old schema
+      console.log(`Returning quiz with empty questions array`);
     }
 
     res.json({
       data: {
         ...quiz,
-        questions: questions.map((q) => ({
-          id: q.id,
-          question: q.question || q.text, // Normalize to 'question' field
-          text: q.text || q.question, // Also keep text for compatibility
-          type: q.type || 'mcq',
-          options: q.options || [],
-          correctAnswer: q.correctAnswer !== undefined ? q.correctAnswer : q.correct_answer,
-          sampleAnswer: q.sampleAnswer,
-          keywords: q.keywords || [],
-          explanation: q.explanation || '',
-        })),
+        questions: questions,
       },
     });
   } catch (error) {
@@ -277,10 +306,10 @@ exports.submitQuiz = async (req, res) => {
       return res.status(400).json({ error: 'answers array is required' });
     }
 
-    // Get quiz
+    // Get quiz metadata
     const { data: quiz, error: quizError } = await supabase
       .from('quizzes')
-      .select('id, questions')
+      .select('id, user_id')
       .eq('id', id)
       .eq('user_id', userId)
       .single();
@@ -289,12 +318,28 @@ exports.submitQuiz = async (req, res) => {
       return res.status(404).json({ error: 'Quiz not found' });
     }
 
-    let questions = quiz.questions;
-    if (typeof questions === 'string') {
-      questions = JSON.parse(questions);
-    } else if (!Array.isArray(questions)) {
-      questions = [];
+    // Get questions from quiz_questions table (normalized schema)
+    const { data: questionsData, error: questionsError } = await supabase
+      .from('quiz_questions')
+      .select('*')
+      .eq('quiz_id', id)
+      .order('order_index', { ascending: true });
+
+    if (questionsError || !questionsData || questionsData.length === 0) {
+      console.error('❌ Could not fetch questions for quiz:', id);
+      return res.status(404).json({ error: 'Quiz questions not found' });
     }
+
+    // Format questions from quiz_questions table
+    const questions = questionsData.map((q) => ({
+      id: q.id,
+      text: q.question_text,
+      question: q.question_text,
+      type: q.question_type || 'mcq',
+      options: q.options?.options || [],
+      correctAnswer: isNaN(parseInt(q.correct_answer)) ? 0 : parseInt(q.correct_answer),
+      explanation: q.explanation || '',
+    }));
 
     // Grade answers
     const graded = await quizService.gradeAnswers(
