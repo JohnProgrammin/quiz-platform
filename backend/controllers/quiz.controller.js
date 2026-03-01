@@ -110,54 +110,66 @@ exports.generateQuiz = async (req, res) => {
 
     console.log(`✅ Generated ${questions.length} questions successfully`);
 
-    // ── DB Insert ────────────────────────────────────────────────────────────
+    // Format questions for response and storage
+    const formattedQuestions = questions.map((q) => ({
+      id: q.id,
+      text: q.text || q.question,
+      question: q.text || q.question, // Keep both field names for compatibility
+      type: q.type,
+      options: q.type === 'mcq' ? q.options : undefined,
+      correctAnswer: q.correctAnswer,
+      sampleAnswer: q.sampleAnswer,
+      keywords: q.keywords,
+    }));
+
+    // ── DB Insert - Store quiz metadata and questions as JSON ────────────────
     const insertPayload = {
       id: quizId,
       user_id: userId,
       note_id: idsToFetch.length === 1 ? idsToFetch[0] : null,
       title: quizTitle,
-      created_at: new Date(),
-      ai_generation_metadata: { noteIds: idsToFetch }
+      question_count: questions.length,
+      created_at: new Date().toISOString(),
+      questions: JSON.stringify(formattedQuestions), // Store as JSON string for compatibility
+      ai_generation_metadata: JSON.stringify({ noteIds: idsToFetch })
     };
 
-    // Try to store questions/count — OK if columns don't exist yet
     try {
-      const { error: quizError } = await supabase
+      console.log('📝 Inserting quiz to database...');
+      const { error: quizError, data: quizData } = await supabase
         .from('quizzes')
-        .insert([{ ...insertPayload, questions, question_count: questions.length }])
-        .select('id')
-        .single();
+        .insert([insertPayload])
+        .select('id');
 
       if (quizError) {
-        // Columns likely missing — fall back to minimal insert
-        console.warn('⚠️ Quiz insert with questions failed, trying minimal insert:', quizError.message);
-        const { error: fallbackError } = await supabase
-          .from('quizzes')
-          .insert([insertPayload]);
-        if (fallbackError) {
-          console.error('❌ Quiz INSERT failed (fallback):', fallbackError);
-          return res.status(500).json({ error: 'Failed to save quiz to database' });
-        }
+        console.error('❌ Quiz INSERT failed:', quizError.message);
+        // Even if DB insert fails, return the questions so user can take quiz
+        console.warn('⚠️ Database insert failed, but returning questions to frontend');
+        return res.status(201).json({
+          id: quizId,
+          questionCount: questions.length,
+          questions: formattedQuestions,
+          warning: 'Quiz generated but may not persist. Please try again if issues continue.'
+        });
       }
+
+      console.log(`✅ Quiz saved to database: ${quizId}`);
     } catch (insertErr) {
-      console.error('❌ Quiz INSERT exception:', insertErr);
-      return res.status(500).json({ error: 'Failed to save quiz to database' });
+      console.error('❌ Quiz INSERT exception:', insertErr.message);
+      // Return questions even if DB fails
+      return res.status(201).json({
+        id: quizId,
+        questionCount: questions.length,
+        questions: formattedQuestions,
+        warning: 'Quiz generated but database save failed'
+      });
     }
 
-    console.log(`✅ Quiz saved to database: ${quizId}`);
-
+    // SUCCESS: Return questions immediately
     res.status(201).json({
       id: quizId,
       questionCount: questions.length,
-      questions: questions.map((q) => ({
-        id: q.id,
-        text: q.text || q.question,
-        type: q.type,
-        options: q.type === 'mcq' ? q.options : undefined,
-        correctAnswer: q.correctAnswer,
-        sampleAnswer: q.sampleAnswer,
-        keywords: q.keywords,
-      })),
+      questions: formattedQuestions,
     });
   } catch (error) {
     console.error('Generate quiz error:', error.message);
